@@ -19,15 +19,15 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-import static com.xx.UI.complex.splitPane.BDSplitItem.dragTab;
-import static com.xx.UI.complex.splitPane.BDSplitItem.tempRunnable;
+import static com.xx.UI.complex.splitPane.BDTabItem.dragTab;
+import static com.xx.UI.complex.splitPane.BDTabItem.tempRunnable;
 
 public class BDTabSkin extends BDSkin<BDTab> {
     private final HBox root;
     private final Text title;
     private final BDButton closeButton;
     private final PseudoClass CLOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("show");
-    BDSplitItem tempItem;
+    BDTabItem tempItem;
 
     protected BDTabSkin(BDTab bdTab) {
         this.root = new HBox();
@@ -57,7 +57,7 @@ public class BDTabSkin extends BDSkin<BDTab> {
                         tempItem.check();
                     if (dragTab.splitItem.get() == null) {
                         Stage stage = new Stage();
-                        BDSplitPane splitPane = new BDSplitPane(new BDSplitItem(dragTab));
+                        BDTabPane splitPane = new BDTabPane(new BDTabItem(dragTab));
                         splitPane.getMapping()
                                 .addListener(splitPane.tabsCount, (_, _, nv) -> {
                                     if (nv.intValue() == 0) {

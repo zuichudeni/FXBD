@@ -5724,33 +5724,33 @@ BDSearchBox .content .right-pane {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
-/*************************** bdSplitItem ********************************************/
-.bd-split-tabcontent-pane {
+/*************************** bdTabItem ********************************************/
+.bd-tab-item-content-pane {
     -fx-border-color: #EBECF0;
     -fx-border-width: 0 0 1px 0;
 }
 
-.bd-split-tabcontent {
+.bd-tab-item-tabcontent {
     -fx-pref-height: 45px;
 }
 
-.bd-split-rectangle {
+.bd-tab-item-rectangle {
     -fx-fill: #A8ADBD;
     -fx-arc-height: 5;
     -fx-arc-width: 5;
 }
 
-.bd-split-rectangle:focused {
+.bd-tab-item-rectangle:focused {
     -fx-fill: #3574F0;
 }
-.bd-split-tabs-back{
+.bd-tab-item-tabs-back{
     -fx-fill: #D8E5F5FF;
 }
-.bd-split-root-rec{
+.bd-tab-item-root-rec{
     -fx-fill: rgba(216, 229, 245, 0.5);
 }
 
-.bd-split-bar {
+.bd-tab-item-bar {
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-pref-height: 6px;
@@ -5760,27 +5760,27 @@ BDSearchBox .content .right-pane {
     -fx-opacity: 0;
     transition: -fx-opacity 0.3s ease;
 }
-.bd-split-right {
+.bd-tab-item-right {
     -fx-padding: 0 5 0 5;
     -fx-alignment: center;
 }
 
-.bd-split-bar:hover {
+.bd-tab-item-bar:hover {
     -fx-opacity: 1;
     transition: -fx-opacity 0.3s ease;
 }
 
-.bd-split-bar .thumb {
+.bd-tab-item-bar .thumb {
     -fx-scale-y: .4;
     transition: -fx-scale-y 0.3s ease;
 }
 
-.bd-split-bar .thumb:hover {
+.bd-tab-item-bar .thumb:hover {
     -fx-scale-y: 1.2;
     transition: -fx-scale-y 0.3s ease;
 }
 
-.bd-split-bar .thumb:pressed {
+.bd-tab-item-bar .thumb:pressed {
     -fx-scale-y: 1.2;
     transition: -fx-scale-y 0.3s ease;
 }

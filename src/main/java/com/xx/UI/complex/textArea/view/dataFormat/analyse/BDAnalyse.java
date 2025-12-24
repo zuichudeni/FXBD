@@ -7,17 +7,37 @@ import javafx.application.Platform;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> implements Analyse<T> {
-    final Map<Integer, List<DataBlock<T, ?>>> dataBlockCacheMap = new ConcurrentHashMap<>();
-    final AtomicBoolean processing = new AtomicBoolean(false);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    Map<Integer, BDTokenEntryList<T>> tokenEntryCacheMap;
-    private volatile Future<?> currentTask;
-    private Runnable completionCallback;
+     final Map<Integer, List<DataBlock<T, ?>>> dataBlockCacheMap = new ConcurrentHashMap<>();
+    private final AtomicBoolean processing = new AtomicBoolean(false);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "BDAnalyse-Worker");
+        thread.setDaemon(true); // 设置为守护线程
+        return thread;
+    });
+    final Map<Integer, BDTokenEntryList<T>> tokenEntryCacheMap = new ConcurrentHashMap<>();
+    private final Object taskLock = new Object();
+    private final AtomicReference<TaskContext<T>> currentTaskContext = new AtomicReference<>();
 
+    // 任务上下文，封装任务相关状态
+    private static class TaskContext<T extends Enum<?> & Analyse.BDTextEnum<T>> {
+        final Future<?> future;
+        final AtomicBoolean cancellationFlag;
+        final Runnable completionCallback;
+        final long creationTime;
 
-    @Override
+        TaskContext(Future<?> future, AtomicBoolean cancellationFlag,
+                   Runnable completionCallback) {
+            this.future = future;
+            this.cancellationFlag = cancellationFlag;
+            this.completionCallback = completionCallback;
+            this.creationTime = System.currentTimeMillis();
+        }
+    }
+
+ @Override
     public final List<DataBlock<T, ?>> transform(
             int paragraphIndex,
             final Paragraph paragraph,
@@ -29,28 +49,26 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
                     .stream()
                     .map(segment -> new DataBlock<>(getUndefinedType(), segment, null))
                     .forEach(list::add);
-        } else
+        } else {
             tokenEntryList.checkTokenEntries(paragraph)
                     .forEach(list::addAll);
+        }
         return list;
     }
 
-    @Override
+     @Override
     public final Map<Integer, BDTokenEntryList<T>> transformTokenEntry(String text) {
         Map<Integer, BDTokenEntryList<T>> map = new ConcurrentHashMap<>();
         List<BDToken<T>> tokens = getBDToken(text);
 
         for (BDToken<T> token : tokens) {
             final int paraIndex = token.getParagraphIndex();
+            BDTokenEntryList<T> entryList = map.computeIfAbsent(paraIndex,
+                    _ -> new BDTokenEntryList<>(getUndefinedType()));
 
-            // 每个段落只查找/创建一次 EntryList
-            BDTokenEntryList<T> entryList = map.computeIfAbsent(paraIndex, _ -> new BDTokenEntryList<>(getUndefinedType()));
-
-            // 预分配空间减少扩容开销
             List<BDToken.Range<T>> ranges = token.getRanges();
             if (!ranges.isEmpty()) {
                 for (BDToken.Range<T> range : ranges) {
-                    // 直接复用 Range 对象创建 TokenEntry
                     entryList.addTokenEntry(new BDTokenEntry<>(
                             range.start(),
                             range.end(),
@@ -64,92 +82,161 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
     }
 
 public boolean isTaskRunning() {
-    return currentTask != null && !currentTask.isDone();
-}
-
-public boolean wasLastTaskCancelled() {
-    return currentCancellationFlag.get();
-}
-    // 添加取消标志和锁
-    private final Object taskLock = new Object();
-    private volatile AtomicBoolean currentCancellationFlag = new AtomicBoolean(false);
-
-    public void setTextAsync(String text, Runnable onComplete) {
-        // 创建新的取消标志
-        AtomicBoolean cancellationFlag = new AtomicBoolean(true);
-
+        TaskContext<T> context = currentTaskContext.get();
+        return context != null && !context.future.isDone();
+    }
+  public boolean wasLastTaskCancelled() {
+        TaskContext<T> context = currentTaskContext.get();
+        return context != null && context.cancellationFlag.get();
+    }
+ public void setTextAsync(String text, Runnable onComplete) {
         synchronized (taskLock) {
-            // 取消当前任务
-            if (currentTask != null) {
-                currentCancellationFlag.set(true); // 标记旧任务取消
-                currentTask.cancel(true); // 尝试中断线程
-            }
+            // 取消当前正在运行的任务
+            cancelCurrentTask();
 
-            // 更新当前取消标志
-            currentCancellationFlag = cancellationFlag;
-            this.completionCallback = onComplete != null ? onComplete : () -> {};
+            // 创建新的任务上下文
+            AtomicBoolean cancellationFlag = new AtomicBoolean(false);
+            TaskContext<T> newContext = new TaskContext<>(
+                null, // 将在提交任务后设置
+                cancellationFlag,
+                onComplete != null ? onComplete : () -> {}
+            );
+
+            // 提交新任务
+            TaskContext<T> finalNewContext = newContext;
+            Future<?> future = executor.submit(() ->
+                processTextAsync(text, cancellationFlag, finalNewContext.completionCallback));
+
+            // 更新任务上下文
+            newContext = new TaskContext<>(future, cancellationFlag, newContext.completionCallback);
+            currentTaskContext.set(newContext);
         }
-
-
-        // 提交新任务
-        currentTask = executor.submit(() -> {
-            // 检查任务是否已被取消
-            if (cancellationFlag.get())
-                return;
-
-            try {
-                Map<Integer, BDTokenEntryList<T>> tempTokenEntryMap = transformTokenEntry(text);
-
-                // 再次检查取消状态
-                if (cancellationFlag.get())
-                    return;
-
-                // 安全更新共享状态
-                synchronized (taskLock) {
-                    if (tokenEntryCacheMap != null) tokenEntryCacheMap.clear();
-                    processing.set(false);
-                    dataBlockCacheMap.clear();
-                    tokenEntryCacheMap = tempTokenEntryMap;
-                }
-
-                // 安全更新UI
-                Platform.runLater(() -> {
-                    if (!cancellationFlag.get())
-                        completionCallback.run();
-                });
-            } catch (CancellationException _) {
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        // 重置取消标志（任务开始后允许执行）
-        cancellationFlag.set(false);
     }
 
+    private void processTextAsync(String text, AtomicBoolean cancellationFlag,
+                                 Runnable completionCallback) {
+        // 线程开始执行时设置处理状态
+        processing.set(true);
+
+        try {
+            // 检查任务是否已被取消
+            if (Thread.interrupted() || cancellationFlag.get()) {
+                return;
+            }
+
+            // 执行文本转换
+            Map<Integer, BDTokenEntryList<T>> tempTokenEntryMap = transformTokenEntry(text);
+
+            // 再次检查取消状态
+            if (cancellationFlag.get()) {
+                return;
+            }
+
+            // 安全更新共享状态
+            synchronized (taskLock) {
+                // 只有在任务未被取消时才更新缓存
+                if (!cancellationFlag.get()) {
+                    tokenEntryCacheMap.clear();
+                    dataBlockCacheMap.clear();
+                    tokenEntryCacheMap.putAll(tempTokenEntryMap);
+                }
+            }
+
+            // 只有在任务成功完成时才回调
+            if (!cancellationFlag.get()) {
+                // 安全更新UI
+                Platform.runLater(() -> {
+                    if (!cancellationFlag.get()) {
+                        try {
+                            completionCallback.run();
+                        } catch (Exception e) {
+                            // 防止回调异常影响后续处理
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        } catch (CancellationException e) {
+            // 任务被取消，正常退出
+        } catch (Exception e) {
+            // 记录异常但不抛出，避免影响后续任务
+            e.printStackTrace();
+            // 可以考虑在这里执行错误回调
+        } finally {
+            // 确保处理状态被重置
+            processing.set(false);
+        }
+    }
+     private void cancelCurrentTask() {
+        TaskContext<T> currentContext = currentTaskContext.get();
+        if (currentContext != null && !currentContext.future.isDone()) {
+            // 设置取消标志
+            currentContext.cancellationFlag.set(true);
+            // 尝试中断线程
+            currentContext.future.cancel(true);
+
+            // 等待任务取消完成（有限等待）
+            try {
+                currentContext.future.get(100, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                // 任务取消可能需要时间，这里忽略超时
+            }
+        }
+    }
     // 检查任务状态
     public boolean isProcessing() {
         return processing.get();
     }
-
+ public void cancelCurrentTaskIfRunning() {
+        synchronized (taskLock) {
+            cancelCurrentTask();
+        }
+    }
     public void setProcessing(boolean processing) {
         this.processing.set(processing);
     }
 
     // 关闭线程池（在不再需要时调用）
     public void shutdown() {
-        executor.shutdownNow();
+        synchronized (taskLock) {
+            cancelCurrentTask();
+
+            // 关闭线程池
+            executor.shutdown();
+            try {
+                // 等待现有任务完成
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                    // 再次等待
+                    if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                        System.err.println("BDAnalyse executor did not terminate");
+                    }
+                }
+            } catch (InterruptedException e) {
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
     }
+
+    // 强制关闭
+    public void shutdownNow() {
+        synchronized (taskLock) {
+            cancelCurrentTask();
+            executor.shutdownNow();
+        }
+    }
+
 
     public Map<Integer, BDTokenEntryList<T>> getTokenEntryCacheMap() {
         return tokenEntryCacheMap;
     }
 
     public List<DataBlock<T, ?>> getDataBlock(int paragraphIndex, Paragraph paragraph) {
-        return dataBlockCacheMap
-                .computeIfAbsent(paragraphIndex, _ ->
-                        transform(paragraphIndex, paragraph, tokenEntryCacheMap.get(paragraphIndex)));
+        return dataBlockCacheMap.computeIfAbsent(paragraphIndex,
+                _ -> transform(paragraphIndex, paragraph, tokenEntryCacheMap.get(paragraphIndex)));
     }
+
 
     void append(int paragraphIndex, int offset, List<Paragraph> paragraphs) {
         if (paragraphs == null || paragraphs.isEmpty()) throw new IllegalArgumentException("变化的段落不能为空");
@@ -253,7 +340,7 @@ public boolean wasLastTaskCancelled() {
         }
     }
 
-    public DataBlockEntry<T> getDataBlockEntry(BDTextAreaContent.Point point) {
+     public DataBlockEntry<T> getDataBlockEntry(BDTextAreaContent.Point point) {
         if (dataBlockCacheMap.containsKey(point.paragraph())) {
             List<DataBlock<T, ?>> dataBlocks = dataBlockCacheMap.get(point.paragraph());
             int tempLen = 0;
@@ -262,18 +349,15 @@ public boolean wasLastTaskCancelled() {
                 DataBlock<T, ?> dataBlock = dataBlocks.get(i);
                 int blockLength = dataBlock.getSegment().getLength();
 
-                // 情况1：偏移量正好在块边界（当前块起始位置）
                 if (tempLen == point.offset()) {
                     return new DataBlockEntry<>(i > 0 ? dataBlocks.get(i - 1) : null, dataBlock);
                 }
 
-                // 情况2：偏移量在块结束位置
                 if (tempLen + blockLength == point.offset()) {
                     return new DataBlockEntry<>(dataBlock,
                             (i < dataBlocks.size() - 1) ? dataBlocks.get(i + 1) : null);
                 }
 
-                // 情况3：偏移量在块内部
                 if (tempLen + blockLength > point.offset()) {
                     return new DataBlockEntry<>(dataBlock, dataBlock);
                 }
@@ -283,6 +367,7 @@ public boolean wasLastTaskCancelled() {
         }
         return null;
     }
+
 
     public record DataBlockEntry<T extends Enum<?> & Analyse.BDTextEnum<T>>(DataBlock<T, ?> left,
                                                                             DataBlock<T, ?> right) {

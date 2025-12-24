@@ -1,5 +1,5 @@
 package com.xx.UI.complex.splitPane;
 
-public enum SplitDir {
+public enum BDTabDir {
     LEFT, RIGHT, TOP, BOTTOM,CENTER
 }

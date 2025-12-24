@@ -60,7 +60,7 @@ public class BDTextArea extends BDControl {
 
                 @Override
                 public DefaultEnum getUndefinedType() {
-                    return null;
+                    return DefaultEnum.UNDEFINED;
                 }
             }) {
                 @Override
@@ -317,6 +317,7 @@ public class BDTextArea extends BDControl {
         content.addCaretChangeListener(event -> caretPosition.set(event.getNewPoint()));
         content.addSelectRangeChangeListener(event -> selectRange.set(new SelectRange(event.getNewStartPoint(), event.getNewEndPoint())));
         setCaretPosition(new BDTextAreaContent.Point(0, 0));
+        mapping.addChildren(listView.mapping);
     }
 
     public void caretUp() {

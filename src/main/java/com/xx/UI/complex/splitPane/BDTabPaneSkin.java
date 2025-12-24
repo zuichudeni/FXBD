@@ -3,12 +3,12 @@ package com.xx.UI.complex.splitPane;
 import com.xx.UI.ui.BDSkin;
 import javafx.scene.layout.StackPane;
 
-public class BDSplitPaneSkin extends BDSkin<BDSplitPane> {
+public class BDTabPaneSkin extends BDSkin<BDTabPane> {
     private final StackPane root;
 
-    protected BDSplitPaneSkin(BDSplitPane bdSplitPane) {
+    protected BDTabPaneSkin(BDTabPane bdTabPane) {
         root = new StackPane();
-        super(bdSplitPane);
+        super(bdTabPane);
     }
 
     @Override

@@ -35,17 +35,15 @@ public abstract class BDTextInitFactory<T extends Enum<?> & Analyse.BDTextEnum<T
                             analyse.setTextAsync(textArea.toString(), textArea::refresh), 100));
             changeListener = e -> {
                 analyse.setProcessing(true);
-                if (analyse.tokenEntryCacheMap != null) {
-                    if (e.getChangeType().equals(ContentChangeEvent.ChangeType.INSERT))
-                        analyse.append(e.getStartParaIndex(), e.getStartOffset(), e.getChangedParagraphs());
-                    else if (e.getChangeType().equals(ContentChangeEvent.ChangeType.DELETE))
-                        analyse.delete(e.getStartParaIndex(),e.getStartOffset(),e.getEndParaIndex(),e.getEndOffset(),e.getChangedParagraphs());
-                    else {
-                        analyse.delete(e.getStartParaIndex(),e.getStartOffset(),e.getEndParaIndex(),e.getEndOffset(),e.getChangedParagraphs());
-                        Paragraph paragraph = new Paragraph();
-                        paragraph.appendString(e.getChangedSegment().getInfo());
-                        analyse.append(e.getStartParaIndex(),e.getStartOffset(),List.of(paragraph));
-                    }
+                if (e.getChangeType().equals(ContentChangeEvent.ChangeType.INSERT))
+                    analyse.append(e.getStartParaIndex(), e.getStartOffset(), e.getChangedParagraphs());
+                else if (e.getChangeType().equals(ContentChangeEvent.ChangeType.DELETE))
+                    analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
+                else {
+                    analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
+                    Paragraph paragraph = new Paragraph();
+                    paragraph.appendString(e.getChangedSegment().getInfo());
+                    analyse.append(e.getStartParaIndex(), e.getStartOffset(), List.of(paragraph));
                 }
                 textArea.refresh();
                 scheduler.run();

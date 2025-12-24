@@ -968,10 +968,11 @@ public class BDMapping {
         this.children.get().addAll(List.of(children));
         return this;
     }
+
     /*
-    * 移除子节点
-    * */
-    public BDMapping removeChild(BDMapping child){
+     * 移除子节点
+     * */
+    public BDMapping removeChild(BDMapping child) {
         Objects.requireNonNull(child, "子节点不能为null");
         this.children.applyIfNotNone(list -> list.remove(child));
         return this;
@@ -991,24 +992,30 @@ public class BDMapping {
         return this;
     }
 
+    public BDMapping disposeBDScheduler() {
+        schedulerList.applyIfNotNone(list -> list.forEach(BDScheduler::dispose));
+        return this;
+    }
+
 
     public void dispose() {
         children.applyIfNotNone(children -> {
             children.forEach(BDMapping::dispose);
             children.clear();
         });
-        disposeBindPropertyList();
-        disposeBindingList();
-        disposeChangeListeners();
-        disposeListChangeListeners();
-        disposeSetChangeListeners();
-        disposeMapChangeListeners();
-        disposeEventHandlers();
-        disposeEventFilters();
-        disposeEvent.applyIfNotNone(event -> {
-            event.forEach(Runnable::run);
-            event.clear();
-        });
+        disposeBindPropertyList().
+                disposeBindingList().
+                disposeChangeListeners().
+                disposeListChangeListeners().
+                disposeSetChangeListeners().
+                disposeMapChangeListeners().
+                disposeEventHandlers().
+                disposeEventFilters()
+                .disposeBDScheduler().
+                disposeEvent.applyIfNotNone(event -> {
+                    event.forEach(Runnable::run);
+                    event.clear();
+                });
         data.applyIfNotNone(Map::clear);
     }
 

@@ -1,7 +1,7 @@
 package com.xx;
 
-import com.xx.UI.complex.splitPane.BDSplitItem;
-import com.xx.UI.complex.splitPane.BDSplitPane;
+import com.xx.UI.complex.splitPane.BDTabItem;
+import com.xx.UI.complex.splitPane.BDTabPane;
 import com.xx.UI.complex.splitPane.BDTab;
 import com.xx.UI.complex.textArea.view.BDTextArea;
 import com.xx.UI.complex.textArea.view.BDTextAreaSearch;
@@ -27,15 +27,15 @@ public class Launch extends Application {
     public void start(Stage stage) throws IOException {
         stage.setTitle("Text Editor");
 
-        BDSplitItem splitItem = new BDSplitItem();
-        File file = new File("F:\\project\\java\\FXEditor\\src\\main\\java\\com\\xx\\UI\\ui");
+        BDTabItem splitItem = new BDTabItem();
+        File file = new File(Util.getPath("src\\main\\java\\com\\xx\\UI\\ui").toUri());
         for (File child : Objects.requireNonNull(file.listFiles())) {
             if (child.isFile())
                 splitItem.addTab(initTab(child.toPath()));
         }
-        splitItem.addTab(initTab(Path.of("F:\\project\\java\\FXEditor\\src\\main\\resources\\business.json")));
+        splitItem.addTab(initTab(Util.getPath("src\\main\\resources\\business.json")));
 
-        Scene scene = new Scene(new BDSplitPane(splitItem), 800, 600);
+        Scene scene = new Scene(new BDTabPane(splitItem), 800, 600);
 
         stage.setScene(scene);
         Application.setUserAgentStylesheet(Util.getResourceUrl("/css/cupertino-light.css"));
@@ -46,8 +46,8 @@ public class Launch extends Application {
         BDTab tab = new BDTab(path.getFileName().toString());
         tab.setGraphic(Util.getImageView(25, path.toString().endsWith("java")?BDIcon.CLASS:BDIcon.JSON));
         BDTextAreaSearch search = new BDTextAreaSearch(initTextArea(path));
-        ROOT_MAPPING.addChildren(search.getMapping());
         tab.setContent(search);
+        tab.getMapping().addChildren(search.getMapping());
         return tab;
     }
 

@@ -6,11 +6,11 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class BDSplitPane extends BDControl {
+public class BDTabPane extends BDControl {
     final SimpleIntegerProperty tabsCount = new SimpleIntegerProperty(0);
-    final SimpleObjectProperty<BDSplitItem> splitItem = new SimpleObjectProperty<>();
+    final SimpleObjectProperty<BDTabItem> splitItem = new SimpleObjectProperty<>();
 
-    public BDSplitPane(BDSplitItem root) {
+    public BDTabPane(BDTabItem root) {
         splitItem.set(root);
         tabsCount.set(root.getTabs().size());
         mapping.addDisposeEvent(() -> {
@@ -19,11 +19,11 @@ public class BDSplitPane extends BDControl {
         });
     }
 
-    public BDSplitItem getRoot() {
+    public BDTabItem getRoot() {
         return splitItem.get();
     }
 
-    void setRoot(BDSplitItem root) {
+    void setRoot(BDTabItem root) {
         if (root == null) {
             throw new IllegalArgumentException("Root cannot be null");
         }
@@ -47,6 +47,6 @@ public class BDSplitPane extends BDControl {
 
     @Override
     protected BDSkin<? extends BDControl> createDefaultSkin() {
-        return new BDSplitPaneSkin(this);
+        return new BDTabPaneSkin(this);
     }
 }

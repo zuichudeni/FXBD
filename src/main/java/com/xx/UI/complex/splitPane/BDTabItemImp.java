@@ -1,11 +1,11 @@
 package com.xx.UI.complex.splitPane;
 
-public interface BDSplitItemImp {
+public interface BDTabItemImp {
     boolean canAdd();
 
-    boolean addItem(SplitDir dir, BDTab... item);
+    boolean addItem(BDTabDir dir, BDTab... item);
 
-    boolean removeItem(BDSplitItem item);
+    boolean removeItem(BDTabItem item);
 
     boolean removeItemFromParent();
 
@@ -14,5 +14,5 @@ public interface BDSplitItemImp {
     }
 
     void check();
-    BDSplitItem initItem();
+    BDTabItem initItem();
 }

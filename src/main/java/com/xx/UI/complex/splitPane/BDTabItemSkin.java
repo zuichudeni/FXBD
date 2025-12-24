@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.xx.UI.complex.splitPane.BDSplitItem.dragTab;
+import static com.xx.UI.complex.splitPane.BDTabItem.dragTab;
 
-public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
+public class BDTabItemSkin extends BDSkin<BDTabItem> {
     // 常量定义
     private static final PseudoClass BAR_HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
     private static final PseudoClass RECTANGLE_FOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("focused");
@@ -64,9 +64,9 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
     private ParallelTransition contentTransition;
     private Node currentContent;
     private ParallelTransition rootRecTransition;
-    private SplitDir currentDir;
+    private BDTabDir currentDir;
 
-    protected BDSplitItemSkin(BDSplitItem bdSplitItem) {
+    protected BDTabItemSkin(BDTabItem bdTabItem) {
 
         // 初始化UI组件
         splitPane = new SplitPane();
@@ -92,7 +92,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
 
         rootRecSizeAnimation = new Timeline();
         rootRecPositionAnimation = new Timeline();
-        super(bdSplitItem);
+        super(bdTabItem);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
                     if (dragTab == null || !control.acceptDrag(dragTab) || control.getTabs().isEmpty()) return;
                     event.consume();
                     event.acceptTransferModes(TransferMode.MOVE);
-                    SplitDir dir = getSplitDir(event);
+                    BDTabDir dir = getSplitDir(event);
                     animationRootRec(dir, event);
                 })
                 .addEventFilter(contentPane, DragEvent.DRAG_EXITED, event -> {
@@ -210,7 +210,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
                 .addEventFilter(contentPane, DragEvent.DRAG_DROPPED, event -> {
                     if (dragTab == null || !control.acceptDrag(dragTab)) return;
                     event.consume();
-                    SplitDir dir = getSplitDir(event);
+                    BDTabDir dir = getSplitDir(event);
                     switch (dir) {
                         case TOP, BOTTOM, LEFT, RIGHT -> control.addItem(dir, dragTab);
                         case CENTER ->
@@ -247,22 +247,22 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
                 });
     }
 
-    private SplitDir getSplitDir(DragEvent event) {
+    private BDTabDir getSplitDir(DragEvent event) {
         Bounds bounds = contentPane.localToScene(contentPane.getLayoutBounds());
         double left = event.getSceneX() - bounds.getMinX();
         double top = event.getSceneY() - bounds.getMinY();
         double right = bounds.getMaxX() - event.getSceneX();
         double bottom = bounds.getMaxY() - event.getSceneY();
         if (left > bounds.getWidth() / 4 && right > bounds.getWidth() / 4 && top > bounds.getHeight() / 4 && bottom > bounds.getHeight() / 4)
-            return SplitDir.CENTER;
+            return BDTabDir.CENTER;
         if (left < right && left < bottom && left < top) {
-            return SplitDir.LEFT;
+            return BDTabDir.LEFT;
         } else if (right < left && right < bottom && right < top) {
-            return SplitDir.RIGHT;
+            return BDTabDir.RIGHT;
         } else if (top < left && top < right && top < bottom) {
-            return SplitDir.TOP;
+            return BDTabDir.TOP;
         } else {
-            return SplitDir.BOTTOM;
+            return BDTabDir.BOTTOM;
         }
     }
 
@@ -294,7 +294,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
                         tabContent.widthProperty(),
                         tabBox.widthProperty())
                 .addListener(() -> {
-                    SplitItemChild child = control.getChild();
+                    BDTabItemChild child = control.getChild();
                     if (child == null) {
                         splitPane.getItems().setAll(rootPane);
                         return;
@@ -311,7 +311,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
         initShowTab(null, control.getShowTab());
         if (control.dirAnimation) {
             tabBox.setBackground(Background.fill(Color.RED));
-            if (control.tempDir == SplitDir.LEFT || control.tempDir == SplitDir.TOP)
+            if (control.tempDir == BDTabDir.LEFT || control.tempDir == BDTabDir.TOP)
                 splitPane.setDividerPositions(0);
             else splitPane.setDividerPositions(1);
             animationDividers();
@@ -416,25 +416,25 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
      * 设置样式类
      */
     private void setupStyleClasses() {
-        control.getStyleClass().add("bd-split-item");
-        splitPane.getStyleClass().add("bd-split-container");
-        body.getStyleClass().add("bd-split-body");
-        rootRec.getStyleClass().add("bd-split-root-rec");
-        bar.getStyleClass().add("bd-split-bar");
-        header.getStyleClass().add("bd-split-header");
-        leftBox.getStyleClass().add("bd-split-left");
-        tabContent.getStyleClass().add("bd-split-tabcontent");
-        tabContentPane.getStyleClass().add("bd-split-tabcontent-pane");
-        tabBox.getStyleClass().add("bd-split-tabbox");
-        rightBox.getStyleClass().add("bd-split-right");
-        foldButton.getStyleClass().add("bd-split-fold-button");
-        rectangle.getStyleClass().add("bd-split-rectangle");
-        tabsBack.getStyleClass().add("bd-split-tabs-back");
+        control.getStyleClass().add("bd-tab-item");
+        splitPane.getStyleClass().add("bd-tab-item-container");
+        body.getStyleClass().add("bd-tab-item-body");
+        rootRec.getStyleClass().add("bd-tab-item-root-rec");
+        bar.getStyleClass().add("bd-tab-item-bar");
+        header.getStyleClass().add("bd-tab-item-header");
+        leftBox.getStyleClass().add("bd-tab-item-left");
+        tabContent.getStyleClass().add("bd-tab-item-tabcontent");
+        tabContentPane.getStyleClass().add("bd-tab-item-content-pane");
+        tabBox.getStyleClass().add("bd-tab-item-tabbox");
+        rightBox.getStyleClass().add("bd-tab-item-right");
+        foldButton.getStyleClass().add("bd-tab-item-fold-button");
+        rectangle.getStyleClass().add("bd-tab-item-rectangle");
+        tabsBack.getStyleClass().add("bd-tab-item-tabs-back");
 
         rectangle.setHeight(RECTANGLE_HEIGHT);
 
         // 设置内容容器的背景和样式
-        contentPane.getStyleClass().add("bd-split-content");
+        contentPane.getStyleClass().add("bd-tab-item-content");
     }
 
     /**
@@ -486,7 +486,7 @@ public class BDSplitItemSkin extends BDSkin<BDSplitItem> {
         return result;
     }
 
-    private void animationRootRec(SplitDir dir, DragEvent event) {
+    private void animationRootRec(BDTabDir dir, DragEvent event) {
         if (Objects.equals(currentDir, dir) && dir != null) return;
         currentDir = dir;
         double width = 0;

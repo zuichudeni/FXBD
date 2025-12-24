@@ -20,11 +20,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 
-import static com.xx.UI.complex.splitPane.BDSplitItem.BD_TAB_FORMAT;
+import static com.xx.UI.complex.splitPane.BDTabItem.BD_TAB_FORMAT;
 
 public class BDTab extends BDControl {
     //    所属的SplitItem
-    final SimpleObjectProperty<BDSplitItem> splitItem = new SimpleObjectProperty<>();
+    final SimpleObjectProperty<BDTabItem> splitItem = new SimpleObjectProperty<>();
     //    是否显示
     final SimpleBooleanProperty show = new SimpleBooleanProperty(false);
     //    展示的内容
@@ -78,7 +78,7 @@ public class BDTab extends BDControl {
 
     public void close() {
         if (!isClosable()) return;
-        BDSplitItem item = splitItem.get();
+        BDTabItem item = splitItem.get();
         drag();
 //        dispose后无法复原。
         mapping.dispose();
@@ -87,7 +87,7 @@ public class BDTab extends BDControl {
 
     //    拖拽时，将Tab从SplitItem中暂时移除
     void drag() {
-        if (splitItem.get() instanceof BDSplitItem item)
+        if (splitItem.get() instanceof BDTabItem item)
             item.removeTab(this);
         show.set(false);
     }
@@ -125,16 +125,16 @@ public class BDTab extends BDControl {
     }
 
     public void show() {
-        if (splitItem.get() instanceof BDSplitItem item)
+        if (splitItem.get() instanceof BDTabItem item)
             item.setShowTab(this);
         if (getContent() != null) getContent().requestFocus();
     }
 
-    public BDSplitItem getSplitItem() {
+    public BDTabItem getSplitItem() {
         return splitItem.get();
     }
 
-    public ReadOnlyObjectProperty<BDSplitItem> splitItemProperty() {
+    public ReadOnlyObjectProperty<BDTabItem> splitItemProperty() {
         return splitItem;
     }
 

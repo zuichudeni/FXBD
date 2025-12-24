@@ -69,7 +69,7 @@ public class BDTextCell extends ListCell<Object> implements BDUI, BDVirtualUI {
     /* 专门储存搜索到的高亮节点容器 */
     private final AnchorPane searchResultLayout = new AnchorPane();
     private final AnchorPane fillLayout = new AnchorPane(selectionRange);
-    protected final AnchorPane root = new AnchorPane(fillLayout,  flowPane,searchResultLayout, tempSelectionRange, caretPath);
+    protected final AnchorPane root = new AnchorPane(fillLayout, flowPane, searchResultLayout, tempSelectionRange, caretPath);
     // 带平滑动画的滚动
     private final Timeline scrollTimeline = new Timeline();
     Object lastEvent = null;
@@ -84,6 +84,10 @@ public class BDTextCell extends ListCell<Object> implements BDUI, BDVirtualUI {
         this.textArea = listView.textArea;
         listView.mapping.addChildren(mapping);
         mapping.addChildren(virtualMapping);
+        mapping.addDisposeEvent(() -> {
+            scrollTimeline.getKeyFrames().clear();
+            scrollTimeline.stop();
+        });
         initUI();
         initEvent();
         initProperty();

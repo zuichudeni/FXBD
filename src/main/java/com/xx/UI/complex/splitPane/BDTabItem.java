@@ -16,10 +16,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 该组件是BDSplitPane的子项容器。当分裂时，会生成两个BDSplitItem，分别作为左右或上下两个子项。
+ * 该组件是BDTabPane的子项容器。当分裂时，会生成两个BDTabItem，分别作为左右或上下两个子项。
  *
  */
-public class BDSplitItem extends BDControl implements BDSplitItemImp {
+public class BDTabItem extends BDControl implements BDTabItemImp {
     public static final DataFormat BD_TAB_FORMAT = new DataFormat("BD_TAB_FORMAT");
     //    拖动的tab
     static BDTab dragTab;
@@ -27,24 +27,24 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
     static Runnable tempRunnable;
     final SimpleObjectProperty<Orientation> orientation = new SimpleObjectProperty<>(Orientation.VERTICAL);
     //    父节点
-    private final SimpleObjectProperty<BDSplitItem> parentItem = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<BDTabItem> parentItem = new SimpleObjectProperty<>();
     //    子节点
-    private final SimpleObjectProperty<SplitItemChild> child = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<BDTabItemChild> child = new SimpleObjectProperty<>();
     //    记录显示历史
     private final LinkedHashSet<BDTab> tabDisplayHistory = new LinkedHashSet<>();
     //    tab列表
     private final SimpleListProperty<BDTab> tabs = new SimpleListProperty<>(FXCollections.observableArrayList());
     //    显示的tab
     private final SimpleObjectProperty<BDTab> showTab = new SimpleObjectProperty<>();
-    BDSplitPane splitPane;
+    BDTabPane splitPane;
 
-    SplitDir tempDir;
+    BDTabDir tempDir;
     boolean dirAnimation;
 
-    public BDSplitItem(BDTab... tabs) {
+    public BDTabItem(BDTab... tabs) {
         addTabs(tabs);
         getMapping().addDisposeEvent(() -> {
-            if (child.get() instanceof SplitItemChild(BDSplitItem first, BDSplitItem second)) {
+            if (child.get() instanceof BDTabItemChild(BDTabItem first, BDTabItem second)) {
                 first.mapping.dispose();
                 second.mapping.dispose();
             }
@@ -57,14 +57,14 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         });
     }
 
-    public BDSplitItem(BDSplitItem parent, BDTab... tabs) {
+    public BDTabItem(BDTabItem parent, BDTab... tabs) {
         this(tabs);
         this.parentItem.set(parent);
     }
 
     @Override
     protected BDSkin<? extends BDControl> createDefaultSkin() {
-        return new BDSplitItemSkin(this);
+        return new BDTabItemSkin(this);
     }
 
     @Override
@@ -73,31 +73,31 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
     }
 
     @Override
-    public boolean addItem(SplitDir dir, BDTab... tabs) {
+    public boolean addItem(BDTabDir dir, BDTab... tabs) {
         if (tabs == null || tabs.length == 0)
             throw new IllegalArgumentException("Tabs can not be null or empty.");
         if (!canAdd()) return false;
 
         // 保存当前父节点引用
-        BDSplitItem oldParent = getParentItem();
+        BDTabItem oldParent = getParentItem();
 
         // 创建新父节点和兄弟节点
-        BDSplitItem newParent = initItem();
-        BDSplitItem item = new BDSplitItem(newParent, tabs);
+        BDTabItem newParent = initItem();
+        BDTabItem item = new BDTabItem(newParent, tabs);
 
         // 设置方向
-        if (dir.equals(SplitDir.LEFT) || dir.equals(SplitDir.RIGHT)) {
+        if (dir.equals(BDTabDir.LEFT) || dir.equals(BDTabDir.RIGHT)) {
             newParent.orientation.set(Orientation.HORIZONTAL);
         } else {
             newParent.orientation.set(Orientation.VERTICAL);
         }
 
         // 创建子项关系
-        SplitItemChild child;
-        if (dir.equals(SplitDir.LEFT) || dir.equals(SplitDir.TOP)) {
-            child = new SplitItemChild(item, this);  // 新节点在前
+        BDTabItemChild child;
+        if (dir.equals(BDTabDir.LEFT) || dir.equals(BDTabDir.TOP)) {
+            child = new BDTabItemChild(item, this);  // 新节点在前
         } else {
-            child = new SplitItemChild(this, item);  // 当前节点在前
+            child = new BDTabItemChild(this, item);  // 当前节点在前
         }
 
         // 设置子节点
@@ -106,12 +106,12 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         // 更新父子关系
         if (oldParent != null) {
             // 替换旧父节点中的当前节点为新父节点
-            SplitItemChild parentChild = oldParent.getChild();
+            BDTabItemChild parentChild = oldParent.getChild();
             if (parentChild != null) {
                 if (parentChild.first().equals(this)) {
-                    oldParent.child.set(new SplitItemChild(newParent, parentChild.second()));
+                    oldParent.child.set(new BDTabItemChild(newParent, parentChild.second()));
                 } else if (parentChild.second().equals(this)) {
-                    oldParent.child.set(new SplitItemChild(parentChild.first(), newParent));
+                    oldParent.child.set(new BDTabItemChild(parentChild.first(), newParent));
                 }
             }
             newParent.parentItem.set(oldParent);
@@ -143,7 +143,7 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
     }
 
     @Override
-    public boolean removeItem(BDSplitItem item) {
+    public boolean removeItem(BDTabItem item) {
         if (item == null || item == this || (!item.equals(getChild().first()) && !item.equals(getChild().second())))
             return false;
         return item.removeItemFromParent();
@@ -151,7 +151,7 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
 
     @Override
     public boolean removeItemFromParent() {
-        BDSplitItem parent = getParentItem();
+        BDTabItem parent = getParentItem();
         if (parent == null || getChild() != null) {
             // 没有父节点或者有子节点，不能移除
             return false;
@@ -161,14 +161,14 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         cleanTabs();
 
         // 获取兄弟节点
-        BDSplitItem brother = getBroItem();
+        BDTabItem brother = getBroItem();
         if (brother == null) {
             // 如果没有兄弟节点，这是不应该发生的情况
             return false;
         }
 
         // 获取祖父节点
-        BDSplitItem grandParent = parent.getParentItem();
+        BDTabItem grandParent = parent.getParentItem();
 
         if (grandParent != null) {
             // 父节点不是根节点
@@ -177,19 +177,19 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
             grandParent.mapping.removeChild(parent.mapping);
 
             // 2. 将兄弟节点提升到祖父节点的位置
-            BDSplitItem parentBrother = parent.getBroItem();
+            BDTabItem parentBrother = parent.getBroItem();
             if (parentBrother != null) {
                 // 重新组织祖父节点的子节点
-                SplitItemChild grandParentChild = grandParent.getChild();
-                SplitItemChild newChild;
+                BDTabItemChild grandParentChild = grandParent.getChild();
+                BDTabItemChild newChild;
 
                 if (grandParentChild != null) {
                     if (grandParentChild.first().equals(parent)) {
                         // 父节点是第一个子节点
-                        newChild = new SplitItemChild(brother, grandParentChild.second());
+                        newChild = new BDTabItemChild(brother, grandParentChild.second());
                     } else {
                         // 父节点是第二个子节点
-                        newChild = new SplitItemChild(grandParentChild.first(), brother);
+                        newChild = new BDTabItemChild(grandParentChild.first(), brother);
                     }
                     grandParent.setChild(newChild);
 
@@ -235,11 +235,11 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         }
     }
 
-    private BDSplitItem getBroItem() {
-        BDSplitItem parent = getParentItem();
+    private BDTabItem getBroItem() {
+        BDTabItem parent = getParentItem();
         if (parent == null) return null;
 
-        SplitItemChild child = parent.getChild();
+        BDTabItemChild child = parent.getChild();
         if (child == null) return null;
 
         if (child.first() == this) {
@@ -253,27 +253,27 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
 
 
     @Override
-    public BDSplitItem initItem() {
-        return new BDSplitItem();
+    public BDTabItem initItem() {
+        return new BDTabItem();
     }
 
-    public BDSplitItem getParentItem() {
+    public BDTabItem getParentItem() {
         return parentItem.get();
     }
 
-    public ReadOnlyObjectProperty<BDSplitItem> parentItemProperty() {
+    public ReadOnlyObjectProperty<BDTabItem> parentItemProperty() {
         return parentItem;
     }
 
-    public ReadOnlyObjectProperty<SplitItemChild> childProperty() {
+    public ReadOnlyObjectProperty<BDTabItemChild> childProperty() {
         return child;
     }
 
-    public SplitItemChild getChild() {
+    public BDTabItemChild getChild() {
         return child.get();
     }
 
-    public void setChild(SplitItemChild child) {
+    public void setChild(BDTabItemChild child) {
         this.child.set(child);
     }
 
@@ -381,8 +381,8 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         }
     }
 
-    public BDSplitItem getRoot() {
-        BDSplitItem item = this;
+    public BDTabItem getRoot() {
+        BDTabItem item = this;
         while (item.getParentItem() != null)
             item = item.getParentItem();
         return item;
@@ -404,7 +404,7 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
 
         // 打印当前节点的信息
         System.out.print(indent);
-        System.out.print("+-- BDSplitItem [");
+        System.out.print("+-- BDTabItem [");
 
         // 显示当前节点的一些关键状态
         System.out.print("Tabs=" + getTabs().size()); // 包含的标签数
@@ -415,7 +415,7 @@ public class BDSplitItem extends BDControl implements BDSplitItemImp {
         System.out.println("]");
 
         // 如果有子节点（即这是一个分裂容器），则递归打印两个分支
-        SplitItemChild child = getChild();
+        BDTabItemChild child = getChild();
         if (child != null) {
             System.out.println(indent + "    |");
             System.out.println(indent + "    +-- First Branch:");

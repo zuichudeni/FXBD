@@ -18,6 +18,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Window;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -218,5 +222,28 @@ public class Util {
 
     public interface InitImageView {
         void initImageView(ImageView imageView);
+    }
+
+//    返回项目下的文件路径。
+    public static Path getPath(String relativePath) {
+        Path filePath = Paths.get("").toAbsolutePath().resolve(relativePath);
+        if (!Files.exists(filePath)) {
+            // 创建父目录
+            if (filePath.getParent() != null) {
+                try {
+                    Files.createDirectories(filePath.getParent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // 创建文件
+            try {
+                Files.createFile(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return filePath;
     }
 }
