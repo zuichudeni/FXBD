@@ -428,6 +428,9 @@ public class BDTextArea extends BDControl {
     public void insertText(int index, String text) {
         content.insert(index, text, true);
     }
+    public void appendText(String text) {
+        insertText(getLength(), text);
+    }
 
     public void insertNode(BDTextAreaContent.Point point, NodeSegment<?> nodeSegment) {
         content.insert(point, nodeSegment, true);
@@ -435,6 +438,9 @@ public class BDTextArea extends BDControl {
 
     public void insertNode(int index, NodeSegment<?> nodeSegment) {
         content.insert(index, nodeSegment, true);
+    }
+    public void appendNode(NodeSegment<?> nodeSegment) {
+        insertNode(getLength(), nodeSegment);
     }
 
     public void deleteSelect() {

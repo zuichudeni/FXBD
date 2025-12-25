@@ -5,6 +5,7 @@ import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.Util;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -112,9 +113,8 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                         leftInvisibleTabs.forEach(e -> {
                             Node node = e.cloneNode(popup);
                             root.getChildren().add(node);
-                            node.setOnMouseClicked(_->{
+                            node.setOnMouseClicked(_ -> {
                                 e.show();
-                                initShowTab(null, control.getShowTab());
                                 popup.hide();
                             });
                         });
@@ -127,9 +127,8 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                         rightInvisibleTabs.forEach(e -> {
                             Node node = e.cloneNode(popup);
                             root.getChildren().add(node);
-                            node.setOnMouseClicked(_->{
+                            node.setOnMouseClicked(_ -> {
                                 e.show();
-                                initShowTab(null, control.getShowTab());
                                 popup.hide();
                             });
                         });
@@ -140,7 +139,7 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                     popup.setHideOnEscape(true);
                     popup.getScene().getStylesheets().addAll(control.getScene().getWindow().getScene().getStylesheets());
                     Bounds bounds = foldButton.localToScreen(foldButton.getLayoutBounds());
-                    popup.show(control.getScene().getWindow(), bounds.getMinX() - popup.getWidth()-bounds.getWidth()/2 , bounds.getMaxY());
+                    popup.show(control.getScene().getWindow(), bounds.getMinX() - popup.getWidth() - bounds.getWidth() / 2, bounds.getMaxY());
                 })
                 .addEventHandler(tabContentPane, ScrollEvent.SCROLL, event1 -> {
                     int delta = (int) (event1.getDeltaY() / 32);
@@ -272,8 +271,8 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
         mapping.binding(bar.visibleProperty(), tabBox.widthProperty().greaterThan(tabContent.widthProperty()))
                 .bindProperty(bar.visibleProperty(), foldButton.visibleProperty(), foldButton.managedProperty())
                 .addListener(() -> rectangle.pseudoClassStateChanged(RECTANGLE_FOCUSED_PSEUDO_CLASS, focusWithIn.get()), true, focusWithIn)
-                .addListener(control.showTabProperty(), (_, oldTab, newTab) -> initShowTab(oldTab, newTab))
-                .addListener(control.tabsProperty(), (_, _, _) -> initShowTab(null, control.getShowTab()))
+                .addListener(control.showTab, (_, _, newTab) -> initShowTab(newTab))
+                .addListener(control.tabsProperty(), (_, _, _) -> initShowTab(control.getShowTab()))
                 .addListener(bar.valueProperty(), (_, _, newValue) -> tabContent.setHvalue(newValue.doubleValue()))
                 .addListener(() -> {
                             double tabContentWidth = tabContent.getWidth();
@@ -307,8 +306,6 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                 }, true, (Observable) control.tabsProperty(), control.orientation)
                 .addListener(header.hoverProperty(), (_, _, nv) -> bar.pseudoClassStateChanged(BAR_HOVER_PSEUDO_CLASS, nv));
 
-        // 初始化显示的tab
-        initShowTab(null, control.getShowTab());
         if (control.dirAnimation) {
             tabBox.setBackground(Background.fill(Color.RED));
             if (control.tempDir == BDTabDir.LEFT || control.tempDir == BDTabDir.TOP)
@@ -327,20 +324,16 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
         }
     }
 
-    private void initShowTab(BDTab oldTab, BDTab newTab) {
+    private void initShowTab(BDTab newTab) {
         if (!tabBox.getChildren().contains(newTab))
             tabBox.getChildren().setAll(control.getTabs());
-        if (oldTab != null)
-            oldTab.show.set(false);
         if (newTab != null) {
             tabBox.layout();
             tabBox.requestLayout();
             tabBox.applyCss();
-            newTab.show.set(true);
 
             // 使用动画切换内容
             transitionContent(newTab.getContent());
-
             animationMove(newTab.getLayoutX(), newTab.getWidth());
             double layoutX = newTab.getLayoutX();
             double width = newTab.getWidth();
@@ -410,6 +403,10 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
 
         // 添加到根节点
         getChildren().setAll(splitPane);
+
+        // 初始化显示的tab
+        new Timeline(new KeyFrame(ANIMATION_DURATION,_->initShowTab(control.getShowTab()))).play();
+
     }
 
     /**

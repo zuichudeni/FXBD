@@ -35,4 +35,5 @@ module FXEditor {
     exports com.xx.UI.complex.textArea.view.dataFormat.example.regex;
 
     exports com.xx.UI.complex.splitPane;
+    exports com.xx.demo;
 }

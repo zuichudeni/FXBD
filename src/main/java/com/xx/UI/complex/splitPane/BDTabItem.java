@@ -23,7 +23,7 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
     public static final DataFormat BD_TAB_FORMAT = new DataFormat("BD_TAB_FORMAT");
     //    拖动的tab
     static BDTab dragTab;
-//    为了解决拖动后新窗口的关闭问题。
+    //    为了解决拖动后新窗口的关闭问题。
     static Runnable tempRunnable;
     final SimpleObjectProperty<Orientation> orientation = new SimpleObjectProperty<>(Orientation.VERTICAL);
     //    父节点
@@ -35,7 +35,7 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
     //    tab列表
     private final SimpleListProperty<BDTab> tabs = new SimpleListProperty<>(FXCollections.observableArrayList());
     //    显示的tab
-    private final SimpleObjectProperty<BDTab> showTab = new SimpleObjectProperty<>();
+    final SimpleObjectProperty<BDTab> showTab = new SimpleObjectProperty<>();
     BDTabPane splitPane;
 
     BDTabDir tempDir;
@@ -219,7 +219,8 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
         parent.mapping.dispose();
         return true;
     }
-     /**
+
+    /**
      * 检查并清理空节点
      */
     @Override
@@ -249,7 +250,6 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
         }
         return null;
     }
-
 
 
     @Override
@@ -307,6 +307,7 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
         tabs.add(index, tab);
         if (getRoot().splitPane != null)
             getRoot().splitPane.tabsCount.set(getRoot().splitPane.tabsCount.get() + 1);
+        tab.show();
     }
 
     public void removeTab(BDTab tab) {
@@ -366,15 +367,18 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
 
     public void setShowTab(BDTab showTab) {
         if (showTab == null || tabs.contains(showTab)) {
-            // 更新显示历史
-            if (this.showTab.get() != null)
+            if (this.showTab.get() != null) {
+                // 更新显示历史
                 tabDisplayHistory.add(this.showTab.get());
-            this.showTab.set(showTab);
+                this.showTab.get().show.set(false);
+            }
             // 新显示的tab放到历史记录最前面
             if (showTab != null) {
                 tabDisplayHistory.remove(showTab);
                 tabDisplayHistory.add(showTab);
+                showTab.show.set(true);
             }
+            this.showTab.set(showTab);
         } else {
             throw new IllegalArgumentException("tab: '%s' 不在tabs列表中".formatted(
                     showTab.getTitle()));
@@ -435,7 +439,7 @@ public class BDTabItem extends BDControl implements BDTabItemImp {
         }
     }
 
-    public SimpleObjectProperty<BDTab> showTabProperty() {
+    public ReadOnlyObjectProperty<BDTab> showTabProperty() {
         return showTab;
     }
 }

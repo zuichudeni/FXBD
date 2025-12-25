@@ -348,7 +348,10 @@ public class BDTab extends BDControl {
     public String toString() {
         return getTitle();
     }
-private final PseudoClass TAB_SHOW = PseudoClass.getPseudoClass("show");
+
+    private final PseudoClass TAB_SHOW = PseudoClass.getPseudoClass("show");
+
+//    单纯的生成本标签tab的简单UI拷贝。
     Node cloneNode(Popup popup) {
         HBox hBox = new HBox();
         hBox.getStyleClass().add("bd-tab-clone");
