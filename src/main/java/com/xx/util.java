@@ -1,21 +1,32 @@
 package com.xx;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.stream.Collectors;
+
+import static com.xx.CompressionUtils.decompressAllInFolder;
 
 //临时工具
 public class util {
     public static void main() throws IOException {
-        toBDIcon();
+//        decompressAllInFolder("F:\\project\\python\\jetbrainsIconCrawl");
+//        transfer("F:\\project\\python\\jetbrainsIconCrawl\\downloads", "F:\\FXBD\\src\\main\\resources\\texture");
+        generateBDIconEnum();
     }
 
     private static void transfer(String dirFrom, String dirTo) throws IOException {
         File fileFrom = new File(dirFrom);
         File fileTo = new File(dirTo);
+        // 确保目标目录存在
+        if (!fileTo.exists()) {
+            fileTo.mkdirs();
+        }
         Stack<File> stack = new Stack<>();
         stack.push(fileFrom);
         while (!stack.isEmpty()) {
@@ -34,37 +45,69 @@ public class util {
         }
     }
 
-    private static void toBDIcon() {
-        File file = new File("F:\\project\\java\\FXEditor\\src\\main\\resources\\texture");
-        Arrays.stream(Objects.requireNonNull(file.listFiles())).forEach(image -> {
-            String name = image.getName();
-            System.out.printf("%s(\"/texture/%s\"),\n", convertToConstantCase(name.substring(0, name.length() - 4)), image.getName());
-        });
+    private static void generateBDIconEnum() {
+        // 配置路径 - 可根据需要修改
+        String textureDirPath = "F:\\project\\java\\FXEditor\\src\\main\\resources\\texture";
+        String outputFilePath = "C:\\Users\\X.....X\\Desktop\\BDIcon.java";
+
+        File textureDir = new File(textureDirPath);
+        File[] imageFiles = textureDir.listFiles();
+
+        if (imageFiles == null || imageFiles.length == 0) {
+            System.err.println("No image files found in directory: " + textureDirPath);
+            return;
+        }
+
+        // 生成枚举常量部分
+        String enumConstants = Arrays.stream(imageFiles)
+                .filter(file -> !file.isDirectory())
+                .map(file -> {
+                    String fileName = file.getName();
+                    String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+                    String constantName = convertToConstantCase(baseName);
+                    return String.format("    %s(\"/texture/%s\")", constantName, fileName);
+                })
+                .sorted() // 按字母顺序排序，使生成的代码更整洁
+                .collect(Collectors.joining(",\n"));
+
+        // 生成完整枚举类
+        String enumClass = String.format("package com.xx.UI.ui;\n\n" +
+                "public enum BDIcon {\n" +
+                "%s;\n\n" +
+                "    private final String path;\n\n" +
+                "    BDIcon(String path) {\n" +
+                "        this.path = path;\n" +
+                "    }\n\n" +
+                "    public String getIconPath() {\n" +
+                "        return path;\n" +
+                "    }\n" +
+                "}", enumConstants);
+
+        // 写入文件
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+            writer.write(enumClass);
+            System.out.println("BDIcon enum successfully generated at: " + outputFilePath);
+        } catch (IOException e) {
+            System.err.println("Error writing enum file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public static String convertToConstantCase(String input) {
-        if (input == null || input.isEmpty()) {
-            return input;
-        }
-
-        StringBuilder result = new StringBuilder();
-        boolean lastCharWasLower = false;
-
-        for (int i = 0; i < input.length(); i++) {
-            char currentChar = input.charAt(i);
-
-            // 遇到大写字母且前一个字符是小写字母
-            if (Character.isUpperCase(currentChar) && lastCharWasLower) {
-                result.append('_');
-            }
-
-            // 添加当前字符（转换为大写）
-            result.append(Character.toUpperCase(currentChar));
-
-            // 检查当前字符是否为小写字母
-            lastCharWasLower = Character.isLowerCase(currentChar);
-        }
-
-        return result.toString();
+    private static String convertToConstantCase(String input) {
+        // 处理特殊字符和命名规范
+        return input
+                // 替换所有非字母数字字符为下划线
+                .replaceAll("[^a-zA-Z0-9]", "_")
+                // 处理连续下划线
+                .replaceAll("_+", "_")
+                // 处理开头和结尾的下划线
+                .replaceAll("^_|_$", "")
+                // 转换为大写
+                .toUpperCase()
+                // 处理特殊命名情况
+                .replace("20X20", "_20X20")
+                .replace("14X14", "_14X14")
+                .replace("@", "_")
+                .replace(".", "_");
     }
 }

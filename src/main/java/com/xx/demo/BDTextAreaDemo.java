@@ -1,8 +1,8 @@
 package com.xx.demo;
 
-import com.xx.UI.complex.splitPane.BDTab;
-import com.xx.UI.complex.splitPane.BDTabItem;
-import com.xx.UI.complex.splitPane.BDTabPane;
+import com.xx.UI.complex.BDTabPane.BDTab;
+import com.xx.UI.complex.BDTabPane.BDTabItem;
+import com.xx.UI.complex.BDTabPane.BDTabPane;
 import com.xx.UI.complex.textArea.content.segment.NodeSegment;
 import com.xx.UI.complex.textArea.view.BDTextArea;
 import com.xx.UI.complex.textArea.view.BDTextAreaSearch;

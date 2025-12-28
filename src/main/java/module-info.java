@@ -11,6 +11,7 @@ module FXBD {
     requires java.naming;
     requires jfx.incubator.richtext;
     requires java.management;
+    requires org.apache.commons.compress;
 
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.lexer;
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.JavaImp;
@@ -34,6 +35,6 @@ module FXBD {
     exports com.xx.UI.complex.textArea.view.dataFormat.analyse;
     exports com.xx.UI.complex.textArea.view.dataFormat.example.regex;
 
-    exports com.xx.UI.complex.splitPane;
+    exports com.xx.UI.complex.BDTabPane;
     exports com.xx.demo;
 }
