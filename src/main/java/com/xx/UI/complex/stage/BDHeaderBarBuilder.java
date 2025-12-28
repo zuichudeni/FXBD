@@ -2,12 +2,12 @@ package com.xx.UI.complex.stage;
 
 import com.xx.UI.basic.BDButton;
 import com.xx.UI.ui.BDIcon;
-import com.xx.UI.ui.BDUI;
 import com.xx.UI.util.Util;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HeaderBar;
+import javafx.scene.layout.HeaderButtonType;
 import javafx.scene.text.Text;
 
 public class BDHeaderBarBuilder {
@@ -44,17 +44,28 @@ public class BDHeaderBarBuilder {
         trailingBox.getChildren().add(node);
         return this;
     }
-    public BDHeaderBarBuilder addMinimizeButton(){
-        BDButton button = new BDButton();
-        button.setGraphic(Util.getImageView(20, BDIcon.MINIMAP));
-        return addTrailing(button);
-    }
     public BDHeaderBarBuilder addMaximizeButton(){
         BDButton button = new BDButton();
+        button.getStyleClass().add("bd-stage-maximize-button");
+        button.setGraphic(Util.getImageView(20, BDIcon.MAXIMIZEINACTIVE));
+        button.setSelectable(false);
+        HeaderBar.setButtonType(button, HeaderButtonType.ICONIFY);
+        return addTrailing(button);
+    }
+    public BDHeaderBarBuilder addMinimizeButton(){
+        BDButton button = new BDButton();
+        button.getStyleClass().add("bd-stage-minimize-button");
+        button.setGraphic(Util.getImageView(20, BDIcon.MINIMIZEINACTIVE));
+        button.setSelectable(false);
+        HeaderBar.setButtonType(button, HeaderButtonType.MAXIMIZE);
         return addTrailing(button);
     }
     public BDHeaderBarBuilder addCloseButton(){
         BDButton button = new BDButton();
+        button.getStyleClass().add("bd-stage-close-button");
+        button.setGraphic(Util.getImageView(20, BDIcon.CLOSEINACTIVE));
+        button.setSelectable(false);
+        HeaderBar.setButtonType(button, HeaderButtonType.CLOSE);
         return addTrailing(button);
     }
     public HeaderBar build(){
