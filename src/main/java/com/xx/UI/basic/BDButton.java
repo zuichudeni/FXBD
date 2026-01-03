@@ -50,7 +50,7 @@ public class BDButton extends Button {
     private ObjectProperty<Paint> selectedPressedFill;
 
     public BDButton() {
-        getStyleClass().setAll(CSS_CLASS_NAME);
+        getStyleClass().add(CSS_CLASS_NAME);
     }
 
     public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {

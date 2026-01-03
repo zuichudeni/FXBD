@@ -129,6 +129,7 @@
 
     -color-bd-base1: #27282E;
     -color-bd-base2: #FFFFFF;
+    -color-bd-base3: #F7F8FA;
     -color-bd-danger1: #C42B1C;
     -color-bd-danger2: #B32B1D;
 
@@ -5862,7 +5863,9 @@ BDSearchBox .content .right-pane {
 .bd-tab-clone-rectangle:show {
     -fx-fill: #3574F0;
 }
-
+/*
+        BD Stage 样式
+*/
 /*************************** BDHeaderBar ********************************************/
 .bd-header-bar {
     -fx-background-color: -color-bd-base1;
@@ -5902,4 +5905,25 @@ BDSearchBox .content .right-pane {
 .bd-stage-close-button {
     -bd-hover-fill: -color-bd-danger1;
     -bd-pressed-fill: -color-bd-danger2;
+}
+/*************************** BDContent ********************************************/
+.bd-side-bar-pane {
+    -fx-spacing: 10px;
+    -fx-alignment: center;
+    -fx-padding: 5px;
+    -fx-border-width: 2;
+    -fx-border-color: -color-bd-base3;
+}
+.bd-side-bar-pane.vertical {
+    -fx-pref-width: 50px;
+}
+
+.bd-side-bar-pane.horizontal {
+    -fx-pref-height: 50px;
+}
+.bd-side-bar-item {
+    -fx-content-display: graphic-only;
+    -fx-background-radius: 50;
+    -fx-padding: 5px;
+    -fx-effect: none;
 }
