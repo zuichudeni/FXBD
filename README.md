@@ -59,6 +59,8 @@ mapping.dispose();
 ### 3. BDTabPane
 - **功能**：参考IntelliJ IDEA的TabPane实现的布局
 
+### 4. BDStage
+- **功能**：参考IntelliJ IDEA的界面布局实现的窗口类
 
 体验请参考demo目录下相应的demo文件。
 
