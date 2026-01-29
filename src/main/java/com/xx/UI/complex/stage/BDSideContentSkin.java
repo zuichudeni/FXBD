@@ -49,9 +49,11 @@ public class BDSideContentSkin extends BDSkin<BDSideContent> {
                 .addListener(() -> {
                             if (isFocusOn.get())
                                 postPane.pseudoClassStateChanged(SHOW_CLASS, true);
-                            else postPane.pseudoClassStateChanged(SHOW_CLASS, control.showProperty().get());
+                            else {
+                                postPane.pseudoClassStateChanged(SHOW_CLASS,control.showProperty().get() || control.dock.isVisible());
+                            }
                         }, true,
-                        control.showProperty(), isFocusOn)
+                        control.showProperty(), isFocusOn,control.dock.visibleProperty())
                 .addListener(() -> {
                     content.getChildren().clear();
                     if (control.getContent() != null)

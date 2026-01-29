@@ -34,7 +34,7 @@ public class BDSideContent extends BDControl {
         skin = new BDSideContentSkin(this);
     }
 
-    void setItem(BDSideBarItem item) {
+    final void setItem(BDSideBarItem item) {
         this.item = item;
         mapping.bindProperty(item.windowOpenProperty(), dock.visibleProperty(), dock.managedProperty())
                 .addEventHandler(dock, ActionEvent.ACTION, _ -> item.windowClose());

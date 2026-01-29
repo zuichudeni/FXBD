@@ -60,8 +60,8 @@ public class BDButton extends Button {
     }
 
     public BDButton(String text, Node graphic) {
-        super(text, graphic);
-        getStyleClass().add(CSS_CLASS_NAME);
+        this(text);
+        setDefaultGraphic(graphic);
     }
     
 

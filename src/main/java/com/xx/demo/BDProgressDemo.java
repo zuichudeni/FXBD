@@ -9,6 +9,7 @@ import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -44,8 +45,9 @@ public class BDProgressDemo extends Application {
 
         buttonGroup.getChildren().addAll(insertTask,Util.getHBoxSpring(),cleanTask);
         root.getChildren().addAll(progressContent,Util.getVBoxSpring(),buttonGroup);
+        root.setPadding(new Insets(20));
 
-        Scene scene = new Scene(root, 600, 100);
+        Scene scene = new Scene(root, 600, 200);
         stage.setScene(scene);
         stage.show();
         stage.setAlwaysOnTop(true);
