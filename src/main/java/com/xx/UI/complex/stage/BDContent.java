@@ -7,6 +7,7 @@ import javafx.animation.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -600,10 +601,10 @@ public class BDContent extends BDControl {
         tempDragData = null;
     }
 
+    private final PseudoClass TOOL_TIP_SHOW = PseudoClass.getPseudoClass("show");
     void hoverToolTipShow(BDSideBarItem item) {
-        tooltip.setVisible(true);
-        tooltip.setManaged(true);
-        text.setText(item.getName() + (item.getShortcutKey() == null ? "" : item.getShortcutKey()));
+        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW,true);
+        text.setText(item.getName() + (item.getShortcutKey() == null ? "" :" " + item.getShortcutKey()));
         tooltip.layout();
         tooltip.applyCss();
         Bounds itemBounds = item.localToScene(item.getLayoutBounds());
@@ -611,7 +612,7 @@ public class BDContent extends BDControl {
         double tooltipWidth = tooltip.getWidth();
         double tooltipHeight = tooltip.getHeight();
         double layoutY = itemBounds.getMinY() - rootBounds.getMinY() - (tooltipHeight - itemBounds.getHeight()) / 2;
-        double layoutX = 0;
+        double layoutX;
         if (item.getDirection().equals(BDDirection.LEFT))
             layoutX = 10;
         else if (item.getDirection().equals(BDDirection.RIGHT))
@@ -620,7 +621,7 @@ public class BDContent extends BDControl {
             layoutX = 10;
         else layoutX = rootBounds.getWidth() - tooltipWidth - 10;
         tooltip.setLayoutX(Math.min(layoutX, horizontalSplitPane.getWidth() - tooltipWidth));
-        tooltip.setLayoutY(Math.min(layoutY,horizontalSplitPane.getHeight() - tooltipHeight));
+        tooltip.setLayoutY(layoutY);
     }
 
     void dragHove(BDSidebar.BDDragData dragData, double scenex, double sceney) {
@@ -661,8 +662,7 @@ public class BDContent extends BDControl {
     }
 
     void hideToolTip() {
-        tooltip.setVisible(false);
-        tooltip.setManaged(false);
+        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW,false);
     }
 
 }

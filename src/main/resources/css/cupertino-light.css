@@ -5609,10 +5609,14 @@ BDTextArea {
 /*icon按钮*/
 BDButton:hover {
     -fx-background-color: -color-button-bg-hover;
+
+    transiton: -fx-backgrond-color 0.3 ease;
 }
 
 BDButton:pressed {
     -fx-background-color: -color-button-bg-pressed;
+
+    transiton: -fx-backgrond-color 0.3 ease;
 }
 
 BDButton {
@@ -5667,10 +5671,14 @@ BDSearchBox {
 
 BDSearchBox .result {
     -fx-fill: #8C8C8C;
+
+    transiton: -fx-fill 0.3 ease;
 }
 
 BDSearchBox .result:error {
     -fx-fill: #ff0000;
+
+    transiton: -fx-fill 0.3 ease;
 }
 
 BDSearchBox .content {
@@ -5756,10 +5764,14 @@ BDSearchBox .content .right-pane {
     -fx-fill: #A8ADBD;
     -fx-arc-height: 5;
     -fx-arc-width: 5;
+
+    transition: -fx-fill 0.3s ease;
 }
 
 .bd-tab-item-rectangle:focused {
     -fx-fill: #3574F0;
+
+    transition: -fx-fill 0.3s ease;
 }
 
 .bd-tab-item-tabs-back {
@@ -5807,11 +5819,13 @@ BDSearchBox .content .right-pane {
 }
 
 .bd-tab {
-    -fx-opacity: 0.7;
+    -fx-opacity: 0.6;
+    transition: -fx-opacity 0.3s ease;
 }
 
-.bd-tab:hover {
+.bd-tab:show {
     -fx-opacity: 1;
+    transition: -fx-opacity 0.3s ease;
 }
 
 .bd-tab-title {
@@ -5854,6 +5868,7 @@ BDSearchBox .content .right-pane {
     -fx-alignment: center-left;
     -fx-opacity: 0.8;
     -fx-background-radius: 5px;
+    -fx-padding: 5;
 }
 
 .bd-tab-clone:hover {
@@ -5872,6 +5887,7 @@ BDSearchBox .content .right-pane {
 
 .bd-tab-clone-rectangle:show {
     -fx-fill: #3574F0;
+    transition: -fx-fill 0.3s ease;
 }
 
 /*
@@ -5883,7 +5899,7 @@ BDSearchBox .content .right-pane {
 }
 
 .bd-header-bar-title {
-    -fx-font-size: 18px;
+    -fx-font-size: 12.5px;
     -fx-font-family: "JetBrains Mono SemiBold";
     -fx-fill: -color-bd-base2;
 }
@@ -5915,7 +5931,7 @@ BDSearchBox .content .right-pane {
     -bd-hover-fill: rgba(255, 255, 255, 0.2);
     -bd-pressed-fill: rgba(255, 255, 255, 0.1);
     -fx-background-radius: 0;
-    -fx-padding: 20px;
+    -fx-padding: 15px;
 }
 
 .bd-stage-close-button {
@@ -5935,12 +5951,24 @@ BDSearchBox .content .right-pane {
 }
 .bd-content-pane .bd-content-tooltip{
     -fx-background-color: black;
-    -fx-padding: 15px;
+    -fx-padding: 10px;
     -fx-background-radius: 5px;
+
+    -fx-opacity: 0;
+    transition: -fx-opacity 0.3s ease;
 }
+.bd-content-pane .bd-content-tooltip:show{
+    -fx-background-color: black;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+
+    -fx-opacity: 1;
+    transition: -fx-opacity 0.3s ease;
+}
+
 .bd-content-pane .bd-content-tooltip-text{
     -fx-fill: white;
-    -fx-font-size: 15;
+    -fx-font-size: 12.5;
 }
 /*BDSideContent*/
 .bd-side-content{
@@ -6044,4 +6072,201 @@ BDSearchBox .content .right-pane {
 .bd-side-bar-pane .placeholder{
     -fx-fill: transparent;
     -fx-pref-height: 30;
+}
+
+/*************************** BDProgress - IntelliJ IDEA Style ********************************************/
+
+/* 根容器 */
+.bd-progress-root {
+    -fx-spacing: -3px;
+    -fx-alignment: center-left;
+    -fx-padding: 8px 12px;
+    -fx-background-color: #ffffff, #f5f5f5;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 1);
+}
+
+/* 标题样式 */
+.bd-progress-title {
+    -fx-font-size: 15px;
+    -fx-fill: #333333;
+    -fx-text-fill: #333333;
+}
+
+/* 进度条容器 */
+.bd-progress-bar-content {
+    -fx-spacing: 5px;
+    -fx-alignment: center-left;
+    -fx-padding: 2px 0;
+}
+
+/* 基础进度条样式 */
+.bd-progress-bar {
+    -fx-pref-height: 4px;
+    -fx-min-width: 200px;
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 2px;
+    -fx-padding: 0;
+}
+
+.bd-progress-bar .track {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 2px;
+}
+
+.bd-progress-bar .bar {
+    -fx-background-color: #0078d4; /* 默认蓝色 */
+    -fx-background-radius: 2px;
+    -fx-padding: 0;
+}
+
+/* 状态：运行中 (蓝色) */
+.bd-progress-bar:running .bar {
+    -fx-background-color: #0078d4;
+    -fx-background-radius: 2px;
+}
+
+.bd-progress-root:running {
+    -fx-background-color: #ffffff, #f0f8ff; /* 浅蓝色背景 */
+}
+
+.bd-progress-title:running {
+    -fx-fill: #005a9e;
+    -fx-text-fill: #005a9e;
+}
+
+/* 状态：暂停 (琥珀色/黄色) */
+.bd-progress-bar:pause .bar {
+    -fx-background-color: #ffb900;
+    -fx-background-radius: 2px;
+}
+
+.bd-progress-root:pause {
+    -fx-background-color: #ffffff, #fff9e6;
+}
+
+.bd-progress-title:pause {
+    -fx-fill: #996e00;
+    -fx-text-fill: #996e00;
+}
+
+/* 状态：成功 (绿色) */
+.bd-progress-bar:succeeded .bar {
+    -fx-background-color: #107c10;
+    -fx-background-radius: 2px;
+}
+
+.bd-progress-root:succeeded {
+    -fx-background-color: #ffffff, #f0fff0;
+}
+
+.bd-progress-title:succeeded {
+    -fx-fill: #0e5c0e;
+    -fx-text-fill: #0e5c0e;
+}
+
+/* 状态：失败 (红色) */
+.bd-progress-bar:failed .bar {
+    -fx-background-color: #d83b01;
+    -fx-background-radius: 2px;
+}
+
+.bd-progress-root:failed {
+    -fx-background-color: #ffffff, #fff0f0;
+}
+
+.bd-progress-title:failed {
+    -fx-fill: #a52c00;
+    -fx-text-fill: #a52c00;
+}
+
+/* 消息文本 */
+.bd-progress-message {
+    -fx-font-size: 12px;
+    -fx-fill: #666666;
+    -fx-text-fill: #666666;
+}
+
+.bd-progress-message:running {
+    -fx-fill: #666666;
+}
+
+.bd-progress-message:pause {
+    -fx-fill: #996e00;
+}
+
+.bd-progress-message:succeeded {
+    -fx-fill: #0e5c0e;
+    -fx-font-weight: 500;
+}
+
+.bd-progress-message:failed {
+    -fx-fill: #a52c00;
+    -fx-strikethrough: false;
+    -fx-font-weight: 500;
+}
+
+/* 运行状态文本 */
+.bd-progress-state {
+    -fx-font-size: 12px;
+    -fx-fill: #666666;
+    -fx-text-fill: #666666;
+}
+
+.bd-progress-state:running {
+    -fx-fill: #666666;
+}
+
+.bd-progress-state:pause {
+    -fx-fill: #996e00;
+}
+
+.bd-progress-state:succeeded {
+    -fx-fill: #0e5c0e;
+    -fx-font-weight: 500;
+}
+
+.bd-progress-state:failed {
+    -fx-fill: #a52c00;
+    -fx-strikethrough: false;
+    -fx-font-weight: 500;
+}
+
+/* 控制按钮 */
+.bd-progress-pause {
+    -fx-padding: 0 0 0 0;
+    -fx-opacity: 0.7;
+    transition: -fx-opacity 0.3s ease;
+    -fx-cursor: hand;
+}
+.bd-progress-pause:hover {
+    -fx-opacity: 1;
+    transition: -fx-opacity 0.3s ease;
+    -fx-cursor: hand;
+
+    -bd-hover-fill: rgba(255, 165, 0, 0.3);
+}
+
+.bd-progress-close {
+    -fx-padding: 0 0 0 0;
+    -fx-opacity: 0.7;
+    transition: -fx-opacity 0.3s ease;
+    -fx-cursor: hand;
+
+    -bd-hover-fill: rgba(255, 0, 0, 0.4);
+}
+.bd-progress-close:hover {
+    -fx-opacity: 1;
+    transition: -fx-opacity 0.3s ease;
+    -fx-cursor: hand;
+}
+
+/* 不确定进度条样式 - 使用JavaFX兼容的线性渐变 */
+.bd-progress-bar.indeterminate .bar {
+    -fx-background-color: linear-gradient(to right,
+        transparent 0%,
+        #0078d4 25%,
+        #0078d4 75%,
+        transparent 100%);
 }

@@ -1,6 +1,6 @@
 package com.xx.UI.complex.search;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.complex.textArea.content.BDTextAreaContent;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;

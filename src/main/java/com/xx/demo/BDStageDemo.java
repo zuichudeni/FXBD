@@ -1,6 +1,6 @@
 package com.xx.demo;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.complex.BDTabPane.BDTab;
 import com.xx.UI.complex.BDTabPane.BDTabItem;
 import com.xx.UI.complex.BDTabPane.BDTabPane;
@@ -17,16 +17,13 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * BDStage 演示程序 - 增强版
@@ -51,7 +48,7 @@ public class BDStageDemo extends Application {
         BDTextArea fileTextArea = initProjectTextArea();
         fileContent.setContent(new BDTextAreaSearch(fileTextArea));
         BDSideBarItem projectItem = new BDSideBarItem(
-            "项目",
+            "项目","Alt+1",
             Util.getImageView(30, BDIcon.FOLDER),
             Util.getImageView(30, BDIcon.FOLDER_DARK),
             BDDirection.LEFT,

@@ -1,6 +1,6 @@
 package com.xx.UI.complex.stage;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;

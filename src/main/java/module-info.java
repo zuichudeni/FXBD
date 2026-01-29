@@ -9,9 +9,11 @@ module FXBD {
     requires batik.transcoder;
     requires com.ibm.icu;
     requires java.naming;
-    requires jfx.incubator.richtext;
     requires java.management;
     requires org.apache.commons.compress;
+    requires com.dlsc.fxmlkit;
+        requires javafx.fxml;
+
 
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.lexer;
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.JavaImp;

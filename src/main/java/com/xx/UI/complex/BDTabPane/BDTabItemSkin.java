@@ -1,8 +1,9 @@
 package com.xx.UI.complex.BDTabPane;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
+import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;
 import javafx.animation.*;
 import javafx.beans.Observable;
@@ -36,7 +37,7 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
     private static final String CTRL_F4_SHORTCUT = "Ctrl+F4";
     private static final double RECTANGLE_HEIGHT = 5.0;
     private static final double SCROLL_FACTOR = 1.05;
-
+    private final PseudoClass CLOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("show");
     // UI组件
     private final SplitPane splitPane;
     private final AnchorPane rootPane;
@@ -102,20 +103,15 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                     List<BDTab>[] invisibleTabs = getInvisibleTabs();
                     List<BDTab> leftInvisibleTabs = invisibleTabs[0];
                     List<BDTab> rightInvisibleTabs = invisibleTabs[1];
-
+                    BDMapping tempMapping = new BDMapping();
                     Popup popup = new Popup();
-
                     VBox root = new VBox();
                     root.getStyleClass().add("bd-tab-popup");
 
                     if (!leftInvisibleTabs.isEmpty())
                         leftInvisibleTabs.forEach(e -> {
-                            Node node = e.cloneNode(popup);
+                            Node node = e.cloneNode(popup, tempMapping);
                             root.getChildren().add(node);
-                            node.setOnMouseClicked(_ -> {
-                                e.show();
-                                popup.hide();
-                            });
                         });
                     if (!rightInvisibleTabs.isEmpty()) {
                         if (!leftInvisibleTabs.isEmpty()) {
@@ -124,21 +120,17 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
                             root.getChildren().add(e);
                         }
                         rightInvisibleTabs.forEach(e -> {
-                            Node node = e.cloneNode(popup);
+                            Node node = e.cloneNode(popup, tempMapping);
                             root.getChildren().add(node);
-                            node.setOnMouseClicked(_ -> {
-                                e.show();
-                                popup.hide();
-                            });
                         });
                     }
 
                     popup.getContent().add(root);
                     popup.setAutoHide(true);
                     popup.setHideOnEscape(true);
-                    popup.getScene().getStylesheets().addAll(control.getScene().getWindow().getScene().getStylesheets());
                     Bounds bounds = foldButton.localToScreen(foldButton.getLayoutBounds());
                     popup.show(control.getScene().getWindow(), bounds.getMinX() - popup.getWidth() - bounds.getWidth() / 2, bounds.getMaxY());
+                    popup.setOnHiding(_ -> tempMapping.dispose());
                 })
                 .addEventHandler(tabContentPane, ScrollEvent.SCROLL, event1 -> {
                     int delta = (int) (event1.getDeltaY() / 32);
@@ -409,7 +401,7 @@ public class BDTabItemSkin extends BDSkin<BDTabItem> {
         getChildren().setAll(splitPane);
 
         // 初始化显示的tab
-        new Timeline(new KeyFrame(ANIMATION_DURATION,_->initShowTab(control.getShowTab()))).play();
+        new Timeline(new KeyFrame(ANIMATION_DURATION, _ -> initShowTab(control.getShowTab()))).play();
 
     }
 

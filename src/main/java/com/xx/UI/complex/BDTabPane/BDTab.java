@@ -1,9 +1,10 @@
 package com.xx.UI.complex.BDTabPane;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDControl;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
+import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
@@ -11,6 +12,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
@@ -349,10 +351,10 @@ public class BDTab extends BDControl {
         return getTitle();
     }
 
-    private final PseudoClass TAB_SHOW = PseudoClass.getPseudoClass("show");
+    final PseudoClass TAB_SHOW = PseudoClass.getPseudoClass("show");
 
 //    单纯的生成本标签tab的简单UI拷贝。
-    Node cloneNode(Popup popup) {
+    Node cloneNode(Popup popup, BDMapping tempMapping) {
         HBox hBox = new HBox();
         hBox.getStyleClass().add("bd-tab-clone");
         double height = 20;
@@ -400,21 +402,28 @@ public class BDTab extends BDControl {
         text.getStyleClass().add("tab-title");
 
         BDButton closeButton = new BDButton();
-        closeButton.setSelectable(false);
-        closeButton.getStyleClass().add("circle");
-        closeButton.setPadding(new Insets(0, 0, 0, 0));
-        closeButton.setGraphic(Util.getImageView(20, BDIcon.CLOSE_SMALL));
-        hBox.getChildren().addAll(text, Util.getHBoxSpring(), closeButton);
-        closeButton.setOnAction(_ -> {
+        closeButton.setOnAction(event -> {
             close();
             popup.hide();
+            event.consume();
         });
+        hBox.setOnMouseClicked(_-> show());
+        Tooltip tooltip = new Tooltip();
+        tooltip.setText("关闭");
+        closeButton.setTooltip(tooltip);
+        closeButton.setSelectable(false);
+        closeButton.getStyleClass().add("bd-tab-close-button");
+        closeButton.getStyleClass().add("circle");
+        closeButton.setPadding(new Insets(0, 0, 0, 0));
+        closeButton.setDefaultGraphic(Util.getImageView(20, BDIcon.CLOSE_SMALL));
+        closeButton.pseudoClassStateChanged(TAB_SHOW,true);
+
         Rectangle rectangle = new Rectangle();
         rectangle.setWidth(5);
         rectangle.setHeight(height);
         rectangle.getStyleClass().add("bd-tab-clone-rectangle");
         rectangle.pseudoClassStateChanged(TAB_SHOW, isShow());
-        hBox.getChildren().addFirst(rectangle);
+        hBox.getChildren().addAll(rectangle,text, Util.getHBoxSpring(), closeButton);
         return hBox;
     }
 

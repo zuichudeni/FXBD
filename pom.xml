@@ -31,8 +31,13 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>jfx-incubator-richtext</artifactId>
+            <artifactId>javafx-fxml</artifactId>
             <version>25</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dlsc.fxmlkit</groupId>
+            <artifactId>fxmlkit</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.mkpaz</groupId>
@@ -45,6 +50,9 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+
+<!--        处理图片资源  -->
         <!-- Batik SVG 转换核心库 -->
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>

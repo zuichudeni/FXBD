@@ -1,6 +1,6 @@
 package com.xx.UI.complex.stage;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;

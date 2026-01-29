@@ -1,4 +1,4 @@
-package com.xx.UI.basic;
+package com.xx.UI.basic.button;
 
 import com.xx.UI.util.BDMapping;
 import javafx.beans.property.ObjectProperty;

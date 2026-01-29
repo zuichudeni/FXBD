@@ -1,10 +1,9 @@
 package com.xx.UI.complex.BDTabPane;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.Util;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,7 +25,6 @@ public class BDTabSkin extends BDSkin<BDTab> {
     private final HBox root;
     private final Text title;
     private final BDButton closeButton;
-    private final PseudoClass CLOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("show");
     BDTabItem tempItem;
 
     protected BDTabSkin(BDTab bdTab) {
@@ -89,8 +87,13 @@ public class BDTabSkin extends BDSkin<BDTab> {
     public void initProperty() {
         mapping.bindProperty(title.textProperty(), control.titleProperty())
                 .binding(closeButton.disableProperty(), control.closableProperty().not())
-                .addListener(() -> closeButton.pseudoClassStateChanged(CLOSED_PSEUDO_CLASS,
-                                control.isShow() || control.isHover()), true,
+                .addListener(() -> {
+                            closeButton.pseudoClassStateChanged(control.TAB_SHOW,
+                                    control.isShow() || control.isHover());
+                            control.pseudoClassStateChanged(control.TAB_SHOW,
+                                    control.isShow() || control.isHover());
+
+                        }, true,
                         control.showProperty(), control.hoverProperty())
                 .addListener(() -> {
                     if (control.getGraphic() == null)
@@ -117,7 +120,6 @@ public class BDTabSkin extends BDSkin<BDTab> {
         closeButton.setSelectable(false);
         closeButton.getStyleClass().add("bd-tab-close-button");
         closeButton.getStyleClass().add("circle");
-        closeButton.setPadding(new Insets(0, 0, 0, 0));
         closeButton.setDefaultGraphic(Util.getImageView(20, BDIcon.CLOSE_SMALL));
     }
 

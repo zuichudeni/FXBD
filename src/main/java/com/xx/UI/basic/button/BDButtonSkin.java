@@ -1,4 +1,4 @@
-package com.xx.UI.basic;
+package com.xx.UI.basic.button;
 
 import com.xx.UI.ui.BDUI;
 import com.xx.UI.util.BDMapping;

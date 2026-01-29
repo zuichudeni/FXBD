@@ -1,6 +1,6 @@
 package com.xx.UI.complex.stage;
 
-import com.xx.UI.basic.BDButton;
+import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDControl;
 import com.xx.UI.ui.BDSkin;
 import javafx.beans.property.*;

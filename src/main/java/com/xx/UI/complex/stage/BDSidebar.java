@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,6 +40,13 @@ class BDSidebar extends BDControl {
             separator = new Separator();
     }
 
+    final List<BDSideBarItem> getItems(){
+        List<BDSideBarItem> items = new ArrayList<>();
+        fronFrontSideBarItems.stream().filter(item->item instanceof BDSideBarItem).forEach(item->items.add((BDSideBarItem) item));
+        fronSideBarItems.stream().filter(item->item instanceof BDSideBarItem).forEach(item->items.add((BDSideBarItem) item));
+        afterSideBarItems.stream().filter(item->item instanceof BDSideBarItem).forEach(item->items.add((BDSideBarItem) item));
+        return items;
+    }
     final BDDragData calculateDragData(double sceneY) {
 //        fronFront 区域
         for (int i = 0; i < fronFrontSideBarItems.size(); i++) {

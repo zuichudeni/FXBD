@@ -2,15 +2,20 @@ package com.xx.UI.complex.stage;
 
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.Util;
-import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.xx.UI.complex.stage.BDContent.DRAG_ITEM;
 
@@ -45,8 +50,8 @@ public class BDContentSkin extends BDSkin<BDContent> {
         control.tooltip.setMouseTransparent(true);
         control.tooltip.getStyleClass().add("bd-content-tooltip");
         control.text.getStyleClass().add("bd-content-tooltip-text");
-        control.setMinSize(0,0);
-        control.horizontalRootPane.setMinSize(0,0);
+        control.setMinSize(0, 0);
+        control.horizontalRootPane.setMinSize(0, 0);
         control.hideToolTip();
     }
 
@@ -67,17 +72,17 @@ public class BDContentSkin extends BDSkin<BDContent> {
                     event.acceptTransferModes(TransferMode.MOVE);
                     if (Util.searchEventTargetNode(event.getTarget(), BDSidebar.class) instanceof BDSidebar sidebar
                             && (sidebar.direction.equals(BDDirection.LEFT) || sidebar.direction.equals(BDDirection.RIGHT))) {
-                        control.changeSplitBack(calculate(event, sidebar),event);
+                        control.changeSplitBack(calculate(event, sidebar), event);
                     } else {
                         Bounds bounds = control.horizontalSplitPane.localToScene(control.horizontalSplitPane.getLayoutBounds());
                         control.refreshDivider();
                         if (!control.leftSideBar.isNone() && event.getSceneX() <= bounds.getMinX() + bounds.getWidth() * control.leftDivider)
-                            control.changeSplitBack(calculate(event, control.leftSideBar.get()),event);
+                            control.changeSplitBack(calculate(event, control.leftSideBar.get()), event);
                         else if (!control.rightSideBar.isNone() && event.getSceneX() >= bounds.getMinX() + bounds.getWidth() * control.rightDivider)
-                            control.changeSplitBack(calculate(event, control.rightSideBar.get()),event);
+                            control.changeSplitBack(calculate(event, control.rightSideBar.get()), event);
                         else {
                             control.hideAllItemBack();
-                            control.dragHove(null,event.getSceneX(),event.getSceneY());
+                            control.dragHove(null, event.getSceneX(), event.getSceneY());
                         }
                     }
                 })
@@ -100,8 +105,8 @@ public class BDContentSkin extends BDSkin<BDContent> {
                         else if (!control.rightSideBar.isNone() && event.getSceneX() >= bounds.getMinX() + bounds.getWidth() * control.rightDivider)
                             bdDragData = calculate(event, control.rightSideBar.get());
                     }
-                    BDSidebar oldSidebar = DRAG_ITEM.tempSidebar == null?DRAG_ITEM.sidebar.get():DRAG_ITEM.tempSidebar;
-                    if (bdDragData != null){
+                    BDSidebar oldSidebar = DRAG_ITEM.tempSidebar == null ? DRAG_ITEM.sidebar.get() : DRAG_ITEM.tempSidebar;
+                    if (bdDragData != null) {
                         BDSidebar newSideBar = null;
                         if (bdDragData.getDirection().equals(BDDirection.LEFT))
                             newSideBar = control.leftSideBar.get();
@@ -124,6 +129,30 @@ public class BDContentSkin extends BDSkin<BDContent> {
                         DRAG_ITEM.tempIndex = bdDragData.getItemBackIndex();
                     } else DRAG_ITEM.tempSidebar = null;
                     control.hideAllItemBack();
+                })
+                .addEventFilter(control.borderPane, KeyEvent.KEY_PRESSED, event -> {
+                    Map<KeyCombination, List<BDSideBarItem>> map = new HashMap<>();
+                    control.leftSideBar.applyIfNotNone(bar -> bar.getItems().forEach(item -> {
+                        if (item.getShortcutKey() != null) {
+                            KeyCombination key = KeyCombination.keyCombination(item.getShortcutKey());
+                            if (map.containsKey(key))
+                                map.get(key).add(item);
+                            else map.put(key, new ArrayList<>(List.of(item)));
+                        }
+                    }));
+                    control.rightSideBar.applyIfNotNone(bar -> bar.getItems().forEach(item -> {
+                        if (item.getShortcutKey() != null) {
+                            KeyCombination key = KeyCombination.keyCombination(item.getShortcutKey());
+                            if (map.containsKey(key))
+                                map.get(key).add(item);
+                            else map.put(key, new ArrayList<>(List.of(item)));
+                        }
+                    }));
+                    map.forEach((k, v) -> {
+                        if (k.match(event)) {
+                            v.forEach(item -> item.setSelected(!item.isSelected()));
+                        }
+                    });
                 });
     }
 

@@ -5,7 +5,6 @@ import com.xx.UI.util.Util;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -64,9 +63,7 @@ class BDSideBarSkin extends BDSkin<BDSidebar> {
                                 frontRoot.getChildren().remove(control.separator);
                         }, true,
                         (ObservableList<?>) control.fronSideBarItems)
-                .addListener(() -> {
-                    afterPane.getChildren().setAll(control.afterSideBarItems);
-                }, true, (ObservableList<?>) control.afterSideBarItems);
+                .addListener(() -> afterPane.getChildren().setAll(control.afterSideBarItems), true, (ObservableList<?>) control.afterSideBarItems);
     }
 
     @Override
@@ -86,9 +83,9 @@ class BDSideBarSkin extends BDSkin<BDSidebar> {
         pane.getStyleClass().add((control.direction == BDDirection.LEFT || control.direction == BDDirection.RIGHT) ? "vertical" : "horizontal");
         control.itemBack.getStyleClass().add("item-back");
         getChildren().setAll(pane);
-        control.setMinSize(0,0);
-        frontRoot.setMinSize(0,0);
-        afterPane.setMinSize(0,0);
-        pane.setMinSize(0,0);
+        control.setMinSize(0, 0);
+        frontRoot.setMinSize(0, 0);
+        afterPane.setMinSize(0, 0);
+        pane.setMinSize(0, 0);
     }
 }
