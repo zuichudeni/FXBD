@@ -1388,6 +1388,7 @@ public enum BDIcon {
     LIST_KEY_DARK("/texture/listKey_dark.png"),
     LOADER("/texture/loader.png"),
     LOADER_DARK("/texture/loader_dark.png"),
+    LOADER_A("/texture/load-a.png"),
     LOCAL_SCOPE("/texture/localScope.png"),
     LOCAL_SCOPE_DARK("/texture/localScope_dark.png"),
     LOCATE("/texture/locate.png"),

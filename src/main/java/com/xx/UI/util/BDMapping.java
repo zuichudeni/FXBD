@@ -1106,7 +1106,7 @@ public class BDMapping {
          */
         public void bindProperty(Property<T> property) {
             Objects.requireNonNull(property, "绑定属性不能为null");
-            if (property.isBound()) throw new IllegalArgumentException("属性已绑定");
+            if (property.isBound()) throw new IllegalArgumentException( property + "属性已绑定");
             property.bind(bindingValue);
             bindValues.add(property);
         }

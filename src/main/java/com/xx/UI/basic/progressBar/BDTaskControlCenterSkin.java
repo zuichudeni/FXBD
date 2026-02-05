@@ -9,9 +9,7 @@ import com.xx.UI.util.LazyValue;
 import com.xx.UI.util.Util;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -22,19 +20,21 @@ import javafx.stage.Stage;
 
 public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
     private final HBox root;
-    private final Text title;
+    private final Label title;
     private final ProgressBar bar;
     private final Text size;
     private final VBox contentList;
     private LazyValue<Stage> stage;
     private LazyValue<Node> success;
+    private final Tooltip tooltip;
 
     protected BDTaskControlCenterSkin(BDTaskControlCenter bdTaskControlCenter) {
         root = new HBox();
-        title = new Text();
+        title = new Label();
         bar = new ProgressBar();
         size = new Text();
         contentList = new VBox(5);
+        tooltip = new Tooltip();
 
         super(bdTaskControlCenter);
     }
@@ -62,7 +62,7 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                         size.setText("");
                         contentList.getChildren().addAll(success.get());
                     } else {
-                        tempMapping.bindProperty(title.textProperty(), list.getFirst().getTask().titleProperty())
+                        tempMapping.bindProperty(title.textProperty(), list.getFirst().getTask().messageProperty())
                                 .bindProperty(bar.progressProperty(), list.getFirst().getTask().progressProperty());
                         if (list.size() > 1) size.setText("+" + (list.size() - 1));
                         else size.setText("");
@@ -70,11 +70,14 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                             contentList.getChildren().add(content);
                     }
                 }, true, (ObservableList<?>) control.contents)
+                .bindProperty(tooltip.textProperty(),title.textProperty())
                 .addChildren(tempMapping);
     }
 
     @Override
     public void initUI() {
+
+        control.setTooltip(tooltip);
         success = new LazyValue<>(() -> {
             HBox hBox = new HBox();
             Text emptyText = new Text("所有任务后台已完成");
@@ -94,6 +97,7 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                             .setBackFill(Color.web("#ffffff"))
                             .addCloseButton();
                     ScrollPane content = new ScrollPane(contentList);
+                    content.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                     mapping.bindProperty(contentList.prefWidthProperty(), content.widthProperty());
                     Stage build = new BDStageBuilder()
                             .setHeaderBar(header)

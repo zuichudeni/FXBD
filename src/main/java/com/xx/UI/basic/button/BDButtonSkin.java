@@ -2,6 +2,9 @@ package com.xx.UI.basic.button;
 
 import com.xx.UI.ui.BDUI;
 import com.xx.UI.util.BDMapping;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -11,11 +14,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.util.Duration;
 
 public class BDButtonSkin extends ButtonSkin implements BDUI {
     protected final BDMapping mapping;
     protected final BDButton control;
     private final SimpleBooleanProperty pressed = new SimpleBooleanProperty(false);
+    private RotateTransition rotateTransition;
 
     public BDButtonSkin(final BDButton button) {
         super(button);
@@ -44,12 +49,14 @@ public class BDButtonSkin extends ButtonSkin implements BDUI {
         mapping.binding(control.backgroundProperty(),
                         Bindings.createObjectBinding(() -> {
                                     // 获取当前背景的圆角和内边距，如果背景为空则使用默认值
-                                    CornerRadii radii = background == null ? CornerRadii.EMPTY : 
-                                        (background.getFills().isEmpty() ? CornerRadii.EMPTY : background.getFills().getFirst().getRadii());
-                                    Insets insets = background == null ? Insets.EMPTY : 
-                                        (background.getFills().isEmpty() ? Insets.EMPTY : background.getFills().getFirst().getInsets());
-                                    
-                                    if (control.isSelected()) {
+                                    CornerRadii radii = background == null ? CornerRadii.EMPTY :
+                                            (background.getFills().isEmpty() ? CornerRadii.EMPTY : background.getFills().getFirst().getRadii());
+                                    Insets insets = background == null ? Insets.EMPTY :
+                                            (background.getFills().isEmpty() ? Insets.EMPTY : background.getFills().getFirst().getInsets());
+
+                                    if (control.isLoad())
+                                        return new Background(new BackgroundFill(control.getLoadFil(), radii, insets));
+                                    else if (control.isSelected()) {
                                         if (pressed.get()) {
                                             return new Background(new BackgroundFill(control.getSelectedPressedFill(), radii, insets));
                                         } else if (control.isHover()) {
@@ -73,71 +80,107 @@ public class BDButtonSkin extends ButtonSkin implements BDUI {
                                 control.selectedFillProperty(),
                                 control.selectedHoverFillProperty(),
                                 control.selectedPressedFillProperty(),
+                                control.loadFillProperty(),
                                 control.selectedProperty(),
-                                control.hoverProperty(),
+                                control.hoverProperty(), control.loadProperty(),
                                 pressed))
                 // 图标切换逻辑
                 .addListener(() -> {
-                            // 根据按钮状态切换图标
-                            if (control.isSelected()) {
-                                if (pressed.get()) {
-                                    // 选中状态下按下
-                                    if (control.getSelectedPressGraphic() != null) {
-                                        control.setGraphic(control.getSelectedPressGraphic());
-                                    } else if (control.getSelectedGraphic() != null) {
-                                        control.setGraphic(control.getSelectedGraphic());
-                                    } else if (control.getPressGraphic() != null) {
-                                        control.setGraphic(control.getPressGraphic());
+                            if (control.isLoad() && control.getLoadGraphic() != null)
+                                control.setGraphic(control.getLoadGraphic());
+                            else {
+                                // 根据按钮状态切换图标
+                                if (control.isSelected()) {
+                                    if (pressed.get()) {
+                                        // 选中状态下按下
+                                        if (control.getSelectedPressGraphic() != null) {
+                                            control.setGraphic(control.getSelectedPressGraphic());
+                                        } else if (control.getSelectedGraphic() != null) {
+                                            control.setGraphic(control.getSelectedGraphic());
+                                        } else if (control.getPressGraphic() != null) {
+                                            control.setGraphic(control.getPressGraphic());
+                                        } else {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        }
+                                    } else if (control.isHover()) {
+                                        // 选中状态下悬停
+                                        if (control.getSelectedGraphic() != null) {
+                                            control.setGraphic(control.getSelectedGraphic());
+                                        } else {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        }
                                     } else {
-                                        control.setGraphic(control.getDefaultGraphic());
-                                    }
-                                } else if (control.isHover()) {
-                                    // 选中状态下悬停
-                                    if (control.getSelectedGraphic() != null) {
-                                        control.setGraphic(control.getSelectedGraphic());
-                                    } else {
-                                        control.setGraphic(control.getDefaultGraphic());
-                                    }
-                                } else {
-                                    // 选中状态下正常
-                                    if (control.getSelectedGraphic() != null) {
-                                        control.setGraphic(control.getSelectedGraphic());
-                                    } else {
-                                        control.setGraphic(control.getDefaultGraphic());
-                                    }
-                                }
-                            } else {
-                                if (pressed.get()) {
-                                    // 未选中状态下按下
-                                    if (control.getPressGraphic() != null) {
-                                        control.setGraphic(control.getPressGraphic());
-                                    } else {
-                                        control.setGraphic(control.getDefaultGraphic());
-                                    }
-                                } else if (control.isHover()) {
-                                    // 未选中状态下悬停
-                                    if (control.getDefaultGraphic() != null) {
-                                        control.setGraphic(control.getDefaultGraphic());
-                                    } else {
-                                        control.setGraphic(null);
+                                        // 选中状态下正常
+                                        if (control.getSelectedGraphic() != null) {
+                                            control.setGraphic(control.getSelectedGraphic());
+                                        } else {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        }
                                     }
                                 } else {
-                                    // 未选中状态下正常
-                                    if (control.getDefaultGraphic() != null) {
-                                        control.setGraphic(control.getDefaultGraphic());
+                                    if (pressed.get()) {
+                                        // 未选中状态下按下
+                                        if (control.getPressGraphic() != null) {
+                                            control.setGraphic(control.getPressGraphic());
+                                        } else {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        }
+                                    } else if (control.isHover()) {
+                                        // 未选中状态下悬停
+                                        if (control.getDefaultGraphic() != null) {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        } else {
+                                            control.setGraphic(null);
+                                        }
                                     } else {
-                                        control.setGraphic(null);
+                                        // 未选中状态下正常
+                                        if (control.getDefaultGraphic() != null) {
+                                            control.setGraphic(control.getDefaultGraphic());
+                                        } else {
+                                            control.setGraphic(null);
+                                        }
                                     }
                                 }
                             }
-                        }, 
+                        },
                         true,
+                        control.loadProperty(),
                         pressed,
                         control.selectedProperty(),
                         control.hoverProperty(),
                         control.defaultGraphicProperty(),
                         control.selectedGraphicProperty(),
                         control.selectedPressGraphicProperty(),
-                        control.pressGraphicProperty());
+                        control.pressGraphicProperty())
+                .addListener(() -> {
+                    if (control.isLoad())
+                        startLoad();
+                    else stopLoad();
+                }, true, control.loadProperty(), control.loadGraphicProperty());
+    }
+
+    private void startLoad() {
+        control.setMouseTransparent(true);
+        control.pseudoClassStateChanged(control.LOAD, true);
+        if (rotateTransition != null) return;
+        if (control.getLoadGraphic() != null) {
+            rotateTransition = new RotateTransition(Duration.millis(900), control.getLoadGraphic());
+            rotateTransition.setFromAngle(0);
+            rotateTransition.setToAngle(-360);
+            rotateTransition.setCycleCount(-1);
+            rotateTransition.setAutoReverse(false);
+            rotateTransition.setInterpolator(Interpolator.LINEAR);
+
+            rotateTransition.play();
+        }
+    }
+
+    private void stopLoad() {
+        control.setMouseTransparent(false);
+        control.pseudoClassStateChanged(control.LOAD, true);
+        if (rotateTransition != null) {
+            rotateTransition.stop();
+            rotateTransition = null;
+        }
     }
 }

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 public class BDProgressDemo extends Application {
 
-    private BDTask<String> getSimpleTask() {
+    public static BDTask<String> getSimpleTask() {
         BDTask<String> task = new BDTask<>() {
             @Override
             protected String work() throws InterruptedException, TimeoutException {

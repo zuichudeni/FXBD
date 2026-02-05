@@ -130,7 +130,7 @@
     -color-bd-base1: #27282E;
     -color-bd-base2: #FFFFFF;
     -color-bd-base3: #D1D1D6;
-    -color-bd-accent1:#D4E2FF;
+    -color-bd-accent1: #D4E2FF;
     -color-bd-danger1: #C42B1C;
     -color-bd-danger2: #B32B1D;
 
@@ -5606,19 +5606,6 @@ BDTextArea {
 
 /*************************** 按钮样式 ********************************************/
 
-/*icon按钮*/
-BDButton:hover {
-    -fx-background-color: -color-button-bg-hover;
-
-    transiton: -fx-backgrond-color 0.3 ease;
-}
-
-BDButton:pressed {
-    -fx-background-color: -color-button-bg-pressed;
-
-    transiton: -fx-backgrond-color 0.3 ease;
-}
-
 BDButton {
     -bd-default-fill: transparent;
     -bd-hover-fill: #EDEDED;
@@ -5626,15 +5613,25 @@ BDButton {
     -bd-selected-fill: #D4E2FF;
     -bd-selected-pressed-fill: #C2D6FC;
     -bd-selected-hover-fill: #C2D6FC;
+    -bd-load-fill: #EDEDED;
+
 
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-background-insets: 0, 1px;
-    -fx-background-radius: 5px;
     -fx-content-display: graphic-only;
     -fx-effect: none;
     -fx-padding: 6px;
+
+    -fx-opacity: 1;
+    transition: -fx-opacity 0.3s ease;
+    transiton: -fx-backgrond-color 0.3 ease;
+}
+BDButton:load{
+    -fx-opacity: 0.7;
+
+    transition: -fx-opacity 0.3s ease;
 }
 
 /*circle按钮*/
@@ -5655,7 +5652,7 @@ BDButton.circle {
     -fx-padding: 6px;
 }
 
-BDButton.icon{
+BDButton.icon {
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-background-radius: 5;
@@ -5946,10 +5943,11 @@ BDSearchBox .content .right-pane {
     -fx-padding: 0;
 }
 
-.bd-content-pane .bd-split-back{
+.bd-content-pane .bd-split-back {
     -fx-fill: rgba(216, 229, 245, 0.5);
 }
-.bd-content-pane .bd-content-tooltip{
+
+.bd-content-pane .bd-content-tooltip {
     -fx-background-color: black;
     -fx-padding: 10px;
     -fx-background-radius: 5px;
@@ -5957,7 +5955,8 @@ BDSearchBox .content .right-pane {
     -fx-opacity: 0;
     transition: -fx-opacity 0.3s ease;
 }
-.bd-content-pane .bd-content-tooltip:show{
+
+.bd-content-pane .bd-content-tooltip:show {
     -fx-background-color: black;
     -fx-padding: 10px;
     -fx-background-radius: 5px;
@@ -5966,21 +5965,25 @@ BDSearchBox .content .right-pane {
     transition: -fx-opacity 0.3s ease;
 }
 
-.bd-content-pane .bd-content-tooltip-text{
+.bd-content-pane .bd-content-tooltip-text {
     -fx-fill: white;
     -fx-font-size: 12.5;
 }
+
 /*BDSideContent*/
-.bd-side-content{
+.bd-side-content {
     -fx-background-color: #F8F9FB;
 }
-.bd-side-content-header{
+
+.bd-side-content-header {
     -fx-border-width: 0 0 1 0;
-    -fx-border-color:-color-bd-base3 ;
+    -fx-border-color: -color-bd-base3;
 }
-.bd-side-content-header .hide{
+
+.bd-side-content-header .hide {
 }
-.bd-side-content-header-pre , .bd-side-content-header-post{
+
+.bd-side-content-header-pre, .bd-side-content-header-post {
     -fx-padding: 9.5;
     -fx-spacing: 5;
     -fx-background-color: #F8F9FB;
@@ -5988,20 +5991,25 @@ BDSearchBox .content .right-pane {
 
 
 }
-.bd-side-content-header-post{
+
+.bd-side-content-header-post {
     -fx-opacity: 0;
     transition: -fx-opacity 0.3s ease;
 }
-.bd-side-content-header-post:show{
+
+.bd-side-content-header-post:show {
     -fx-opacity: 1;
     transition: -fx-opacity 0.3s ease;
 }
+
 .bd-side-content-title {
     -fx-font-size: 15;
 }
-.bd-side-content-content{
+
+.bd-side-content-content {
     -fx-background-color: #F8F9FB;
 }
+
 /*BDSideBar*/
 .bd-side-bar-pane {
     -fx-spacing: 5px;
@@ -6069,7 +6077,7 @@ BDSearchBox .content .right-pane {
     -fx-arc-width: 10;
 }
 
-.bd-side-bar-pane .placeholder{
+.bd-side-bar-pane .placeholder {
     -fx-fill: transparent;
     -fx-pref-height: 30;
 }
@@ -6239,6 +6247,7 @@ BDSearchBox .content .right-pane {
     transition: -fx-opacity 0.3s ease;
     -fx-cursor: hand;
 }
+
 .bd-progress-pause:hover {
     -fx-opacity: 1;
     transition: -fx-opacity 0.3s ease;
@@ -6255,6 +6264,7 @@ BDSearchBox .content .right-pane {
 
     -bd-hover-fill: rgba(255, 0, 0, 0.4);
 }
+
 .bd-progress-close:hover {
     -fx-opacity: 1;
     transition: -fx-opacity 0.3s ease;
@@ -6264,11 +6274,12 @@ BDSearchBox .content .right-pane {
 /* 不确定进度条样式 - 使用JavaFX兼容的线性渐变 */
 .bd-progress-bar.indeterminate .bar {
     -fx-background-color: linear-gradient(to right,
-        transparent 0%,
-        #0078d4 25%,
-        #0078d4 75%,
-        transparent 100%);
+    transparent 0%,
+    #0078d4 25%,
+    #0078d4 75%,
+    transparent 100%);
 }
+
 /*************************** bd-task-control-center - IntelliJ IDEA Style ********************************************/
 .bd-task-control-center {
     -fx-alignment: center;
@@ -6276,14 +6287,19 @@ BDSearchBox .content .right-pane {
     -fx-padding: 10px;
     -fx-background-radius: 5px;
 }
+
 .bd-task-control-center:hover {
     -fx-background-color: #F7F8FA;
 }
-.bd-task-control-center-size{
+
+.bd-task-control-center-size {
     -fx-fill: #666666;
 }
-.bd-task-control-center-title{
+
+.bd-task-control-center-title {
     -fx-fill: #005a9e;
+    -fx-ellipsis-string: "...";
+    -fx-text-overrun: ellipsis;
 }
 
 /* 基础进度条样式 */
@@ -6294,17 +6310,38 @@ BDSearchBox .content .right-pane {
     -fx-padding: 0;
 }
 
-.bd-control-center-stage-empty-content{
+.bd-control-center-stage-empty-content {
     -fx-spacing: 10px;
-     -fx-alignment: center-left;
+    -fx-alignment: center-left;
 }
-.bd-control-center-stage-empty-text{
+
+.bd-control-center-stage-empty-text {
     -fx-font-size: 20;
 }
-.bd-task-control-center-stage-title{
-     -fx-font-size: 20;
+
+.bd-task-control-center-stage-title {
+    -fx-font-size: 20;
 }
-.bd-task-control-center-stage-content{
+
+.bd-task-control-center-stage-content {
     -fx-padding: 20px;
     -fx-alignment: center;
+}
+
+/*************************** BDLoadPane ********************************************/
+.bd-load-pane {
+
+}
+
+.bd-load-root {
+
+}
+
+.bd-load-vbox {
+    -fx-background-color: rgba(224, 224, 224, 0.5);
+    -fx-alignment: center;
+    -fx-spacing: 20px;
+}
+
+.bd-load-text {
 }

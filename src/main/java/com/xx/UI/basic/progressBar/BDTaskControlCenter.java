@@ -4,9 +4,11 @@ import com.xx.UI.ui.BDControl;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.BDMapping;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 
 import java.util.ArrayList;
@@ -95,5 +97,9 @@ public class BDTaskControlCenter extends BDControl {
 
     public void hide() {
         this.show.set(false);
+    }
+
+    public ReadOnlyListProperty<BDProgressContent> contentsProperty() {
+        return contents;
     }
 }

@@ -12,9 +12,11 @@ module FXBD {
     requires java.management;
     requires org.apache.commons.compress;
     requires com.dlsc.fxmlkit;
-        requires javafx.fxml;
+    requires javafx.fxml;
+    requires java.sql;
 
 
+    exports com.xx.UI.basic.progressBar;
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.lexer;
     exports com.xx.UI.complex.textArea.view.dataFormat.example.java.JavaImp;
     exports com.xx.antlr.XMLLexer.lexer;

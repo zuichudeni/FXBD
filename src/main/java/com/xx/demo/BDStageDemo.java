@@ -52,9 +52,12 @@ public class BDStageDemo extends Application {
         BDSideBarItem debugItem = getDebugItem();
         BDTabItem rootTabItem = getRootTabItem();
         HBox toolbar = getToolbar(rootTabItem);
-         BDTaskControlCenter controlCenter = new BDTaskControlCenter();
+
+        BDTaskControlCenter controlCenter = new BDTaskControlCenter();
+        controlCenter.setPadding(new Insets(10));
+        globalMapping.binding(controlCenter.contentsProperty().emptyProperty().not(), controlCenter.visibleProperty(), controlCenter.managedProperty());
+
         BDSideBarItem taskItem = getTaskItem(controlCenter);
-        taskItem.setPadding(new Insets(10));
 
         // 构建标题栏
         BDHeaderBarBuilder headerBarBuilder = new BDHeaderBarBuilder()
@@ -67,7 +70,7 @@ public class BDStageDemo extends Application {
 
         // 构建内容
         BDContentBuilder contentBuilder = new BDContentBuilder()
-                .addSideNode(projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem,taskItem)
+                .addSideNode(projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem, taskItem)
                 .addSideNode(BDDirection.BOTTOM, BDInSequence.AFTER, controlCenter)
                 .addCenterNode(new BDTabPane(rootTabItem));
 
@@ -85,16 +88,17 @@ public class BDStageDemo extends Application {
         windowAction(bdStage, rootTabItem);
     }
 
-    private BDSideBarItem getTaskItem(BDTaskControlCenter controlCenter){
+    private BDSideBarItem getTaskItem(BDTaskControlCenter controlCenter) {
         BDSideContent taskControl = new BDSideContent();
         taskControl.setTitle("任务控制中心");
         BDButton insertTask1 = new BDButton("插入任务", Util.getImageView(20, BDIcon.ADD_DARK));
         insertTask1.setSelectable(false);
         taskControl.setContent(insertTask1);
-        globalMapping.addEventHandler(insertTask1, ActionEvent.ACTION, _ -> controlCenter.pushTask(getSimpleTask(),true,true));
-        return new BDSideBarItem("任务",Util.getImageView(30,BDIcon.RUN),Util.getImageView(30,BDIcon.RUN_DARK),BDDirection.BOTTOM,BDInSequence.FRONT,taskControl);
+        globalMapping.addEventHandler(insertTask1, ActionEvent.ACTION, _ -> controlCenter.pushTask(getSimpleTask(), true, true));
+        return new BDSideBarItem("任务", Util.getImageView(25, BDIcon.RUN), Util.getImageView(25, BDIcon.RUN_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, taskControl);
     }
-     private BDTask<String> getSimpleTask() {
+
+    private BDTask<String> getSimpleTask() {
         BDTask<String> task = new BDTask<>() {
             @Override
             protected String work() throws InterruptedException, TimeoutException {
