@@ -38,18 +38,47 @@ public class BDContentSkin extends BDSkin<BDContent> {
         control.verticalSplitPane.setOrientation(Orientation.VERTICAL);
         control.leftSplitPane.setOrientation(Orientation.VERTICAL);
         control.rightSplitPane.setOrientation(Orientation.VERTICAL);
-        control.borderPane.getStyleClass().add("bd-content-pane");
-        control.verticalSplitPane.getStyleClass().add("bd-content-vertical-pane");
-        control.horizontalSplitPane.getStyleClass().add("bd-content-horizontal-pane");
-        control.leftSplitPane.getStyleClass().add("bd-content-left-pane");
-        control.rightSplitPane.getStyleClass().add("bd-content-right-pane");
-        control.bottomSplitPane.getStyleClass().add("bd-content-bottom-pane");
-        control.centerPane.getStyleClass().add("bd-content-center-pane");
-        control.splitBack.getStyleClass().add("bd-split-back");
+        if (control.styleClass != null)
+            control.borderPane.getStyleClass().addAll("bd-content-pane", control.styleClass);
+        else control.borderPane.getStyleClass().add("bd-content-pane");
+
+        if (control.styleClass != null)
+            control.verticalSplitPane.getStyleClass().addAll("bd-content-vertical-pane", control.styleClass);
+        else control.verticalSplitPane.getStyleClass().add("bd-content-vertical-pane");
+
+        if (control.styleClass != null)
+            control.horizontalSplitPane.getStyleClass().addAll("bd-content-horizontal-pane", control.styleClass);
+        else control.horizontalSplitPane.getStyleClass().add("bd-content-horizontal-pane");
+
+        if (control.styleClass != null)
+            control.leftSplitPane.getStyleClass().addAll("bd-content-left-pane", control.styleClass);
+        else control.leftSplitPane.getStyleClass().add("bd-content-left-pane");
+
+        if (control.styleClass != null)
+            control.rightSplitPane.getStyleClass().addAll("bd-content-right-pane", control.styleClass);
+        else control.rightSplitPane.getStyleClass().add("bd-content-right-pane");
+
+        if (control.styleClass != null)
+            control.bottomSplitPane.getStyleClass().addAll("bd-content-bottom-pane", control.styleClass);
+        else control.bottomSplitPane.getStyleClass().add("bd-content-bottom-pane");
+
+        if (control.styleClass != null)
+            control.centerPane.getStyleClass().addAll("bd-content-center-pane", control.styleClass);
+        else control.centerPane.getStyleClass().add("bd-content-center-pane");
+
         control.splitBack.setMouseTransparent(true);
+        if (control.styleClass != null)
+            control.splitBack.getStyleClass().addAll("bd-split-back", control.styleClass);
+        else control.splitBack.getStyleClass().add("bd-split-back");
+
         control.tooltip.setMouseTransparent(true);
-        control.tooltip.getStyleClass().add("bd-content-tooltip");
-        control.text.getStyleClass().add("bd-content-tooltip-text");
+        if (control.styleClass != null)
+            control.tooltip.getStyleClass().addAll("bd-content-tooltip", control.styleClass);
+        else control.tooltip.getStyleClass().add("bd-content-tooltip");
+
+        if (control.styleClass != null)
+            control.text.getStyleClass().addAll("bd-content-tooltip-text", control.styleClass);
+        else control.text.getStyleClass().add("bd-content-tooltip-text");
         control.setMinSize(0, 0);
         control.horizontalRootPane.setMinSize(0, 0);
         control.hideToolTip();

@@ -81,6 +81,11 @@ public class BDContent extends BDControl {
     private Timeline bottomAnimation;
     private Timeline leftAnimation;
     private Timeline rightAnimation;
+    String styleClass ;
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 
     public Node getContent() {
         return content.get();

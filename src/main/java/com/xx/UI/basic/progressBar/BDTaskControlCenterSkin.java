@@ -94,7 +94,7 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                     BDHeaderBarBuilder header = new BDHeaderBarBuilder()
                             .addCenter(title)
                             .addTitle("进程")
-                            .setBackFill(Color.web("#ffffff"))
+                            .setStyleClass(BDStageBuilder.BD_STAGE_STYLE.STYLE1.getStyle())
                             .addCloseButton();
                     ScrollPane content = new ScrollPane(contentList);
                     content.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);

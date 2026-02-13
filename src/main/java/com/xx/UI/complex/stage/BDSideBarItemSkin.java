@@ -48,7 +48,6 @@ public class BDSideBarItemSkin extends BDButtonSkin {
 
     @Override
     public void initUI() {
-
         control.getStyleClass().add("bd-side-bar-item");
     }
 }

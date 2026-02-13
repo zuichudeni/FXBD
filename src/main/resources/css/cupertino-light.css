@@ -5447,7 +5447,7 @@ Add support for NO_HEADER tweak in tables .table-view.no-header > .column-header
 
 /*************************** 富文本样式 ********************************************/
 .root {
-    -fx-font-family: "JetBrains Mono Light"; /* 推荐使用等宽字体 */
+    -fx-font-family: "JetBrains Mono Light";
 }
 
 BDTextArea {
@@ -5628,7 +5628,8 @@ BDButton {
     transition: -fx-opacity 0.3s ease;
     transiton: -fx-backgrond-color 0.3 ease;
 }
-BDButton:load{
+
+BDButton:load {
     -fx-opacity: 0.7;
 
     transition: -fx-opacity 0.3s ease;
@@ -5891,15 +5892,38 @@ BDSearchBox .content .right-pane {
         BD Stage 样式
 */
 /*************************** BDHeaderBar ********************************************/
-.bd-header-bar {
+.bd-stage .bd-header-bar{
     -fx-background-color: -color-bd-base1;
 }
-
-.bd-header-bar-title {
-    -fx-font-size: 12.5px;
-    -fx-font-family: "JetBrains Mono SemiBold";
-    -fx-fill: -color-bd-base2;
+.bd-stage .bd-stage-tool-button {
+    -bd-default-fill: transparent;
+    -bd-hover-fill: rgba(255, 255, 255, 0.2);
+    -bd-pressed-fill: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 0;
+    -fx-padding: 15px;
 }
+
+.bd-stage .bd-stage-close-button {
+    -bd-hover-fill: -color-bd-danger1;
+    -bd-pressed-fill: -color-bd-danger2;
+}
+/*style1*/
+.bd-stage.style1 .bd-header-bar{
+    -fx-background-color: #F7F8FA;
+}
+.bd-stage.style1 .bd-stage-tool-button {
+    -bd-default-fill: transparent;
+    -bd-hover-fill: #F1F2F4;
+    -bd-pressed-fill: #F1F2F4;
+    -fx-background-radius: 0;
+    -fx-padding: 15px;
+}
+
+.bd-stage.style1 .bd-stage-close-button {
+    -bd-hover-fill: #C42B1C;
+    -bd-pressed-fill: #C84031;
+}
+
 
 .bd-header-bar-icon-title {
     -fx-padding: 0 0 0 20px;
@@ -5921,19 +5945,6 @@ BDSearchBox .content .right-pane {
 
 .bd-header-bar-leading {
     -fx-alignment: center-left;
-}
-
-.bd-stage-tool-button {
-    -bd-default-fill: transparent;
-    -bd-hover-fill: rgba(255, 255, 255, 0.2);
-    -bd-pressed-fill: rgba(255, 255, 255, 0.1);
-    -fx-background-radius: 0;
-    -fx-padding: 15px;
-}
-
-.bd-stage-close-button {
-    -bd-hover-fill: -color-bd-danger1;
-    -bd-pressed-fill: -color-bd-danger2;
 }
 
 /*************************** BDContent ********************************************/
@@ -6071,6 +6082,32 @@ BDSearchBox .content .right-pane {
     -fx-effect: none;
 }
 
+.bd-side-bar-badge {
+    /* 外观 */
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 71, 87, 0.8), rgba(255, 56, 56, 0.8));
+    -fx-background-radius: 100;
+    -fx-border-radius: 100;
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-border-width: 1.5;
+
+    /* 阴影效果 */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 56, 56, 0.4), 6, 0, 0, 2);
+
+    /* 内边距 - 根据内容调整 */
+    -fx-padding: 0;
+
+    /* 文字样式 */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-alignment: center;
+
+    /* 最小尺寸确保圆形 */
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-pref-height: 18px;
+}
+
 .bd-side-bar-pane .item-back {
     -fx-fill: -item-back-fill;
     -fx-arc-height: 10;
@@ -6080,6 +6117,71 @@ BDSearchBox .content .right-pane {
 .bd-side-bar-pane .placeholder {
     -fx-fill: transparent;
     -fx-pref-height: 30;
+}
+
+/*************************** BDDialog - IntelliJ IDEA Style ********************************************/
+/*stage*/
+.bd-stage.dialog .bd-header-bar{
+    -fx-background-color: #F7F8FA;
+}
+.bd-stage.dialog .bd-stage-tool-button {
+    -bd-default-fill: transparent;
+    -bd-hover-fill: #F1F2F4;
+    -bd-pressed-fill: #F1F2F4;
+    -fx-background-radius: 0;
+    -fx-padding: 15px;
+}
+
+.bd-stage.dialog .bd-stage-close-button {
+    -bd-hover-fill: #C42B1C;
+    -bd-pressed-fill: #C84031;
+}
+
+/*root*/
+.bd-dialog-root {
+    -fx-alignment: center-left;
+}
+
+.bd-dialog-header {
+    -fx-padding: 20px;
+    -fx-alignment: center;
+}
+
+.bd-dialog-header-text {
+}
+
+.bd-dialog-separator {
+    -fx-padding: 0;
+    -fx-pref-height: 2px;
+    -fx-min-height: 2px;
+    -fx-max-height: 2px;
+}
+
+.bd-dialog-content-root {
+    -fx-alignment: baseline-left;
+    -fx-padding: 20px;
+}
+
+.bd-dialog-action-bar {
+    -fx-padding: 20px;
+}
+
+.bd-dialog-action-bar-pre {
+}
+
+.bd-dialog-action-bar-center {
+}
+
+.bd-dialog-action-bar-after {
+}
+
+.bd-dialog-expand-text {
+    -fx-cursor: hand;
+    -fx-underline: false;
+}
+
+.bd-dialog-expand-text:hover {
+    -fx-underline: true;
 }
 
 /*************************** BDProgress - IntelliJ IDEA Style ********************************************/

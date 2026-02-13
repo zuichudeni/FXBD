@@ -26,7 +26,6 @@ public class BDStageBuilder {
     double y = Double.MIN_VALUE;
     double w = Double.MIN_VALUE;
     double h = Double.MIN_VALUE;
-
     /**
      * 构造函数，初始化Stage和Scene
      */
@@ -41,6 +40,12 @@ public class BDStageBuilder {
             if (h != Double.MIN_VALUE)
                 stage.setHeight(h);
         });
+        root.getStyleClass().add("bd-stage");
+    }
+
+    public BDStageBuilder addStyleClass(String styleClass) {
+        root.getStyleClass().add(styleClass);
+        return this;
     }
 
     /**
@@ -50,8 +55,6 @@ public class BDStageBuilder {
      */
     public BDStageBuilder setHeaderBar(BDHeaderBarBuilder headerBarBuilder) {
         stage.initStyle(StageStyle.EXTENDED);
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
         root.getChildren().addFirst(headerBarBuilder.build());
         HeaderBar.setPrefButtonHeight(stage, 0);
         if (headerBarBuilder.title instanceof Text title)
@@ -67,23 +70,7 @@ public class BDStageBuilder {
                 }
             }, true, stage.maximizedProperty());
         return this;
-    }    private final Stage stage = new Stage() {
-        @Override
-        public void close() {
-            mapping.dispose();
-            super.close();
-        }
-
-        @Override
-        public void hide() {
-            x = stage.getX();
-            y = stage.getY();
-            w = stage.getWidth();
-            h = stage.getHeight();
-            super.hide();
-        }
-
-    };
+    }
 
     /**
      * 设置窗口内容
@@ -108,18 +95,68 @@ public class BDStageBuilder {
         return this;
     }
 
+    public BDStageBuilder setSize(double width, double height) {
+        stage.setWidth(width);
+        stage.setHeight(height);
+        return this;
+    }
+
+    /**
+     * 构建并返回Stage
+     *
+     * @return 配置好的Stage实例
+     */
+    public Stage build(BD_STAGE_STYLE style) {
+        addStyleClass(style.getStyle());
+        return this.build();
+    }    private final Stage stage = new Stage() {
+        @Override
+        public void close() {
+            mapping.dispose();
+            super.close();
+        }
+
+        @Override
+        public void hide() {
+            x = stage.getX();
+            y = stage.getY();
+            w = stage.getWidth();
+            h = stage.getHeight();
+            super.hide();
+        }
+
+    };
+
     /**
      * 构建并返回Stage
      *
      * @return 配置好的Stage实例
      */
     public Stage build() {
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
         return stage;
     }
 
     public BDMapping getMapping() {
         return mapping;
     }
+
+    public enum BD_STAGE_STYLE {
+        NORMAL(""),
+        STYLE1("style1");
+        private final String style;
+
+        BD_STAGE_STYLE(String s) {
+            this.style = s;
+        }
+
+        public String getStyle() {
+            return style;
+        }
+    }
+
+
 
 
 }

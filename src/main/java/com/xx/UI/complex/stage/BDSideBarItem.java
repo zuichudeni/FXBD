@@ -1,17 +1,17 @@
 package com.xx.UI.complex.stage;
 
 import com.xx.UI.basic.button.BDButton;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import com.xx.UI.util.LazyValue;
+import javafx.beans.property.*;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
 import javafx.css.converter.PaintConverter;
+import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -52,6 +52,14 @@ public class BDSideBarItem extends BDButton {
     private WritableImage cachedDragImage;
     //    生成的stage的header填充颜色
     private ObjectProperty<Paint> headerFill;
+    private final SimpleIntegerProperty badge = new SimpleIntegerProperty(0);
+    final LazyValue<Node> badgeNode = new LazyValue<>(()->{
+        Label label = new Label();
+        label.getStyleClass().add("bd-side-bar-badge");
+        label.setMouseTransparent(true);
+        getMapping().bindProperty(label.textProperty(),badge.map(Object::toString));
+        return label;
+    });
 
     public BDSideBarItem(String name, ImageView defaultIcon, ImageView selectIcon, BDDirection direction, BDInSequence inSequence, BDSideContent sideContent) {
         Objects.requireNonNull(name);
@@ -94,6 +102,17 @@ public class BDSideBarItem extends BDButton {
                 }
             };
         return headerFill;
+    }
+
+    public int getBadge() {
+        return badge.get();
+    }
+
+    public SimpleIntegerProperty badgeProperty() {
+        return badge;
+    }
+    public void setBadge(int badge){
+        this.badge.set(badge);
     }
 
     public String getName() {

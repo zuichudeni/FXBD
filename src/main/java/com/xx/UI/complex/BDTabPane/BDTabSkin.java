@@ -6,9 +6,9 @@ import com.xx.UI.complex.stage.BDStageBuilder;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.Util;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseDragEvent;
@@ -58,16 +58,20 @@ public class BDTabSkin extends BDSkin<BDTab> {
                     if (tempItem != null)
                         tempItem.check();
                     if (dragTab.splitItem.get() == null) {
-
-                        BDStageBuilder stageBuilder = new BDStageBuilder()
-                                .setHeaderBar(new BDHeaderBarBuilder().addIcon(Util.getImageView(20,BDIcon.OPEN_NEW_TAB))
+                        BDTabPane splitPane = new BDTabPane(new BDTabItem(dragTab));
+                        Bounds layoutBounds = dragTab.getContent().getLayoutBounds();
+                        Stage stage = new BDStageBuilder()
+                                .setHeaderBar(new BDHeaderBarBuilder()
+                                        .setStyleClass("bd-tab-stage-header")
+                                        .addIcon(Util.getImageView(20, BDIcon.OPEN_NEW_TAB))
                                         .addTitle(dragTab.getTitle())
                                         .addMinimizeButton()
                                         .addMaximizeButton()
-                                        .addCloseButton());
+                                        .addCloseButton())
+                                .setContent(splitPane)
+                                .setSize(layoutBounds.getHeight(),layoutBounds.getWidth())
+                                .build();
 
-                        Stage stage = new Stage();
-                        BDTabPane splitPane = new BDTabPane(new BDTabItem(dragTab));
                         splitPane.getMapping()
                                 .addListener(splitPane.tabsCount, (_, _, nv) -> {
                                     if (nv.intValue() == 0) {
@@ -81,7 +85,6 @@ public class BDTabSkin extends BDSkin<BDTab> {
                                     if (!nv)
                                         splitPane.getMapping().dispose();
                                 });
-                        stage.setScene(new Scene(splitPane));
                         stage.show();
                         dragTab.show();
                     }

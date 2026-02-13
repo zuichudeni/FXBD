@@ -1,5 +1,6 @@
 package com.xx.demo;
 
+import com.dlsc.fxmlkit.fxml.FxmlKit;
 import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.basic.progressBar.BDTask;
 import com.xx.UI.basic.progressBar.BDTaskControlCenter;
@@ -22,6 +23,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -39,8 +41,11 @@ public class BDStageDemo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
+        FxmlKit.enableDevelopmentMode();
+        FxmlKit.setApplicationUserAgentStylesheet(Util.getResourceUrl("/css/cupertino-light.css"));
         //        创建工具
+        BDSideBarItem dialogItem = getDialogItem();
+        BDSideBarItem badgeItem = getBadgeItem();
         BDSideBarItem projectItem = getProjectItem();
         BDSideBarItem searchItem = getSearchItem();
         BDSideBarItem gitItem = getGitItem();
@@ -68,9 +73,9 @@ public class BDStageDemo extends Application {
                 .addMaximizeButton()
                 .addCloseButton();
 
-        // 构建内容
+        // 构建内容8
         BDContentBuilder contentBuilder = new BDContentBuilder()
-                .addSideNode(projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem, taskItem)
+                .addSideNode(dialogItem, badgeItem, projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem, taskItem)
                 .addSideNode(BDDirection.BOTTOM, BDInSequence.AFTER, controlCenter)
                 .addCenterNode(new BDTabPane(rootTabItem));
 
@@ -78,14 +83,59 @@ public class BDStageDemo extends Application {
         Stage bdStage = new BDStageBuilder()
                 .setHeaderBar(headerBarBuilder)
                 .setContent(contentBuilder.build())
-                .setStyle(Util.getResourceUrl("/css/cupertino-light.css"))
+                .setSize(1200, 1000)
                 .build();
         // 显示窗口
-        bdStage.setWidth(1200);
-        bdStage.setHeight(1000);
+        bdStage.setAlwaysOnTop(true);
         bdStage.show();
 //        添加事件
         windowAction(bdStage, rootTabItem);
+    }
+
+    private BDSideBarItem getDialogItem() {
+        BDSideContent sideContent = new BDSideContent();
+        BDSideBarItem dialogItem = new BDSideBarItem("弹窗", Util.getImageView(30, BDIcon.INFORMATION_DIALOG), Util.getImageView(20, BDIcon.INFORMATION_DIALOG_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, sideContent);
+        Button dialog1 = new Button("弹窗一");
+        globalMapping.addEventHandler(dialog1, ActionEvent.ACTION, _ -> {
+            Button ok = new Button("确定");
+            Stage stage = new BDDialog()
+                    .setHeader(new BDHeaderBarBuilder().addCloseButton()
+                            .addTitle("弹窗测试")
+                            .addIcon(Util.getImageView(40, BDIcon.FINAL_MARK)))
+                    .setHeaderText("我是header text，右边的是header graphic。")
+                    .setHeaderGraphic(Util.getImageView(60, BDIcon.INFORMATION_DIALOG))
+                    .setContent(new Text("我是text content"))
+                    .setExpandContent(new Text("我是被隐藏起来的text expand content"))
+                    .addAfterActionNode(ok)
+                    .build();
+            stage.setAlwaysOnTop(true);
+            stage.show();
+        });
+
+        HBox root = new HBox(20, dialog1);
+        sideContent.setTitle("弹窗测试");
+        sideContent.setContent(root);
+        return dialogItem;
+    }
+
+    private BDSideBarItem getBadgeItem() {
+        HBox root = new HBox(20);
+        root.setAlignment(Pos.TOP_CENTER);
+        BDSideContent sideContent = new BDSideContent();
+        sideContent.setContent(root);
+        sideContent.setTitle("badge 测试");
+        BDSideBarItem badgeItem = new BDSideBarItem("勋章", Util.getImageView(30, BDIcon.AREA_LABEL),
+                Util.getImageView(30, BDIcon.AREA_LABEL_DARK), BDDirection.RIGHT, BDInSequence.AFTER, sideContent);
+        BDButton addBadge = new BDButton();
+        addBadge.setSelectable(false);
+        addBadge.setDefaultGraphic(Util.getImageView(25, BDIcon.ADD));
+        BDButton subBadge = new BDButton();
+        subBadge.setSelectable(false);
+        subBadge.setDefaultGraphic(Util.getImageView(25, BDIcon.REMOVE_14X14));
+        globalMapping.addEventHandler(subBadge, ActionEvent.ACTION, _ -> badgeItem.setBadge(Math.max(0, badgeItem.getBadge() - 1)))
+                .addEventHandler(addBadge, ActionEvent.ACTION, _ -> badgeItem.setBadge(Math.max(0, badgeItem.getBadge() + 1)));
+        root.getChildren().addAll(subBadge, addBadge);
+        return badgeItem;
     }
 
     private BDSideBarItem getTaskItem(BDTaskControlCenter controlCenter) {

@@ -24,9 +24,15 @@ public class BDHeaderBarBuilder {
     BDButton maximizeButton;
     BDButton minimizeButton;
     BDButton closeButton;
+    private String styleClass;
 
     public BDHeaderBarBuilder() {
         initializeHeaderBar();
+    }
+
+    public BDHeaderBarBuilder setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+        return this;
     }
 
     /**
@@ -117,9 +123,19 @@ public class BDHeaderBarBuilder {
     public BDHeaderBarBuilder addMaximizeButton() {
         this.maximizeButton = createToolButton(
                 "bd-stage-maximize-button",
-                BDIcon.MAXIMIZE_DARK,
+                BDIcon.MAXIMIZE_INACTIVE_DARK,
                 BDIcon.MAXIMIZE_INACTIVE_DARK
         );
+        HeaderBar.setButtonType(maximizeButton, HeaderButtonType.MAXIMIZE);
+        return this;
+    }
+
+    public BDHeaderBarBuilder addMaximizeButton(Node defaultNode, Node pressNode) {
+        this.maximizeButton = new BDButton();
+        this.maximizeButton.getStyleClass().addAll("bd-stage-tool-button", styleClass);
+        this.maximizeButton.setDefaultGraphic(defaultNode);
+        this.maximizeButton.setPressGraphic(pressNode);
+        this.maximizeButton.setSelectable(false);
         HeaderBar.setButtonType(maximizeButton, HeaderButtonType.MAXIMIZE);
         return this;
     }
@@ -132,10 +148,20 @@ public class BDHeaderBarBuilder {
     public BDHeaderBarBuilder addMinimizeButton() {
         this.minimizeButton = createToolButton(
                 "bd-stage-minimize-button",
-                BDIcon.MINIMIZE_DARK,
+                BDIcon.MINIMIZE_INACTIVE_DARK,
                 BDIcon.MINIMIZE_INACTIVE_DARK
         );
         HeaderBar.setButtonType(minimizeButton, HeaderButtonType.ICONIFY);
+        return this;
+    }
+
+    public BDHeaderBarBuilder addMinimizeButton(Node defaultNode, Node pressNode) {
+        this.minimizeButton = new BDButton();
+        this.minimizeButton.getStyleClass().addAll("bd-stage-tool-button", styleClass);
+        this.minimizeButton.setDefaultGraphic(defaultNode);
+        this.minimizeButton.setPressGraphic(pressNode);
+        this.minimizeButton.setSelectable(false);
+        HeaderBar.setButtonType(minimizeButton, HeaderButtonType.MAXIMIZE);
         return this;
     }
 
@@ -151,6 +177,16 @@ public class BDHeaderBarBuilder {
                 BDIcon.CLOSE_INACTIVE_DARK
         );
         HeaderBar.setButtonType(closeButton, HeaderButtonType.CLOSE);
+        return this;
+    }
+
+    public BDHeaderBarBuilder addCloseButton(Node defaultNode, Node pressNode) {
+        this.closeButton = new BDButton();
+        this.closeButton.getStyleClass().addAll("bd-stage-tool-button", styleClass);
+        this.closeButton.setDefaultGraphic(defaultNode);
+        this.closeButton.setPressGraphic(pressNode);
+        this.closeButton.setSelectable(false);
+        HeaderBar.setButtonType(closeButton, HeaderButtonType.MAXIMIZE);
         return this;
     }
 
@@ -199,6 +235,16 @@ public class BDHeaderBarBuilder {
             buttonBox.getChildren().add(closeButton);
         buttonBox.getStyleClass().add("bd-header-bar-button-box");
         trailingBox.getChildren().add(buttonBox);
+        if (styleClass != null) {
+            centerBox.getStyleClass().add(styleClass);
+            headerBar.getStyleClass().add(styleClass);
+            leadingBox.getStyleClass().add(styleClass);
+            if (title != null) title.getStyleClass().add(styleClass);
+            if (icon != null) icon.getStyleClass().add(styleClass);
+            if (maximizeButton != null) maximizeButton.getStyleClass().add(styleClass);
+            if (minimizeButton != null) minimizeButton.getStyleClass().add(styleClass);
+            if (closeButton != null) closeButton.getStyleClass().add(styleClass);
+        }
         return headerBar;
     }
 }
