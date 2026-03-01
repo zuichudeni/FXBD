@@ -3,15 +3,12 @@ package com.xx;
 import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;
 import javafx.application.Application;
-import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Launch extends Application {
     public static BDMapping ROOT_MAPPING = new BDMapping();

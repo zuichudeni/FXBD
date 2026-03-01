@@ -5,15 +5,13 @@ module FXBD {
     requires javafx.graphics;
     requires org.antlr.antlr4.runtime;
     requires java.desktop;
-    requires org.apache.commons.io;
-    requires batik.transcoder;
     requires com.ibm.icu;
     requires java.naming;
     requires java.management;
-    requires org.apache.commons.compress;
     requires com.dlsc.fxmlkit;
     requires javafx.fxml;
     requires java.sql;
+    requires atlantafx.base;
 
 
     exports com.xx.UI.basic.progressBar;

@@ -582,8 +582,7 @@ public class BDTextAreaContent implements Serializable, Content {
         listeners.add(listener);
     }
 
-    public void removeContentChangeListener(ContentChangeListener listener) {
-        listeners.remove(listener);
+    public void removeContentChangeListener(ContentChangeListener listener) {listeners.remove(listener);
     }
 
     public void addChangeRunnable(Runnable runnable) {

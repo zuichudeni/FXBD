@@ -443,6 +443,7 @@ public class BDTextCell extends ListCell<Object> implements BDUI, BDVirtualUI {
         if (isEmpty() || getIndex() >= content.linesNum() || getIndex() < 0) return;
         flowPane.getChildren().setAll(initParagraph(getIndex()));
         root.applyCss();
+        root.layout();
         if (flowPane.getChildren().isEmpty()) setPrefHeight(textArea.getNoneLineHeight());
         initVirtualEvent();
         initVirtualProperty();

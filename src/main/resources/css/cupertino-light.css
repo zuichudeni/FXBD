@@ -158,6 +158,7 @@
 
 Text {
     -fx-fill: -color-fg-default;
+    -fx-font-family: "JetBrains Mono Light";
 }
 
 .title-1 {
@@ -5446,9 +5447,6 @@ Add support for NO_HEADER tweak in tables .table-view.no-header > .column-header
 }
 
 /*************************** 富文本样式 ********************************************/
-.root {
-    -fx-font-family: "JetBrains Mono Light";
-}
 
 BDTextArea {
     -bd-selected-range-fill: #A6D2FF; /* 橙色选中区域 */
@@ -5892,9 +5890,10 @@ BDSearchBox .content .right-pane {
         BD Stage 样式
 */
 /*************************** BDHeaderBar ********************************************/
-.bd-stage .bd-header-bar{
+.bd-stage .bd-header-bar {
     -fx-background-color: -color-bd-base1;
 }
+
 .bd-stage .bd-stage-tool-button {
     -bd-default-fill: transparent;
     -bd-hover-fill: rgba(255, 255, 255, 0.2);
@@ -5907,10 +5906,12 @@ BDSearchBox .content .right-pane {
     -bd-hover-fill: -color-bd-danger1;
     -bd-pressed-fill: -color-bd-danger2;
 }
+
 /*style1*/
-.bd-stage.style1 .bd-header-bar{
+.bd-stage.style1 .bd-header-bar {
     -fx-background-color: #F7F8FA;
 }
+
 .bd-stage.style1 .bd-stage-tool-button {
     -bd-default-fill: transparent;
     -bd-hover-fill: #F1F2F4;
@@ -5980,7 +5981,13 @@ BDSearchBox .content .right-pane {
     -fx-fill: white;
     -fx-font-size: 12.5;
 }
-
+/*notification-pane*/
+.bd-content-notification-pane{
+    -fx-padding: 10px 0 10px 0;
+}
+.bd-content-notification{
+    -fx-spacing: 5px;
+}
 /*BDSideContent*/
 .bd-side-content {
     -fx-background-color: #F8F9FB;
@@ -5999,8 +6006,6 @@ BDSearchBox .content .right-pane {
     -fx-spacing: 5;
     -fx-background-color: #F8F9FB;
     -fx-alignment: center;
-
-
 }
 
 .bd-side-content-header-post {
@@ -6121,9 +6126,10 @@ BDSearchBox .content .right-pane {
 
 /*************************** BDDialog - IntelliJ IDEA Style ********************************************/
 /*stage*/
-.bd-stage.dialog .bd-header-bar{
+.bd-stage.dialog .bd-header-bar {
     -fx-background-color: #F7F8FA;
 }
+
 .bd-stage.dialog .bd-stage-tool-button {
     -bd-default-fill: transparent;
     -bd-hover-fill: #F1F2F4;
@@ -6144,7 +6150,7 @@ BDSearchBox .content .right-pane {
 
 .bd-dialog-header {
     -fx-padding: 20px;
-    -fx-alignment: center;
+    -fx-alignment: center-left;
 }
 
 .bd-dialog-header-text {
@@ -6183,6 +6189,33 @@ BDSearchBox .content .right-pane {
 .bd-dialog-expand-text:hover {
     -fx-underline: true;
 }
+
+
+/* ========== 对话框类型特定样式 (IntelliJ IDEA 风格) ========== */
+.bd-stage.dialog.question .bd-dialog-separator {
+    -fx-background-color: #C5CAE9;
+}
+
+.bd-stage.dialog.information .bd-dialog-separator {
+    -fx-background-color: #4682FA;
+}
+
+.bd-stage.dialog.warning .bd-dialog-separator {
+    -fx-background-color: #FFE0B2;
+}
+
+.bd-stage.dialog.error .bd-dialog-separator {
+    -fx-background-color: #FFCDD2;
+}
+
+.bd-stage.dialog.success .bd-dialog-separator {
+    -fx-background-color: #55A76A;
+}
+
+.bd-stage.dialog.none .bd-dialog-separator {
+    -fx-background-color: #E0E0E0;
+}
+
 
 /*************************** BDProgress - IntelliJ IDEA Style ********************************************/
 
@@ -6446,4 +6479,160 @@ BDSearchBox .content .right-pane {
 }
 
 .bd-load-text {
+}
+
+/*************************** BDMessage ********************************************/
+/*bd-message-item*/
+.bd-message-item-root {
+    -fx-min-width: 0;
+}
+
+.bd-message-item-header {
+    -fx-padding: 20px 20px 20px 20px;
+    -fx-min-width: 0;
+    -fx-border-color: #DDDDDF;
+    -fx-border-width: 0 0 1 0;
+}
+
+.bd-message-item-title {
+    -fx-fill: #818594;
+}
+
+.bd-message-item-clean {
+    -fx-fill: #315FBD;
+    -fx-cursor: hand;
+}
+
+.bd-message-item-clean:hover {
+    -fx-underline: true;
+}
+
+.bd-message-item-content {
+    -fx-spacing: 10px;
+    -fx-min-width: 0;
+    -fx-padding:10px 20px 20px;
+}
+
+/*message*/
+/* 基础样式（已读）- 明确边框宽度为1px */
+.bd-message-root {
+    -fx-min-width: 0;
+    -fx-fill-width: true;
+    -fx-padding: 10px;
+    -fx-spacing: 15px;
+    -fx-background-radius: 10px;
+    -fx-background-color: #EBECF0;
+    -fx-border-color: #dbdbdb;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;  /* 统一基础边框宽度 */
+}
+
+.bd-message-root.question {
+    -fx-border-color: #8A2BE2;
+    -fx-background-color: #F0E6FF;
+}
+
+.bd-message-root.information {
+    -fx-border-color: #4682FA;
+    -fx-background-color: #D7F1FF;
+}
+
+.bd-message-root.warning {
+    -fx-border-color: #FFAF0F;
+    -fx-background-color: #FFF8C5;
+}
+
+.bd-message-root.error {
+    -fx-border-color: #E55765;
+    -fx-background-color: #FFEBE9;
+}
+
+.bd-message-root.success {
+    -fx-border-color: #55A76A;
+    -fx-background-color: #DAFBE1;
+}
+
+/* 全局未读样式（作为后备，也可被类型覆盖） */
+.bd-message-root:uncheck {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-border-width: 2px;
+    -fx-background-color: #f5f5f5; /* 稍微亮一点的灰色 */
+    -fx-border-color: #b0b0b0;
+}
+
+/* 各消息类型未读样式：边框加粗（2px）、背景提亮 + 阴影 */
+.bd-message-root.question:uncheck {
+    -fx-border-width: 2px;
+    -fx-border-color: #8A2BE2;
+    -fx-background-color: #FCF5FF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+}
+
+.bd-message-root.information:uncheck {
+    -fx-border-width: 2px;
+    -fx-border-color: #4682FA;
+    -fx-background-color: #E8F5FF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+}
+
+.bd-message-root.warning:uncheck {
+    -fx-border-width: 2px;
+    -fx-border-color: #FFAF0F;
+    -fx-background-color: #FFFBE0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+}
+
+.bd-message-root.error:uncheck {
+    -fx-border-width: 2px;
+    -fx-border-color: #E55765;
+    -fx-background-color: #FFF5F2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+}
+
+.bd-message-root.success:uncheck {
+    -fx-border-width: 2px;
+    -fx-border-color: #55A76A;
+    -fx-background-color: #E8FDEB;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+}
+.bd-message-content {
+    -fx-min-width: 0;
+    -fx-padding: 5px;
+}
+
+.bd-message-header {
+    -fx-min-width: 0;
+    -fx-alignment: center-left;
+    -fx-spacing: 5px;
+}
+
+.bd-message-delete {
+    -fx-min-width: 0;
+    -fx-padding: 2px;
+    -bd-hover-fill: #FDD5D9;
+    -bd-pressed-fill: #F9545D;
+    -fx-cursor: hand;
+}
+
+.bd-message-item-prompt-text {
+    -fx-text-alignment: center;
+    -fx-fill: #818594;
+    -fx-font-size: 18;
+}
+/*************************** BDTreeView ********************************************/
+.bd-tree-cell{
+}
+.bd-tree-hbox{
+    -fx-alignment: center-left;
+}
+.bd-tree-root{
+    -fx-border-width: 0 0 0 1px;
+
+}
+.bd-tree-cell-text{
+
+}
+.bd-tree-cell-line{
+    -fx-stroke: blue;
+    -fx-translate-x: -14px;
 }

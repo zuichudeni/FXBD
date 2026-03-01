@@ -2,10 +2,7 @@ package com.xx.UI.complex.textArea.view.dataFormat.analyse;
 
 import com.xx.UI.complex.textArea.content.segment.Paragraph;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -15,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
     private final List<BDTokenEntry<T>> tokenEntries = new ArrayList<>();
     private final T undefinedType;
-
     public BDTokenEntryList(T undefinedType) {
         if (undefinedType == null) throw new IllegalArgumentException("undefinedType cannot be null");
         this.undefinedType = undefinedType;
@@ -32,6 +28,34 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
             }
         }
         tokenEntries.add(tokenEntry);
+        marg();
+    }
+    public void marg(){
+        // 2. 按起始位置排序
+    tokenEntries.sort(Comparator.comparingInt(BDTokenEntry::getStart));
+
+    // 3. 合并相邻且类型相同、info 相同的条目
+    List<BDTokenEntry<T>> merged = new ArrayList<>();
+    for (BDTokenEntry<T> entry : tokenEntries) {
+        if (merged.isEmpty()) {
+            merged.add(entry);
+            continue;
+        }
+        BDTokenEntry<T> last = merged.getLast();
+        if (last.getEnd() == entry.getStart() &&
+            last.getType() == entry.getType() &&
+            Objects.equals(last.getInfo(), entry.getInfo())) {
+            // 合并为新条目（保留前者的 info）
+            BDTokenEntry<T> combined = new BDTokenEntry<>(
+                last.getStart(), entry.getEnd(), last.getType(), last.getInfo()
+            );
+            merged.set(merged.size() - 1, combined);
+        } else {
+            merged.add(entry);
+        }
+    }
+    tokenEntries.clear();
+    tokenEntries.addAll(merged);
     }
 
     public List<List<DataBlock<T, ?>>> checkTokenEntries(Paragraph paragraph) {
@@ -109,8 +133,8 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
     }
 
     //    只能由BDAnalyse的append调用。
-    public void addTokenEntry(int offset, Paragraph first, T undefinedType) {
-        if (tokenEntries.isEmpty() || first.getLength() == 0) return;
+    public boolean addTokenEntry(int offset, Paragraph first, T undefinedType) {
+        if (tokenEntries.isEmpty() || first.getLength() == 0) return false;
         sort();
         boolean isAdded = false;
         for (BDTokenEntry<T> tokenEntry : tokenEntries) {
@@ -127,6 +151,8 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
             tokenEntries.add(new BDTokenEntry<>(offset, offset + first.getLength(), undefinedType, null));
             sort();
         }
+        marg();
+        return true;
     }
 
     public BDTokenEntryList<T> remove(int offset) {
@@ -202,7 +228,7 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
                 it.add(suffix);
             }
             // 4. Token部分重叠：截断处理
-            else if (entryStart < end && entryEnd > end) {
+            else if (entryEnd > end) {
                 // 保留后部分并前移
                 it.set(new BDTokenEntry<>(
                         start, // 位置调整
@@ -212,7 +238,7 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
                 ));
             }
             // 5. Token部分重叠（左侧）：截断前部
-            else if (entryStart < start && entryEnd > start) {
+            else if (entryEnd > start) {
                 it.set(new BDTokenEntry<>(
                         entryStart,
                         start,
@@ -221,6 +247,7 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
                 ));
             }
         }
+        marg();
     }
 
     private void replaceTokenEntry(BDTokenEntry<T> tokenEntry, int start, int end) {
@@ -231,7 +258,7 @@ public class BDTokenEntryList<T extends Enum<?> & Analyse.BDTextEnum<T>> {
 
     public T getType(int offset) {
         for (BDTokenEntry<T> tokenEntry : tokenEntries)
-            if (tokenEntry.getStart() < offset && offset < tokenEntry.getEnd())
+            if (tokenEntry.getStart() <= offset && offset <= tokenEntry.getEnd())
                 return tokenEntry.getType();
         return null;
     }

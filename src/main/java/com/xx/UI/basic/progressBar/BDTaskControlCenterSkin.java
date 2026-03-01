@@ -1,5 +1,6 @@
 package com.xx.UI.basic.progressBar;
 
+import com.xx.UI.complex.stage.BDDialog;
 import com.xx.UI.complex.stage.BDHeaderBarBuilder;
 import com.xx.UI.complex.stage.BDStageBuilder;
 import com.xx.UI.ui.BDIcon;
@@ -14,7 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -24,9 +24,9 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
     private final ProgressBar bar;
     private final Text size;
     private final VBox contentList;
+    private final Tooltip tooltip;
     private LazyValue<Stage> stage;
     private LazyValue<Node> success;
-    private final Tooltip tooltip;
 
     protected BDTaskControlCenterSkin(BDTaskControlCenter bdTaskControlCenter) {
         root = new HBox();
@@ -70,13 +70,13 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                             contentList.getChildren().add(content);
                     }
                 }, true, (ObservableList<?>) control.contents)
-                .bindProperty(tooltip.textProperty(),title.textProperty())
+                .bindProperty(tooltip.textProperty(), title.textProperty())
                 .addChildren(tempMapping);
     }
 
     @Override
     public void initUI() {
-
+        title.setMouseTransparent(true);
         control.setTooltip(tooltip);
         success = new LazyValue<>(() -> {
             HBox hBox = new HBox();
@@ -88,8 +88,6 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
         });
         stage = new LazyValue<>(
                 () -> {
-                    Text title = new Text("进程");
-                    title.getStyleClass().add("bd-task-control-center-stage-title");
                     contentList.getStyleClass().add("bd-task-control-center-stage-content");
                     BDHeaderBarBuilder header = new BDHeaderBarBuilder()
                             .addCenter(title)
@@ -99,8 +97,9 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                     ScrollPane content = new ScrollPane(contentList);
                     content.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                     mapping.bindProperty(contentList.prefWidthProperty(), content.widthProperty());
-                    Stage build = new BDStageBuilder()
-                            .setHeaderBar(header)
+                    Stage build = new BDDialog()
+                            .setDialogType(BDDialog.BD_DIALOG_TYPE.NONE)
+                            .setHeader(header)
                             .setContent(content)
                             .build();
                     build.setWidth(600);

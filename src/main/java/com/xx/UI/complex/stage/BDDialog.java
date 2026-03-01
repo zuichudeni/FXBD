@@ -1,5 +1,6 @@
 package com.xx.UI.complex.stage;
 
+import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDUI;
 import com.xx.UI.util.BDMapping;
 import com.xx.UI.util.Util;
@@ -39,16 +40,20 @@ public class BDDialog implements BDUI {
     private final HBox center = new HBox();
     private final HBox after = new HBox();
     private final BDMapping mapping = new BDMapping();
+    private final SimpleObjectProperty<BD_DIALOG_TYPE> dialogType = new SimpleObjectProperty<>(BD_DIALOG_TYPE.INFORMATION);
+    private boolean headerGraphicInit = false;
 
     public BDDialog() {
         initUI();
         initEvent();
         initProperty();
     }
-    public BDDialog setHeader(BDHeaderBarBuilder headerBarBuilder){
+
+    public BDDialog setHeader(BDHeaderBarBuilder headerBarBuilder) {
         stageBuilder.setHeaderBar(headerBarBuilder);
         return this;
     }
+
     public DIALOG_HEADER_DISPLAY getHeaderDisplay() {
         return headerDisplay.get();
     }
@@ -68,6 +73,7 @@ public class BDDialog implements BDUI {
 
     public BDDialog setHeaderGraphic(Node headerGraphic) {
         this.headerGraphic.set(headerGraphic);
+        this.headerGraphicInit = true;
         return this;
     }
 
@@ -140,6 +146,19 @@ public class BDDialog implements BDUI {
         return this;
     }
 
+    public BD_DIALOG_TYPE getDialogType() {
+        return dialogType.get();
+    }
+
+    public SimpleObjectProperty<BD_DIALOG_TYPE> dialogTypeProperty() {
+        return dialogType;
+    }
+
+    public BDDialog setDialogType(BD_DIALOG_TYPE dialogType) {
+        this.dialogType.set(dialogType);
+        return this;
+    }
+
     public BDDialog addPreActionNode(Node... node) {
         pre.getChildren().addAll(node);
         return this;
@@ -190,11 +209,11 @@ public class BDDialog implements BDUI {
     @Override
     public void initProperty() {
         mapping.addListener(() -> {
-                    if (headerText.getText() != null) {
+                    if (headerText.getText() != null && !headerText.getText().isEmpty()) {
                         if (headerGraphic.get() != null) {
                             if (headerDisplay.get().equals(DIALOG_HEADER_DISPLAY.TEXT_GRAPHIC))
-                                header.getChildren().setAll(headerText,Util.getHBoxSpring(), headerGraphic.get());
-                            else header.getChildren().setAll(headerGraphic.get(),Util.getHBoxSpring(), headerText);
+                                header.getChildren().setAll(headerText, Util.getHBoxSpring(), headerGraphic.get());
+                            else header.getChildren().setAll(headerGraphic.get(), Util.getHBoxSpring(), headerText);
                         } else header.getChildren().setAll(headerText);
                     } else if (headerGraphic.get() != null) header.getChildren().setAll(headerGraphic.get());
                     else header.getChildren().clear();
@@ -219,7 +238,22 @@ public class BDDialog implements BDUI {
                     }
                     refreshRoot();
                 }, true, content, expandContent, expand)
-                .addListener(() -> expandAction.get().action(expandText, expand.get()), true, expand, expandAction);
+                .addListener(() -> expandAction.get().action(expandText, expand.get()), true, expand, expandAction)
+                .addListener(() -> {
+                    stageBuilder.addStyleClass(dialogType.get().style);
+                    if (!headerGraphicInit) {
+                        if (dialogType.get() != BD_DIALOG_TYPE.NONE)
+                            headerGraphic.set(Util.getImageView(35, switch (dialogType.get()) {
+                                case QUESTION -> BDIcon.QUESTION_DIALOG;
+                                case INFORMATION -> BDIcon.INFORMATION_DIALOG;
+                                case WARNING -> BDIcon.WARNING_DIALOG;
+                                case ERROR -> BDIcon.ERROR_DIALOG;
+                                case SUCCESS -> BDIcon.SUCCESS_DIALOG;
+                                case NONE -> BDIcon.EMPTY;
+                            }));
+                        else headerGraphic.set(null);
+                    }
+                }, true, dialogType);
     }
 
     private void refreshRoot() {
@@ -232,28 +266,50 @@ public class BDDialog implements BDUI {
         else
             root.getChildren().setAll(actionBar);
     }
-    public BDDialog setSize(double width,double height){
-        stageBuilder.setSize(width,height);
+
+    public BDDialog setSize(double width, double height) {
+        stageBuilder.setSize(width, height);
         return this;
     }
-    public Stage build(){
+
+    public Stage build() {
         stageBuilder.setContent(root);
         stageBuilder.addStyleClass("dialog");
         return stageBuilder.build();
     }
-    public BDDialog addBDDialogStyleClass(String s){
+
+    public BDDialog addBDDialogStyleClass(String s) {
         stageBuilder.addStyleClass(s);
         return this;
     }
+
     @Override
     public void initEvent() {
-        mapping.addEventHandler(expandText, MouseEvent.MOUSE_CLICKED,_->{
+        mapping.addEventHandler(expandText, MouseEvent.MOUSE_CLICKED, _ -> {
             expand.set(!expand.get());
         });
     }
 
     public BDMapping getMapping() {
         return mapping;
+    }
+
+    public enum BD_DIALOG_TYPE {
+        QUESTION("question"),
+        INFORMATION("information"),
+        WARNING("warning"),
+        ERROR("error"),
+        SUCCESS("success"),
+        NONE("none");
+        private final String style;
+
+        BD_DIALOG_TYPE(String style) {
+            this.style = style;
+        }
+
+        public String getStyle() {
+            return style;
+        }
     }
 
     public enum DIALOG_HEADER_DISPLAY {

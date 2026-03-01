@@ -1,22 +1,24 @@
 package com.xx.UI.complex.stage;
 
+import atlantafx.base.controls.Notification;
 import com.xx.UI.ui.BDControl;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.LazyValue;
 import javafx.animation.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -38,8 +40,10 @@ public class BDContent extends BDControl {
     //  Tooltip
     final Text text = new Text();
     final Pane tooltip = new StackPane(text);
-    final Pane horizontalRootPane = new AnchorPane(verticalSplitPane, splitBack, tooltip);
-    final BorderPane borderPane = new BorderPane((horizontalRootPane));
+    final VBox notification = new VBox();
+    final ScrollPane notificationPane = new ScrollPane(notification);
+    final Pane horizontalRootPane = new AnchorPane(verticalSplitPane, splitBack, tooltip, notificationPane);
+    final BorderPane borderPane = new BorderPane(horizontalRootPane);
     final LazyValue<BDSidebar> topSideBar = new LazyValue<>(() -> {
         BDSidebar topSidebar = new BDSidebar(this, BDDirection.TOP);
         borderPane.setTop(topSidebar);
@@ -60,10 +64,12 @@ public class BDContent extends BDControl {
         borderPane.setRight(rightSidebar);
         return rightSidebar;
     });
+    final SimpleListProperty<atlantafx.base.controls.Notification> notifications = new SimpleListProperty<>(FXCollections.observableArrayList());
     final Timeline splitBackAnimation = new Timeline();
     private final SimpleObjectProperty<Node> content = new SimpleObjectProperty<>();
     // 动画控制属性
     private final BooleanProperty animationEnabled = new SimpleBooleanProperty(true);
+    private final PseudoClass TOOL_TIP_SHOW = PseudoClass.getPseudoClass("show");
     boolean rightPaneShow = false;
     double rightPaneDivider = 0.5;
     boolean bottomPaneShow = false;
@@ -77,11 +83,11 @@ public class BDContent extends BDControl {
     boolean bottomShow = false;
     double bottomDivider = 0.8;
     BDSidebar.BDDragData tempDragData;
+    String styleClass;
     // 添加动画控制器，防止快速点击导致动画冲突
     private Timeline bottomAnimation;
     private Timeline leftAnimation;
     private Timeline rightAnimation;
-    String styleClass ;
 
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
@@ -606,10 +612,27 @@ public class BDContent extends BDControl {
         tempDragData = null;
     }
 
-    private final PseudoClass TOOL_TIP_SHOW = PseudoClass.getPseudoClass("show");
+    public ObservableList<Notification> getNotifications() {
+        return notifications.get();
+    }
+
+    public SimpleListProperty<Notification> notificationsProperty() {
+        return notifications;
+    }
+
+    public void addNotification(atlantafx.base.controls.Notification notification) {
+        if (notification.getOnClose() == null)
+            notification.setOnClose(_ -> this.removeNotification(notification));
+        this.notifications.addFirst(notification);
+    }
+
+    public boolean removeNotification(Notification notification) {
+        return notifications.remove(notification);
+    }
+
     void hoverToolTipShow(BDSideBarItem item) {
-        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW,true);
-        text.setText(item.getName() + (item.getShortcutKey() == null ? "" :" " + item.getShortcutKey()));
+        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW, true);
+        text.setText(item.getName() + (item.getShortcutKey() == null ? "" : " " + item.getShortcutKey()));
         tooltip.layout();
         tooltip.applyCss();
         Bounds itemBounds = item.localToScene(item.getLayoutBounds());
@@ -662,12 +685,12 @@ public class BDContent extends BDControl {
         } else if (dragData.getInSequence().equals(BDInSequence.FRONT))
             layoutx = scenex + DRAG_ITEM.getWidth() / 2 + 10;
         else layoutx = scenex - DRAG_ITEM.getWidth() / 2 - tooltip.getWidth() - 10;
-        tooltip.setLayoutY(Math.min(sceney - tooltip.getHeight() / 2,horizontalSplitPane.getHeight() - tooltip.getHeight()));
+        tooltip.setLayoutY(Math.min(sceney - tooltip.getHeight() / 2, horizontalSplitPane.getHeight() - tooltip.getHeight()));
         tooltip.setLayoutX(Math.min(layoutx, horizontalSplitPane.getWidth() - tooltip.getWidth()));
     }
 
     void hideToolTip() {
-        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW,false);
+        tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW, false);
     }
 
 }

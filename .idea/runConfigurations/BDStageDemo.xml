@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BDStageDemo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.xx.demo.BDStageDemo" />
+    <module name="FXBD" />
+    <option name="VM_PARAMETERS" value="-XX:+UseZGC -Xms4g -Xmx4g -XX:ZCollectionInterval=10 -XX:ZAllocationSpikeTolerance=5 -XX:+UseCompressedOops -XX:+UseStringDeduplication -XX:MaxDirectMemorySize=1g -XX:+HeapDumpOnOutOfMemoryError -Djavafx.enablePreview=true --enable-native-access=javafx.graphics -Djavafx.suppressPreviewWarning=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

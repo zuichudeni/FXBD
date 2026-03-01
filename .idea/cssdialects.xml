@@ -2,6 +2,5 @@
 <project version="4">
   <component name="CssDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/resources/css/cupertino-light.css" dialect="JavaFX" />
-    <file url="PROJECT" dialect="JavaFX" />
   </component>
 </project>

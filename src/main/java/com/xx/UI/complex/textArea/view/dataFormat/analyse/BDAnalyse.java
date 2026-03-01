@@ -20,6 +20,7 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
     });
     private final Object taskLock = new Object();
     private final AtomicReference<TaskContext<T>> currentTaskContext = new AtomicReference<>();
+    boolean rendering = true;
 
     @Override
     public final List<DataBlock<T, ?>> transform(
@@ -76,6 +77,7 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
     }
 
     public void setTextAsync(String text, Runnable onComplete) {
+        if (!rendering) return;
         synchronized (taskLock) {
             // 取消当前正在运行的任务
             cancelCurrentTask();
@@ -233,27 +235,23 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
     void append(int paragraphIndex, int offset, List<Paragraph> paragraphs) {
         if (paragraphs == null || paragraphs.isEmpty()) throw new IllegalArgumentException("变化的段落不能为空");
         T type = getUndefinedType();
-        if (tokenEntryCacheMap.containsKey(paragraphIndex)) {
-            T type1 = tokenEntryCacheMap.get(paragraphIndex).getType(offset);
+        BDTokenEntryList<T> entryList = tokenEntryCacheMap.get(paragraphIndex);
+        if (entryList != null) {
+            T type1 = entryList.getType(offset);
             type = type1 == null ? type : type1;
-        }
-        if (tokenEntryCacheMap.containsKey(paragraphIndex)) {
-            BDTokenEntryList<T> entryList = tokenEntryCacheMap.get(paragraphIndex);
-            entryList.addTokenEntry(offset, paragraphs.getFirst(), getUndefinedType());
+            entryList.addTokenEntry(offset, paragraphs.getFirst(), type);
         }
         if (paragraphs.size() > 1) {
             addParagraphIndex(paragraphIndex + 1, paragraphs.size() - 1);
-            if (tokenEntryCacheMap.containsKey(paragraphIndex)) {
-                BDTokenEntryList<T> entryList = tokenEntryCacheMap.get(paragraphIndex);
+            if (entryList != null) {
                 BDTokenEntryList<T> remove = entryList.remove(offset);
                 entryList.addTokenEntry(entryList.getTokenEntries().isEmpty() ? 0 : entryList.getTokenEntries().getLast().getEnd(), paragraphs.getFirst(), type);
                 remove.addTokenEntry(0, paragraphs.getLast(), type);
                 tokenEntryCacheMap.put(paragraphIndex + paragraphs.size() - 1, remove);
             }
             for (int i = 1; i < paragraphs.size(); i++) {
-                BDTokenEntryList<T> value = new BDTokenEntryList<>(getUndefinedType());
+                BDTokenEntryList<T> value = new BDTokenEntryList<>(type);
                 int length = paragraphs.get(i).getLength();
-                if (length <= 0) continue;
                 value.addTokenEntry(new BDTokenEntry<>(0, length, type, null));
                 tokenEntryCacheMap.put(paragraphIndex + i, value);
             }
@@ -261,6 +259,32 @@ public abstract class BDAnalyse<T extends Enum<?> & Analyse.BDTextEnum<T>> imple
         dataBlockCacheMap.clear();
     }
 
+    void append(int paragraphIndex, int offset, List<Paragraph> paragraphs, T type) {
+        if (paragraphs == null || paragraphs.isEmpty()) throw new IllegalArgumentException("变化的段落不能为空");
+        BDTokenEntryList<T> entryList = tokenEntryCacheMap.get(paragraphIndex);
+        if (entryList == null) {
+            entryList = new BDTokenEntryList<>(type.undefinedType());
+            entryList.addTokenEntry(new BDTokenEntry<>(0, 0, type.undefinedType(), null));
+            tokenEntryCacheMap.put(paragraphIndex, entryList);
+        }
+
+        if (paragraphs.size() > 1) {
+            addParagraphIndex(paragraphIndex + 1, paragraphs.size() - 1);
+            BDTokenEntryList<T> remove = entryList.remove(offset);
+            entryList.addTokenEntry(entryList.getTokenEntries().isEmpty() ? 0 : entryList.getTokenEntries().getLast().getEnd(), paragraphs.getFirst(), type);
+            remove.addTokenEntry(0, paragraphs.getLast(), type);
+            tokenEntryCacheMap.put(paragraphIndex + paragraphs.size() - 1, remove);
+            for (int i = 1; i < paragraphs.size(); i++) {
+                BDTokenEntryList<T> value = new BDTokenEntryList<>(type);
+                int length = paragraphs.get(i).getLength();
+                value.addTokenEntry(new BDTokenEntry<>(0, length, type, null));
+                tokenEntryCacheMap.put(paragraphIndex + i, value);
+            }
+        } else entryList.addTokenEntry(offset, paragraphs.getFirst(), type);
+        dataBlockCacheMap.clear();
+    }
+
+    //    这是插入多行，递增插入起始行以下的所有行index
     private void addParagraphIndex(int startParagraphIndex, int line) {
         if (line < 1) return;
         // 获取需要移动的键（已排序）

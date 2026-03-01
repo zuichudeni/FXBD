@@ -20,49 +20,46 @@ public abstract class BDTextInitFactory<T extends Enum<?> & Analyse.BDTextEnum<T
             PseudoClass.getPseudoClass("caret");
     // 默认工厂使用泛型适配器
     protected final BDAnalyse<T> analyse;
-    private final BDTextArea textArea;
-    private ContentChangeListener changeListener;
-    private Runnable disableRunnable;
-    private BDScheduler scheduler;
+    protected final BDTextArea textArea;
+    protected ContentChangeListener changeListener;
+    private final Runnable disableRunnable;
+    private final BDScheduler scheduler;
 
     public BDTextInitFactory(BDTextArea textArea, BDAnalyse<T> analyse) {
         this.textArea = textArea;
         this.analyse = analyse;
-        if (textArea != null) {
-            textArea
-                    .getMapping()
-                    .addBDScheduler(scheduler = new BDScheduler(() ->
-                            analyse.setTextAsync(textArea.toString(), textArea::refresh), 100));
-            changeListener = e -> {
-                analyse.setProcessing(true);
-                if (e.getChangeType().equals(ContentChangeEvent.ChangeType.INSERT))
-                    analyse.append(e.getStartParaIndex(), e.getStartOffset(), e.getChangedParagraphs());
-                else if (e.getChangeType().equals(ContentChangeEvent.ChangeType.DELETE))
-                    analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
-                else {
-                    analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
-                    Paragraph paragraph = new Paragraph();
-                    paragraph.appendString(e.getChangedSegment().getInfo());
-                    analyse.append(e.getStartParaIndex(), e.getStartOffset(), List.of(paragraph));
-                }
-                textArea.refresh();
-                scheduler.run();
-            };
-            textArea.addContentChangeListener(changeListener);
-            disableRunnable = analyse::shutdown;
-            textArea.getMapping().addDisposeEvent(disableRunnable);
-        }
+        textArea
+                .getMapping()
+                .addBDScheduler(scheduler = new BDScheduler(() ->
+                        analyse.setTextAsync(textArea.toString(), textArea::refresh), 100));
+        changeListener = e -> {
+            analyse.setProcessing(true);
+            if (e.getChangeType().equals(ContentChangeEvent.ChangeType.INSERT))
+                analyse.append(e.getStartParaIndex(), e.getStartOffset(), e.getChangedParagraphs());
+            else if (e.getChangeType().equals(ContentChangeEvent.ChangeType.DELETE))
+                analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
+            else {
+                analyse.delete(e.getStartParaIndex(), e.getStartOffset(), e.getEndParaIndex(), e.getEndOffset(), e.getChangedParagraphs());
+                Paragraph paragraph = new Paragraph();
+                paragraph.appendString(e.getChangedSegment().getInfo());
+                analyse.append(e.getStartParaIndex(), e.getStartOffset(), List.of(paragraph));
+            }
+            textArea.refresh();
+            scheduler.run();
+        };
+        textArea.addContentChangeListener(changeListener);
+        disableRunnable = analyse::shutdown;
+        textArea.getMapping().addDisposeEvent(disableRunnable);
     }
 
     /**
      * 根据传入的段落索引和段落内容，返回该段落的返回该段落的block列表。
      */
     public final List<DataBlock<T, ?>> splitDataBlocks(int paragraphIndex, Paragraph paragraph) {
-        if ((analyse.isProcessing() || analyse.getTokenEntryCacheMap() == null) && (analyse.tokenEntryCacheMap == null ||analyse.tokenEntryCacheMap.isEmpty()))
+        if ((analyse.isProcessing() || analyse.getTokenEntryCacheMap() == null) && analyse.tokenEntryCacheMap.isEmpty())
             // 使用类型安全的默认实现
             return getDefaultDataBlocks(paragraph);
         else return analyse.getDataBlock(paragraphIndex, paragraph);
-
     }
 
     private List<DataBlock<T, ?>> getDefaultDataBlocks(Paragraph paragraph) {

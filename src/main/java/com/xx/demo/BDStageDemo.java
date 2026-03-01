@@ -1,5 +1,9 @@
 package com.xx.demo;
 
+import atlantafx.base.controls.Notification;
+import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
+import atlantafx.base.util.Animations;
 import com.dlsc.fxmlkit.fxml.FxmlKit;
 import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.basic.progressBar.BDTask;
@@ -8,6 +12,8 @@ import com.xx.UI.complex.BDTabPane.BDTab;
 import com.xx.UI.complex.BDTabPane.BDTabItem;
 import com.xx.UI.complex.BDTabPane.BDTabPane;
 import com.xx.UI.complex.stage.*;
+import com.xx.UI.complex.stage.sideBarItem.BDMessage;
+import com.xx.UI.complex.stage.sideBarItem.BDMessageItem;
 import com.xx.UI.complex.textArea.content.segment.NodeSegment;
 import com.xx.UI.complex.textArea.view.BDTextArea;
 import com.xx.UI.complex.textArea.view.BDTextAreaSearch;
@@ -29,6 +35,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -38,12 +45,15 @@ public class BDStageDemo extends Application {
 
     private final BDMapping globalMapping = new BDMapping();
     BDTextArea consoleTextArea = initConsoleTextArea();
+    private BDMessageItem message;
+    private BDContent content;
 
     @Override
     public void start(Stage stage) throws Exception {
         FxmlKit.enableDevelopmentMode();
         FxmlKit.setApplicationUserAgentStylesheet(Util.getResourceUrl("/css/cupertino-light.css"));
         //        创建工具
+        message = new BDMessageItem(BDDirection.RIGHT, BDInSequence.FRONT);
         BDSideBarItem dialogItem = getDialogItem();
         BDSideBarItem badgeItem = getBadgeItem();
         BDSideBarItem projectItem = getProjectItem();
@@ -74,15 +84,16 @@ public class BDStageDemo extends Application {
                 .addCloseButton();
 
         // 构建内容8
-        BDContentBuilder contentBuilder = new BDContentBuilder()
-                .addSideNode(dialogItem, badgeItem, projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem, taskItem)
+
+        content = new BDContentBuilder()
+                .addSideNode(message, dialogItem, badgeItem, projectItem, searchItem, gitItem, bookmarkItem, helpItem, settingItem, consoleItem, outputItem, debugItem, taskItem)
                 .addSideNode(BDDirection.BOTTOM, BDInSequence.AFTER, controlCenter)
-                .addCenterNode(new BDTabPane(rootTabItem));
+                .addCenterNode(new BDTabPane(rootTabItem)).build();
 
         // 构建主窗口
         Stage bdStage = new BDStageBuilder()
                 .setHeaderBar(headerBarBuilder)
-                .setContent(contentBuilder.build())
+                .setContent(content)
                 .setSize(1200, 1000)
                 .build();
         // 显示窗口
@@ -94,25 +105,40 @@ public class BDStageDemo extends Application {
 
     private BDSideBarItem getDialogItem() {
         BDSideContent sideContent = new BDSideContent();
-        BDSideBarItem dialogItem = new BDSideBarItem("弹窗", Util.getImageView(30, BDIcon.INFORMATION_DIALOG), Util.getImageView(20, BDIcon.INFORMATION_DIALOG_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, sideContent);
-        Button dialog1 = new Button("弹窗一");
-        globalMapping.addEventHandler(dialog1, ActionEvent.ACTION, _ -> {
+        BDSideBarItem dialogItem = new BDSideBarItem("弹窗", Util.getImageView(30, BDIcon.INFORMATION_DIALOG), Util.getImageView(30, BDIcon.INFORMATION_DIALOG_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, sideContent);
+        Button build = new Button("生成弹窗");
+        ComboBox<BDDialog.BD_DIALOG_TYPE> styleSelect = new ComboBox<>();
+        styleSelect.getItems().addAll(BDDialog.BD_DIALOG_TYPE.NONE,
+                BDDialog.BD_DIALOG_TYPE.INFORMATION,
+                BDDialog.BD_DIALOG_TYPE.SUCCESS,
+                BDDialog.BD_DIALOG_TYPE.QUESTION,
+                BDDialog.BD_DIALOG_TYPE.WARNING,
+                BDDialog.BD_DIALOG_TYPE.ERROR);
+        styleSelect.getSelectionModel().select(0);
+        CheckBox expandAble = new CheckBox("是否填充扩展内容");
+        expandAble.setSelected(true);
+        expandAble.setIndeterminate(false);
+        globalMapping.addEventHandler(build, ActionEvent.ACTION, _ -> {
             Button ok = new Button("确定");
-            Stage stage = new BDDialog()
+            BDDialog bdDialog = new BDDialog()
                     .setHeader(new BDHeaderBarBuilder().addCloseButton()
                             .addTitle("弹窗测试")
                             .addIcon(Util.getImageView(40, BDIcon.FINAL_MARK)))
                     .setHeaderText("我是header text，右边的是header graphic。")
-                    .setHeaderGraphic(Util.getImageView(60, BDIcon.INFORMATION_DIALOG))
                     .setContent(new Text("我是text content"))
-                    .setExpandContent(new Text("我是被隐藏起来的text expand content"))
                     .addAfterActionNode(ok)
-                    .build();
+                    .setDialogType(styleSelect.getSelectionModel().getSelectedItem());
+            if (expandAble.isSelected()) bdDialog.setExpandContent(new Text("我是被隐藏起来的text expand content"));
+            Stage stage = bdDialog.build();
+            globalMapping.addEventHandler(ok, ActionEvent.ACTION, _ -> stage.close());
             stage.setAlwaysOnTop(true);
             stage.show();
+            message.pushMessage(new BDMessage<>(bdDialog.getDialogType(), "dialog启动", new Date(), "启动弹窗成功（弹窗类型：%s,是否有填充内容%s）".formatted(bdDialog.getDialogType(), expandAble.isSelected())));
         });
 
-        HBox root = new HBox(20, dialog1);
+        HBox root = new HBox(20, new VBox(20,
+                new HBox(20, new InputGroup(new Text("弹窗类型"), styleSelect),
+                        expandAble), build));
         sideContent.setTitle("弹窗测试");
         sideContent.setContent(root);
         return dialogItem;
@@ -144,7 +170,20 @@ public class BDStageDemo extends Application {
         BDButton insertTask1 = new BDButton("插入任务", Util.getImageView(20, BDIcon.ADD_DARK));
         insertTask1.setSelectable(false);
         taskControl.setContent(insertTask1);
-        globalMapping.addEventHandler(insertTask1, ActionEvent.ACTION, _ -> controlCenter.pushTask(getSimpleTask(), true, true));
+        globalMapping.addEventHandler(insertTask1, ActionEvent.ACTION, _ -> {
+            BDTask<String> task = getSimpleTask();
+            controlCenter.pushTask(task, true, true);
+            var ntf = new Notification("任务启动",Util.getImageView(25,BDIcon.TASK));
+            ntf.getStyleClass().add(Styles.ELEVATED_1);
+            var noBtn = new Button("关闭");
+            noBtn.setOnAction(_-> task.cancel());
+            ntf.setPrimaryActions(noBtn);
+            ntf.setSecondaryActions(
+                    new MenuItem("任务设置"),
+                    new MenuItem("任务详情")
+            );
+            content.addNotification(ntf);
+        });
         return new BDSideBarItem("任务", Util.getImageView(25, BDIcon.RUN), Util.getImageView(25, BDIcon.RUN_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, taskControl);
     }
 
@@ -169,18 +208,21 @@ public class BDStageDemo extends Application {
             protected void succeeded() {
                 super.succeeded();
                 updateMessage("更新成功");
+                message.pushMessage(new BDMessage<>(BDDialog.BD_DIALOG_TYPE.SUCCESS,"任务完成",new Date(),"任务执行成功。"));
             }
 
             @Override
             protected void cancelled() {
                 super.cancelled();
                 updateMessage("取消任务");
+                message.pushMessage(new BDMessage<>(BDDialog.BD_DIALOG_TYPE.INFORMATION,"任务取消",new Date(),"任务取消成功。"));
             }
 
             @Override
             protected void failed() {
                 super.failed();
                 updateMessage("任务执行失败");
+                message.pushMessage(new BDMessage<>(BDDialog.BD_DIALOG_TYPE.ERROR,"任务异常",new Date(),"任务执行失败！"));
             }
         };
         new Thread(task).start();

@@ -8,11 +8,18 @@
     <artifactId>FXBD</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
+        <!--        antlr-->
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
             <version>4.13.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.1</version>
+        </dependency>
+        <!--        test-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -20,10 +27,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.13.1</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
+        <!--        jfx-->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -34,64 +43,17 @@
             <artifactId>javafx-fxml</artifactId>
             <version>25</version>
         </dependency>
+        <!--        auto css-->
         <dependency>
             <groupId>com.dlsc.fxmlkit</groupId>
             <artifactId>fxmlkit</artifactId>
             <version>1.5.0</version>
         </dependency>
         <dependency>
+            <!--            atlanta-->
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
             <version>2.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <!--        处理图片资源  -->
-        <!-- Batik SVG 转换核心库 -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-transcoder</artifactId>
-            <version>1.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-codec</artifactId>
-            <version>1.16</version>
-        </dependency>
-
-        <!-- PNG 输出支持 -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>xmlgraphics-commons</artifactId>
-            <version>2.6</version>
-        </dependency>
-
-        <!-- 文件操作工具 -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.13.0</version>
-        </dependency>
-
-        <!-- pom.xml -->
-        <!-- Apache Commons Compress 支持多种压缩格式 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.24.0</version>
-        </dependency>
-
-        <!-- 如果需要处理 RAR 格式 -->
-        <dependency>
-            <groupId>com.github.junrar</groupId>
-            <artifactId>junrar</artifactId>
-            <version>7.5.4</version>
         </dependency>
     </dependencies>
     <properties>

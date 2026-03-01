@@ -2,8 +2,10 @@ package com.xx.UI.complex.stage;
 
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.Util;
+import javafx.beans.Observable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -35,6 +37,9 @@ public class BDContentSkin extends BDSkin<BDContent> {
         AnchorPane.setRightAnchor(control.verticalSplitPane, .0);
         AnchorPane.setBottomAnchor(control.verticalSplitPane, .0);
         AnchorPane.setLeftAnchor(control.verticalSplitPane, .0);
+        AnchorPane.setRightAnchor(control.notificationPane, .0);
+        AnchorPane.setBottomAnchor(control.notificationPane,.0);
+        control.notificationPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         control.verticalSplitPane.setOrientation(Orientation.VERTICAL);
         control.leftSplitPane.setOrientation(Orientation.VERTICAL);
         control.rightSplitPane.setOrientation(Orientation.VERTICAL);
@@ -79,6 +84,12 @@ public class BDContentSkin extends BDSkin<BDContent> {
         if (control.styleClass != null)
             control.text.getStyleClass().addAll("bd-content-tooltip-text", control.styleClass);
         else control.text.getStyleClass().add("bd-content-tooltip-text");
+        if (control.styleClass != null)
+            control.notificationPane.getStyleClass().addAll("bd-content-notification-pane",control.styleClass);
+        else control.notificationPane.getStyleClass().addAll("bd-content-notification-pane");
+        if (control.styleClass != null)
+            control.notification.getStyleClass().addAll("bd-content-notification",control.styleClass);
+        else control.notification.getStyleClass().addAll("bd-content-notification");
         control.setMinSize(0, 0);
         control.horizontalRootPane.setMinSize(0, 0);
         control.hideToolTip();
@@ -90,7 +101,10 @@ public class BDContentSkin extends BDSkin<BDContent> {
             control.centerPane.getChildren().clear();
             if (control.getContent() != null)
                 control.centerPane.getChildren().add(control.getContent());
-        }, true, control.contentProperty());
+        }, true, control.contentProperty())
+                .addListener(()->control.notification.getChildren().setAll(control.notifications),true, (Observable) control.notifications)
+                .bindProperty(control.notificationPane.visibleProperty(),control.notifications.isNotNull())
+                .bindProperty(control.notificationPane.maxHeightProperty(),control.horizontalRootPane.heightProperty());
     }
 
     @Override
