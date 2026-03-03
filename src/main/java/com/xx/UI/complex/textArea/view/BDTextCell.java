@@ -420,11 +420,9 @@ public class BDTextCell extends ListCell<Object> implements BDUI, BDVirtualUI {
         }
         searchResults.forEach(result -> {
             BDSearchHighLightLayout lightLayout = computeSearchRange(result.startOffset(), result.endOffset(), result.resultIndex(), result.fullLine());
-            if (lightLayout != null) {
-                searchResultLayout.getChildren().add(lightLayout);
-                boolean b = result.resultIndex() == textArea.searchBlockIndex.get();
-                lightLayout.pseudoClassStateChanged(SELECT, b);
-            }
+            searchResultLayout.getChildren().add(lightLayout);
+            boolean b = result.resultIndex() == textArea.searchBlockIndex.get();
+            lightLayout.pseudoClassStateChanged(SELECT, b);
         });
         searchResultLayout.setVisible(!searchResultLayout.getChildren().isEmpty());
     }

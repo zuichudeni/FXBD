@@ -1,5 +1,9 @@
 package com.xx.UI.ui;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum BDIcon {
     ABBREVIATE_PACKAGE_NAMES("/texture/abbreviatePackageNames.png"),
     ABBREVIATE_PACKAGE_NAMES_DARK("/texture/abbreviatePackageNames_dark.png"),
@@ -2502,10 +2506,159 @@ public enum BDIcon {
     ZOOM_OUT("/texture/zoomOut.png"),
     ZOOM_OUT_DARK("/texture/zoomOut_dark.png");
 
+    private static final Map<String, BDIcon> EXTENSION_ICON_MAP = new HashMap<>();
+
+    static {
+        // 编程语言
+        EXTENSION_ICON_MAP.put("java", BDIcon.JAVA);
+        EXTENSION_ICON_MAP.put("class", BDIcon.CLASS);
+        EXTENSION_ICON_MAP.put("jar", BDIcon.ARCHIVE);
+        EXTENSION_ICON_MAP.put("war", BDIcon.ARCHIVE);
+        EXTENSION_ICON_MAP.put("ear", BDIcon.ARCHIVE);
+        EXTENSION_ICON_MAP.put("zip", BDIcon.ARCHIVE);
+        EXTENSION_ICON_MAP.put("tar", BDIcon.ARCHIVE);
+        EXTENSION_ICON_MAP.put("gz", BDIcon.ARCHIVE);
+
+        EXTENSION_ICON_MAP.put("c", BDIcon.C);
+        EXTENSION_ICON_MAP.put("cpp", BDIcon.CPP);
+        EXTENSION_ICON_MAP.put("cxx", BDIcon.CPP);
+        EXTENSION_ICON_MAP.put("cc", BDIcon.CPP);
+        EXTENSION_ICON_MAP.put("h", BDIcon.H);
+        EXTENSION_ICON_MAP.put("hpp", BDIcon.H);
+        EXTENSION_ICON_MAP.put("hxx", BDIcon.H);
+
+        EXTENSION_ICON_MAP.put("py", BDIcon.PYTHON_FILE_24X24);
+        EXTENSION_ICON_MAP.put("pyc", BDIcon.PYTHON_FILE_24X24); // 编译文件也可用相同图标
+
+        EXTENSION_ICON_MAP.put("js", BDIcon.JAVA_SCRIPT);
+        EXTENSION_ICON_MAP.put("jsx", BDIcon.JSX);
+        EXTENSION_ICON_MAP.put("ts", BDIcon.TYPE_SCRIPT);
+        EXTENSION_ICON_MAP.put("tsx", BDIcon.TSX);
+
+        EXTENSION_ICON_MAP.put("go", BDIcon.GO);
+        EXTENSION_ICON_MAP.put("mod", BDIcon.GO_MOD);
+        EXTENSION_ICON_MAP.put("sum", BDIcon.GO_SUM);
+
+        EXTENSION_ICON_MAP.put("php", BDIcon.PHP);
+        EXTENSION_ICON_MAP.put("pl", BDIcon.PERL);
+        EXTENSION_ICON_MAP.put("pm", BDIcon.PERL);
+        EXTENSION_ICON_MAP.put("r", BDIcon.R_SCRIPT_24X24);
+        EXTENSION_ICON_MAP.put("scala", BDIcon.SCALA);
+        EXTENSION_ICON_MAP.put("kt", BDIcon.UNKNOWN); // Kotlin 没有对应图标，用 UNKNOWN 或 FILE_FORMAT
+        EXTENSION_ICON_MAP.put("kts", BDIcon.UNKNOWN);
+        EXTENSION_ICON_MAP.put("swift", BDIcon.UNKNOWN);
+
+        EXTENSION_ICON_MAP.put("dart", BDIcon.DART);
+        EXTENSION_ICON_MAP.put("coffee", BDIcon.COFFEESCRIPT);
+        EXTENSION_ICON_MAP.put("lua", BDIcon.UNKNOWN);
+        EXTENSION_ICON_MAP.put("rb", BDIcon.UNKNOWN); // Ruby 没有
+        EXTENSION_ICON_MAP.put("rs", BDIcon.UNKNOWN); // Rust 没有
+
+        // 网页前端
+        EXTENSION_ICON_MAP.put("html", BDIcon.HTML);
+        EXTENSION_ICON_MAP.put("htm", BDIcon.HTML);
+        EXTENSION_ICON_MAP.put("xhtml", BDIcon.XHTML);
+        EXTENSION_ICON_MAP.put("css", BDIcon.CSS);
+        EXTENSION_ICON_MAP.put("scss", BDIcon.CSS); // 可用 CSS 图标
+        EXTENSION_ICON_MAP.put("less", BDIcon.CSS);
+        EXTENSION_ICON_MAP.put("sass", BDIcon.CSS);
+
+        // 服务端页面
+        EXTENSION_ICON_MAP.put("jsp", BDIcon.JSP);
+        EXTENSION_ICON_MAP.put("jspx", BDIcon.JSPX);
+        EXTENSION_ICON_MAP.put("asp", BDIcon.UNKNOWN);
+        EXTENSION_ICON_MAP.put("aspx", BDIcon.UNKNOWN);
+
+        // 数据文件
+        EXTENSION_ICON_MAP.put("json", BDIcon.JSON);
+        EXTENSION_ICON_MAP.put("xml", BDIcon.XML);
+        EXTENSION_ICON_MAP.put("yaml", BDIcon.YAML);
+        EXTENSION_ICON_MAP.put("yml", BDIcon.YAML);
+        EXTENSION_ICON_MAP.put("sql", BDIcon.SQL);
+        EXTENSION_ICON_MAP.put("csv", BDIcon.CSV);
+        EXTENSION_ICON_MAP.put("tsv", BDIcon.CSV);
+        EXTENSION_ICON_MAP.put("properties", BDIcon.PROPERTIES);
+        EXTENSION_ICON_MAP.put("conf", BDIcon.PROPERTIES);
+        EXTENSION_ICON_MAP.put("cfg", BDIcon.PROPERTIES);
+        EXTENSION_ICON_MAP.put("ini", BDIcon.PROPERTIES);
+
+        // 配置文件
+        EXTENSION_ICON_MAP.put("gitignore", BDIcon.GITIGNORE);
+        EXTENSION_ICON_MAP.put("gradle", BDIcon.GRADLE);
+        EXTENSION_ICON_MAP.put("maven", BDIcon.MAVEN_PROFILES); // 没有专门 pom.xml 图标，用这个
+        EXTENSION_ICON_MAP.put("pom.xml", BDIcon.MAVEN_PROFILES); // 需特殊处理？实际可以检测文件名
+        EXTENSION_ICON_MAP.put("makefile", BDIcon.MAKEFILE);
+        EXTENSION_ICON_MAP.put("dockerfile", BDIcon.WELCOME_DOCKER_FALLBACK); // 没有直接图标，用这个代替
+
+        // 脚本
+        EXTENSION_ICON_MAP.put("sh", BDIcon.SHELL);
+        EXTENSION_ICON_MAP.put("bash", BDIcon.SHELL);
+        EXTENSION_ICON_MAP.put("zsh", BDIcon.SHELL);
+        EXTENSION_ICON_MAP.put("bat", BDIcon.SHELL);
+        EXTENSION_ICON_MAP.put("cmd", BDIcon.SHELL);
+        EXTENSION_ICON_MAP.put("ps1", BDIcon.SHELL);
+
+        // 文档
+        EXTENSION_ICON_MAP.put("txt", BDIcon.TEXT);
+        EXTENSION_ICON_MAP.put("md", BDIcon.TEXT);
+        EXTENSION_ICON_MAP.put("markdown", BDIcon.TEXT);
+        EXTENSION_ICON_MAP.put("log", BDIcon.TEXT);
+        EXTENSION_ICON_MAP.put("pdf", BDIcon.UNKNOWN); // 无 PDF 图标
+
+        // 图片
+        EXTENSION_ICON_MAP.put("png", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("jpg", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("jpeg", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("gif", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("bmp", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("svg", BDIcon.IMAGE);
+        EXTENSION_ICON_MAP.put("ico", BDIcon.IMAGE);
+
+        // 其他已知类型
+        EXTENSION_ICON_MAP.put("proto", BDIcon.PROTO_FILE);
+        EXTENSION_ICON_MAP.put("graphql", BDIcon.GRAPHQL);
+        EXTENSION_ICON_MAP.put("gql", BDIcon.GRAPHQL);
+        EXTENSION_ICON_MAP.put("vue", BDIcon.UNKNOWN); // Vue 没有
+    }
+
     private final String path;
 
     BDIcon(String path) {
         this.path = path;
+    }
+
+    public static BDIcon getIconForFile(File file) {
+        if (file.isDirectory()) {
+            // 文件夹使用 FOLDER 图标，如需项目根目录专用可改为 PROJECT_DIRECTORY
+            return BDIcon.FOLDER;
+        }
+
+        String name = file.getName();
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex == -1) {
+            // 无扩展名文件，检查是否为特殊文件名（如 Makefile, Dockerfile 等）
+            if ("makefile".equalsIgnoreCase(name)) {
+                return BDIcon.MAKEFILE;
+            }
+            if ("dockerfile".equalsIgnoreCase(name)) {
+                return BDIcon.WELCOME_DOCKER_FALLBACK;
+            }
+            if ("gradle".equalsIgnoreCase(name) || "build.gradle".equalsIgnoreCase(name)) {
+                return BDIcon.GRADLE;
+            }
+            // 其他无扩展名文件用 UNKNOWN
+            return BDIcon.UNKNOWN;
+        }
+
+        String ext = name.substring(dotIndex + 1).toLowerCase();
+        // 尝试从映射获取
+        BDIcon icon = EXTENSION_ICON_MAP.get(ext);
+        if (icon != null) {
+            return icon;
+        }
+
+        // 未映射的扩展名返回 UNKNOWN 或 FILE_FORMAT
+        return BDIcon.UNKNOWN;
     }
 
     public String getIconPath() {

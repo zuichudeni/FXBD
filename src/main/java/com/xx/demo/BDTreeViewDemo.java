@@ -1,7 +1,6 @@
 package com.xx.demo;
 
 import com.dlsc.fxmlkit.fxml.FxmlKit;
-import com.xx.UI.complex.textArea.view.dataFormat.analyse.Analyse;
 import com.xx.UI.complex.tree.BDTreeCellInitFactory;
 import com.xx.UI.complex.tree.BDTreeView;
 import com.xx.UI.ui.BDIcon;
@@ -9,6 +8,7 @@ import com.xx.UI.util.Util;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -27,10 +27,11 @@ public class BDTreeViewDemo extends Application {
         FxmlKit.setApplicationUserAgentStylesheet(Util.getResourceUrl("/css/cupertino-light.css"));
 
         BDTreeView<File> treeView = new BDTreeView<>();
-        treeView.setTreeCellInitFactory(new BDTreeCellInitFactory<File>() {
+        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        treeView.setTreeCellInitFactory(new BDTreeCellInitFactory<>() {
             @Override
             public Node initGraphic(File file) {
-                return Util.getImageView(30,file.isDirectory()?BDIcon.PROJECT_DIRECTORY:BDIcon.CLASS);
+                return Util.getImageView(25, BDIcon.getIconForFile(file));
             }
 
             @Override
@@ -53,7 +54,7 @@ public class BDTreeViewDemo extends Application {
                 else text.setFill(Color.BLACK);
             }
         });
-        treeView.setRoot(getFile(Path.of("./").toFile()));
+        treeView.setRoot(getFile(Path.of("D:\\").toFile()));
         treeView.sortItem();
         StackPane stackPane = new StackPane(treeView);
         Scene scene = new Scene(stackPane, 800, 600);
@@ -65,9 +66,11 @@ public class BDTreeViewDemo extends Application {
 
     private TreeItem<File> getFile(File root) {
         var item = new TreeItem<>(root);
-        if (root.isDirectory()){
-            for (File file : Objects.requireNonNull(root.listFiles()))
-                item.getChildren().add(getFile(file));
+        if (root.isDirectory()) {
+            File[] files = root.listFiles();
+            if (files != null)
+                for (File file : Objects.requireNonNull(files))
+                    item.getChildren().add(getFile(file));
         }
         return item;
     }

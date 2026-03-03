@@ -5981,13 +5981,16 @@ BDSearchBox .content .right-pane {
     -fx-fill: white;
     -fx-font-size: 12.5;
 }
+
 /*notification-pane*/
-.bd-content-notification-pane{
+.bd-content-notification-pane {
     -fx-padding: 10px 0 10px 0;
 }
-.bd-content-notification{
+
+.bd-content-notification {
     -fx-spacing: 5px;
 }
+
 /*BDSideContent*/
 .bd-side-content {
     -fx-background-color: #F8F9FB;
@@ -6510,7 +6513,7 @@ BDSearchBox .content .right-pane {
 .bd-message-item-content {
     -fx-spacing: 10px;
     -fx-min-width: 0;
-    -fx-padding:10px 20px 20px;
+    -fx-padding: 10px 20px 20px;
 }
 
 /*message*/
@@ -6524,7 +6527,7 @@ BDSearchBox .content .right-pane {
     -fx-background-color: #EBECF0;
     -fx-border-color: #dbdbdb;
     -fx-border-radius: 10px;
-    -fx-border-width: 1px;  /* 统一基础边框宽度 */
+    -fx-border-width: 1px; /* 统一基础边框宽度 */
 }
 
 .bd-message-root.question {
@@ -6554,7 +6557,7 @@ BDSearchBox .content .right-pane {
 
 /* 全局未读样式（作为后备，也可被类型覆盖） */
 .bd-message-root:uncheck {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
     -fx-border-width: 2px;
     -fx-background-color: #f5f5f5; /* 稍微亮一点的灰色 */
     -fx-border-color: #b0b0b0;
@@ -6565,36 +6568,37 @@ BDSearchBox .content .right-pane {
     -fx-border-width: 2px;
     -fx-border-color: #8A2BE2;
     -fx-background-color: #FCF5FF;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
 
 .bd-message-root.information:uncheck {
     -fx-border-width: 2px;
     -fx-border-color: #4682FA;
     -fx-background-color: #E8F5FF;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
 
 .bd-message-root.warning:uncheck {
     -fx-border-width: 2px;
     -fx-border-color: #FFAF0F;
     -fx-background-color: #FFFBE0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
 
 .bd-message-root.error:uncheck {
     -fx-border-width: 2px;
     -fx-border-color: #E55765;
     -fx-background-color: #FFF5F2;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
 
 .bd-message-root.success:uncheck {
     -fx-border-width: 2px;
     -fx-border-color: #55A76A;
     -fx-background-color: #E8FDEB;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
+
 .bd-message-content {
     -fx-min-width: 0;
     -fx-padding: 5px;
@@ -6619,20 +6623,32 @@ BDSearchBox .content .right-pane {
     -fx-fill: #818594;
     -fx-font-size: 18;
 }
+
 /*************************** BDTreeView ********************************************/
-.bd-tree-cell{
+.bd-tree-cell {
 }
-.bd-tree-hbox{
+
+.bd-tree-hbox {
     -fx-alignment: center-left;
 }
-.bd-tree-root{
+
+.bd-tree-root {
     -fx-border-width: 0 0 0 1px;
 
 }
-.bd-tree-cell-text{
+
+.bd-tree-cell-text {
 
 }
-.bd-tree-cell-line{
-    -fx-stroke: blue;
-    -fx-translate-x: -14px;
+
+.bd-tree-cell-line {
+    -fx-background-color: #D3D3D3;
+    -fx-pref-width: 0.5px;
+    -fx-border-style: none;
+}
+
+.bd-tree-cell-line:focus {
+    -fx-background-color: #4A90E2;
+    -fx-pref-width: 1px;
+    -fx-border-style: none;
 }

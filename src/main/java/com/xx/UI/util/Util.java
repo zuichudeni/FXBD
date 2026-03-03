@@ -15,24 +15,31 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Window;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Util {
+    //    图像缓存
+    private static final Map<String, SoftReference<Image>> imageCache = new HashMap<>();
+
+public static Image getImage(String path) {
+    SoftReference<Image> ref = imageCache.get(path);
+    Image image = (ref != null) ? ref.get() : null;
+    if (image == null) {
+        image = new Image(Objects.requireNonNull(Util.class.getResourceAsStream(path)));
+        imageCache.put(path, new SoftReference<>(image));
+    }
+    return image;
+}
+
     public static String getResourceUrl(String path) {
         return Objects.requireNonNull(Util.class.getResource(path)).toExternalForm();
-    }
-
-    public static Image getImage(String path) {
-        return new Image(getResourceUrl(path));
     }
 
     public static Image getImage(BDIcon icon) {
@@ -47,13 +54,17 @@ public class Util {
     }
 
     public static ImageView getImageView(double fillWidth, String path, InitImageView initImageView) {
-        ImageView imageView = getImageView(fillWidth, path);
+        Image image = getImage(path);
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(fillWidth);
         initImageView.initImageView(imageView);
         return imageView;
     }
 
     public static ImageView getImageView(double fillWidth, BDIcon icon) {
-        ImageView imageView = new ImageView(getResourceUrl(icon.getIconPath()));
+        Image image = getImage(icon);
+        ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(fillWidth);
         return imageView;
@@ -85,57 +96,57 @@ public class Util {
     }
 
     public static TextArea getInputContent(double showLine) {
-    return new TextArea() {
-        private double lineHeight;
-        private final double basePadding = 8.0; // 基础内边距
+        return new TextArea() {
+            private final double basePadding = 8.0; // 基础内边距
+            private double lineHeight;
 
-        @Override
-        protected Skin<?> createDefaultSkin() {
-            return new TextAreaSkin(this) {
-                {
-                    TextArea node = (TextArea) getNode();
-                    node.applyCss();
-                    lineHeight = node.lookup(".text").getLayoutBounds().getHeight();
-                    node.getStyleClass().add("transparent-text-area");
-                    node.setMinHeight(USE_PREF_SIZE);
-                    node.setMaxHeight(USE_PREF_SIZE);
-                    // 初始高度计算
-                    updateHeight(node);
-                    // 监听文本变化
-                    node.textProperty().addListener((_, _, _) -> updateHeight(node));
-                    // 监听滚动条可见性变化
-                    ScrollPane scrollPane = (ScrollPane) node.lookup(".scroll-pane");
-                    if (scrollPane != null) {
-                        ScrollBar vBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
-                        if (vBar != null) {
-                            vBar.visibleProperty().addListener((_, _, _) -> updateHeight(node));
-                        }
-                    }
-                }
-
-                private void updateHeight(TextArea node) {
-                    String text = node.getText();
-                    int lineCount = Math.max(1, countNewlines(text) + 1);
-                    int visibleLines = (int) Math.min(showLine, lineCount);
-
-                    double newHeight = lineHeight * visibleLines + basePadding ;
-
-                    // 如果有垂直滚动条，稍微调整高度以避免布局跳动
-                    ScrollPane scrollPane = (ScrollPane) node.lookup(".scroll-pane");
-                    if (scrollPane != null) {
-                        ScrollBar vBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
-                        if (vBar != null && vBar.isVisible()) {
-                            newHeight += 2; // 微小调整
+            @Override
+            protected Skin<?> createDefaultSkin() {
+                return new TextAreaSkin(this) {
+                    {
+                        TextArea node = (TextArea) getNode();
+                        node.applyCss();
+                        lineHeight = node.lookup(".text").getLayoutBounds().getHeight();
+                        node.getStyleClass().add("transparent-text-area");
+                        node.setMinHeight(USE_PREF_SIZE);
+                        node.setMaxHeight(USE_PREF_SIZE);
+                        // 初始高度计算
+                        updateHeight(node);
+                        // 监听文本变化
+                        node.textProperty().addListener((_, _, _) -> updateHeight(node));
+                        // 监听滚动条可见性变化
+                        ScrollPane scrollPane = (ScrollPane) node.lookup(".scroll-pane");
+                        if (scrollPane != null) {
+                            ScrollBar vBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
+                            if (vBar != null) {
+                                vBar.visibleProperty().addListener((_, _, _) -> updateHeight(node));
+                            }
                         }
                     }
 
-                    node.setPrefHeight(newHeight);
-                }
+                    private void updateHeight(TextArea node) {
+                        String text = node.getText();
+                        int lineCount = Math.max(1, countNewlines(text) + 1);
+                        int visibleLines = (int) Math.min(showLine, lineCount);
 
-            };
-        }
-    };
-}
+                        double newHeight = lineHeight * visibleLines + basePadding;
+
+                        // 如果有垂直滚动条，稍微调整高度以避免布局跳动
+                        ScrollPane scrollPane = (ScrollPane) node.lookup(".scroll-pane");
+                        if (scrollPane != null) {
+                            ScrollBar vBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
+                            if (vBar != null && vBar.isVisible()) {
+                                newHeight += 2; // 微小调整
+                            }
+                        }
+
+                        node.setPrefHeight(newHeight);
+                    }
+
+                };
+            }
+        };
+    }
 
     public static Button getIconButton() {
         Button button = new Button();
@@ -221,11 +232,7 @@ public class Util {
         return list;
     }
 
-    public interface InitImageView {
-        void initImageView(ImageView imageView);
-    }
-
-//    返回项目下的文件路径。
+    //    返回项目下的文件路径。
     public static Path getPath(String relativePath) {
         Path filePath = Paths.get("").toAbsolutePath().resolve(relativePath);
         if (!Files.exists(filePath)) {
@@ -246,5 +253,9 @@ public class Util {
         }
 
         return filePath;
+    }
+
+    public interface InitImageView {
+        void initImageView(ImageView imageView);
     }
 }
