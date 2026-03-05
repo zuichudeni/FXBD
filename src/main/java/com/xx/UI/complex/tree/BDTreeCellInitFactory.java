@@ -40,6 +40,16 @@ public interface BDTreeCellInitFactory<T> {
         }
         return -1;
     }
+    static void openAt(TreeItem<?> item){
+        Stack<TreeItem<?>> stack = new Stack<>();
+        stack.push(item);
+        while (!stack.isEmpty()) {
+            TreeItem<?> pop = stack.pop();
+            if (pop.getParent() != null)
+                stack.push(pop);
+            pop.setExpanded(true);
+        }
+    }
 
     static void openAll(TreeItem<?> item) {
         Stack<TreeItem<?>> stack = new Stack<>();

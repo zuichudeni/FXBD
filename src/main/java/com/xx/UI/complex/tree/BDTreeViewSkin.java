@@ -1,13 +1,18 @@
 package com.xx.UI.complex.tree;
 
 import com.xx.UI.ui.BDUI;
+import com.xx.UI.util.BDMapping;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.skin.TreeViewSkin;
 import javafx.scene.text.Text;
 
 public class BDTreeViewSkin<T> extends TreeViewSkin<T> implements BDUI {
-    public BDTreeViewSkin(TreeView control) {
+    private final BDMapping mapping ;
+    private final BDTreeView<T> control;
+    public BDTreeViewSkin(BDTreeView<T> control) {
         super(control);
+        this.mapping = control.getMapping();
+        this.control = control;
         initUI();
         initEvent();
         initProperty();
@@ -26,5 +31,6 @@ public class BDTreeViewSkin<T> extends TreeViewSkin<T> implements BDUI {
     @Override
     public void initUI() {
         BDUI.super.initUI();
+        control.getStyleClass().add("bd-tree-view");
     }
 }

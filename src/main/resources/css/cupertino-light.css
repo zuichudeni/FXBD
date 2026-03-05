@@ -6625,7 +6625,18 @@ BDSearchBox .content .right-pane {
 }
 
 /*************************** BDTreeView ********************************************/
+/*view*/
+.bd-tree-view {
+    -fx-background-color: #F7F8FA;
+}
+
+/*cell*/
 .bd-tree-cell {
+    -fx-background-color: transparent;
+}
+
+.bd-tree-cell:selected {
+    -fx-background-color: #D4E2FF;
 }
 
 .bd-tree-hbox {
@@ -6634,7 +6645,6 @@ BDSearchBox .content .right-pane {
 
 .bd-tree-root {
     -fx-border-width: 0 0 0 1px;
-
 }
 
 .bd-tree-cell-text {
@@ -6645,10 +6655,22 @@ BDSearchBox .content .right-pane {
     -fx-background-color: #D3D3D3;
     -fx-pref-width: 0.5px;
     -fx-border-style: none;
+
 }
 
 .bd-tree-cell-line:focus {
-    -fx-background-color: #4A90E2;
+    -fx-background-color: #3574F0;
     -fx-pref-width: 1px;
     -fx-border-style: none;
+
+}
+
+.bd-tree-view:focused > .virtual-flow > .clipped-container > .sheet > .bd-tree-cell:filled:selected {
+    -fx-background-color: #D4E2FF;
+    -fx-background-radius: 5px;
+}
+
+.bd-tree-view > .virtual-flow > .clipped-container > .sheet > .bd-tree-cell:filled:selected {
+    -fx-background-color: #DFE1E5;
+    -fx-background-radius: 5px;
 }

@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -62,5 +63,10 @@ public class BDTreeView<T> extends TreeView<T> {
 
     public SimpleObjectProperty<BDTreeCellInitFactory<T>> treeCellInitFactoryProperty() {
         return treeCellInitFactory;
+    }
+
+    @Override
+    protected Skin<?> createDefaultSkin() {
+        return new BDTreeViewSkin<>(this);
     }
 }
