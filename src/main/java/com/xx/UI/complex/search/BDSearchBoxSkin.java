@@ -52,7 +52,7 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
     private Button replaceAllButton;
     private HBox content;
     private HBox leftTop;
-    private HBox letBottom;
+    private HBox leftBottom;
     private HBox rightTop;
     private HBox rightBottom;
     private CheckMenuItem searchSelect;
@@ -145,6 +145,8 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
                     if (control.getSearchBlockCount() == 0) return "0 个结果";
                     return control.getSearchBlockIndex() + 1 + " / " + control.getSearchBlockCount();
                 }, control.searchBlockCountProperty(), control.searchBlockIndexProperty(), searchField.textProperty()))
+                .bindProperty(rightTop.prefHeightProperty(),leftTop.heightProperty())
+                .bindProperty(rightBottom.prefHeightProperty(),leftBottom.heightProperty())
                 .bindBidirectional(searchField.textProperty(), control.searchTextProperty())
                 .bindBidirectional(searchSelect.selectedProperty(), control.searchSelectedProperty())
                 .bindProperty(control.regularExpression, searchField.textProperty().map(this::getRegularExpression))
@@ -168,10 +170,10 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
                         retractButton.setTooltip(new Tooltip());
                     retractButton.getTooltip().setText((control.isRetract() ? "显示" : "隐藏") + "替换字段  Ctrl+" + (control.isRetract() ? "R" : "F"));
                     if (control.isRetract()) {
-                        leftPane.getChildren().remove(letBottom);
+                        leftPane.getChildren().remove(leftBottom);
                         rightPane.getChildren().remove(rightBottom);
                     } else {
-                        leftPane.getChildren().add(letBottom);
+                        leftPane.getChildren().add(leftBottom);
                         rightPane.getChildren().add(rightBottom);
                     }
                 }, true, control.retractProperty());
@@ -215,7 +217,8 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
 
     private void initLeftPane() {
         leftPane = new VBox();
-        leftPane.setAlignment(Pos.CENTER);
+        leftPane.setMinSize(Region.USE_COMPUTED_SIZE,Region.USE_COMPUTED_SIZE);
+        leftPane.setMaxSize(Region.USE_COMPUTED_SIZE,Region.USE_COMPUTED_SIZE);
         leftPane.getStyleClass().add("left-pane");
         splitPane.getItems().add(leftPane);
         searchHistoryButton = new BDButton();
@@ -256,12 +259,10 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
         replaceNewLineButton.setTooltip(new Tooltip("新行  Ctrl+Shift+Enter"));
         replaceButton = new Button();
 
-        leftTop = new HBox(10, searchHistoryButton, searchField, searchCleanButton, searchNewLineButton, searchCaseButton, searchRegularExpressionButton);
-        leftTop.setAlignment(Pos.CENTER_LEFT);
+        leftTop = new HBox( searchHistoryButton, searchField, searchCleanButton, searchNewLineButton, searchCaseButton, searchRegularExpressionButton);
         leftTop.getStyleClass().add("top-pane");
-        letBottom = new HBox(10, replaceHistoryButton, replaceField, replaceCleanButton, replaceNewLineButton);
-        letBottom.setAlignment(Pos.CENTER_LEFT);
-        letBottom.getStyleClass().add("bottom-pane");
+        leftBottom = new HBox( replaceHistoryButton, replaceField, replaceCleanButton, replaceNewLineButton);
+        leftBottom.getStyleClass().add("bottom-pane");
         leftPane.getChildren().add(leftTop);
 
         leftPane.setPrefHeight(Region.USE_COMPUTED_SIZE);
@@ -271,7 +272,8 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
 
     private void initRightPane() {
         rightPane = new VBox();
-        rightPane.setAlignment(Pos.CENTER);
+        rightPane.setMinSize(Region.USE_COMPUTED_SIZE,Region.USE_COMPUTED_SIZE);
+        rightPane.setMaxSize(Region.USE_COMPUTED_SIZE,Region.USE_COMPUTED_SIZE);
         rightPane.getStyleClass().add("right-pane");
         splitPane.getItems().add(rightPane);
         searchResultText = new Text();
@@ -293,7 +295,7 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
         searchFilterButtonContextMenu.getItems().add(searchSelect);
         searchMorButton = new BDButton();
         searchMorButton.setSelectable(false);
-        searchMorButton.setDefaultGraphic(Util.getImageView(20, BDIcon.MORE_HORIZONTAL));
+        searchMorButton.setDefaultGraphic(Util.getImageView(20, BDIcon.MORE_VERTICAL));
         searchCloseButton = new BDButton();
         searchCloseButton.setSelectable(false);
         searchCloseButton.getStyleClass().add("circle");
@@ -303,11 +305,13 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
         replaceButton = new Button("替换(P)");
         replaceAllButton = new Button("全部替换(A)");
 
-        rightTop = new HBox(10, searchResultText, searchPreviousButton, searchNextButton, searchFilterButton, searchMorButton, Util.getHBoxSpring(), searchCloseButton);
-        rightTop.setAlignment(Pos.CENTER_RIGHT);
+        rightTop = new HBox(searchResultText, searchPreviousButton, searchNextButton, searchFilterButton, searchMorButton, Util.getHBoxSpring(), searchCloseButton);
+        rightTop.setMinHeight(Region.USE_PREF_SIZE);
+        rightTop.setMaxHeight(Region.USE_PREF_SIZE);
         rightTop.getStyleClass().add("top-pane");
-        rightBottom = new HBox(10, replaceButton, replaceAllButton);
-        rightBottom.setAlignment(Pos.CENTER_LEFT);
+        rightBottom = new HBox( replaceButton, replaceAllButton);
+        rightBottom.setMinHeight(Region.USE_PREF_SIZE);
+        rightBottom.setMaxHeight(Region.USE_PREF_SIZE);
         rightBottom.getStyleClass().add("bottom-pane");
         rightPane.getChildren().add(rightTop);
     }

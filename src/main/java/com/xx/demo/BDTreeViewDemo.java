@@ -1,6 +1,8 @@
 package com.xx.demo;
 
 import com.dlsc.fxmlkit.fxml.FxmlKit;
+import com.xx.UI.complex.search.simple.box.BDSimpleSearchBox;
+import com.xx.UI.complex.search.simple.box.BDSimpleSearchPane;
 import com.xx.UI.complex.tree.BDTreeCellInitFactory;
 import com.xx.UI.complex.tree.BDTreeView;
 import com.xx.UI.ui.BDIcon;
@@ -54,10 +56,9 @@ public class BDTreeViewDemo extends Application {
                 else text.setFill(Color.BLACK);
             }
         });
-        treeView.setRoot(getFile(Path.of("D:\\").toFile()));
+        treeView.setRoot(getFile(Path.of("D:\\project\\FXBD").toFile()));
         treeView.sortItem();
-        StackPane stackPane = new StackPane(treeView);
-        Scene scene = new Scene(stackPane, 800, 600);
+        Scene scene = new Scene(new BDSimpleSearchPane(treeView), 800, 600);
         stage.setTitle("BDTreeView 测试");
         stage.setScene(scene);
         stage.show();

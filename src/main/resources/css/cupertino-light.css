@@ -5660,62 +5660,69 @@ BDButton.icon {
 }
 
 /*************************** 搜索框样式 ********************************************/
-BDSearchBox {
+.bd-search-box {
     -number-spacing: 21px;
     -color-border: #DDDDDF;
+    -fx-alignment: center;
 }
 
-BDSearchBox .result {
+.bd-search-box .result {
     -fx-fill: #8C8C8C;
 
     transiton: -fx-fill 0.3 ease;
 }
 
-BDSearchBox .result:error {
+.bd-search-box .result:error {
     -fx-fill: #ff0000;
-
     transiton: -fx-fill 0.3 ease;
 }
 
-BDSearchBox .content {
+.bd-search-box .content {
     -fx-border-width: 1px;
     -fx-border-color: -color-border;
 }
 
-BDSearchBox .split-pane {
+.bd-search-box .split-pane {
     -fx-border-width: 0 0 0 1px;
     -fx-border-color: -color-border;
 }
 
-BDSearchBox .content .retract-content {
-    -fx-padding: 10px;
+.bd-search-box .retract-content {
+    -fx-padding: 10;
 }
 
-BDSearchBox .content .left-pane {
-    -fx-padding: 10px 0 0 0;
-}
 
-BDSearchBox .content .left-pane .text-field {
+.bd-search-box .text-field {
     -fx-background-color: transparent;
 }
 
-BDSearchBox .content .left-pane .text-field :hover {
+.bd-search-box .text-field:hover {
     -fx-background-color: transparent;
 }
 
-BDSearchBox .content .left-pane .top-pane {
-    -fx-padding: 0 10px 10px 10px;
+.bd-search-box .top-pane {
+    -fx-padding: 10;
+    -fx-alignment: center-left;
 }
 
-BDSearchBox .content .left-pane .bottom-pane {
-    -fx-padding: 10px 10px 0 10px;
+.bd-search-box .right-pane {
+    -fx-alignment: center-left;
+}
+
+.bd-search-box .left-pane {
+    -fx-alignment: center-left;
+}
+
+.bd-search-box .bottom-pane {
+    -fx-padding: 10;
+    -fx-alignment: center-left;
     -fx-border-width: 1px 0 0 0;
     -fx-border-color: -color-border;
 }
 
-BDSearchBox .content .right-pane {
-    -fx-padding: 10px;
-    -fx-spacing: -number-spacing;
+
+.bd-search-box .bd-button {
+    -fx-padding: 3px;
 }
 
 /*************************** 透明输入框 ********************************************/
@@ -6673,4 +6680,14 @@ BDSearchBox .content .right-pane {
 .bd-tree-view > .virtual-flow > .clipped-container > .sheet > .bd-tree-cell:filled:selected {
     -fx-background-color: #DFE1E5;
     -fx-background-radius: 5px;
+}
+
+/*************************** BDSimpleSearchBox ********************************************/
+.bd-simple-search-label {
+    -fx-content-display: graphic-only;
+    -fx-background-color: #D1D1D6, white !important;
+}
+
+.bd-simple-search-box-text-field:empty {
+    -fx-text-fill: red;
 }

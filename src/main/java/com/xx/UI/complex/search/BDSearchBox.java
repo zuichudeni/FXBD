@@ -160,7 +160,7 @@ public class BDSearchBox extends BDControl {
         int index = searchBlockIndex.get();
         if (index > 0) {
             searchBlockIndex.set(index - 1);
-        } else if (searchBlocks.size() > 0) {
+        } else if (!searchBlocks.isEmpty()) {
             searchBlockIndex.set(searchBlocks.size() - 1);
         }
     }
