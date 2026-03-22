@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BDTreeViewDemo" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="com.xx.demo.BDTreeViewDemo" />
+  <configuration default="false" name="BDSimpleTextAreaDemo" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.xx.demo.BDSimpleTextAreaDemo" />
     <module name="FXBD" />
     <extension name="coverage">
       <pattern>

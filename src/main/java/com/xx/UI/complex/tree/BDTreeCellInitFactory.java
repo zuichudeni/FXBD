@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +26,12 @@ public interface BDTreeCellInitFactory<T> {
         }
         return depth == 0 ? 1 : depth;
     }
+    static <T> Map<T,String> toMap(TreeItem<T> rootItem, BDTreeCellInitFactory<T> cellInitFactory, Map<T,String> map){
+        map.put(rootItem.getValue(),cellInitFactory.getInfo(rootItem.getValue()));
+        rootItem.getChildren().forEach(item-> toMap(item,cellInitFactory,map));
+        return map;
+    }
+
 
     static int getDeep(TreeItem<?> parent,TreeItem<?> child){
         if (child == null || parent == null) return -1;

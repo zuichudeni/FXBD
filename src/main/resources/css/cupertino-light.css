@@ -6657,6 +6657,19 @@ BDButton.icon {
 .bd-tree-cell-text {
 
 }
+.bd-tree-cell-search-pane{}
+.bd-treeview-search-back{
+    -fx-fill: #F8A80080;
+    -fx-stroke: derive(#6b5252, 0%);
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+}
+.bd-treeview-search-back:selected{
+    -fx-fill: #007DF980;
+    -fx-stroke: derive(#000000, 0%);
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+}
 
 .bd-tree-cell-line {
     -fx-background-color: #D3D3D3;

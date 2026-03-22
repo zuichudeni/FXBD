@@ -3,6 +3,7 @@ package com.xx.UI.complex.search.simple.box;
 import com.xx.UI.basic.button.BDButton;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
+import com.xx.UI.util.BDScheduler;
 import com.xx.UI.util.Util;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
@@ -11,9 +12,8 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -24,11 +24,11 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
 
     private static final PseudoClass ERROR =
             PseudoClass.getPseudoClass("error");
+    private final BDScheduler search;
     public ContextMenu searchFilterButtonContextMenu;
     private BDButton searchHistoryButton;
-    private TextArea searchField;
+    private TextField searchField;
     private BDButton searchCleanButton;
-    private BDButton searchNewLineButton;
     private BDButton searchCaseButton;
     private BDButton searchRegularExpressionButton;
     private Text searchResultText;
@@ -37,11 +37,11 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
     private BDButton searchFilterButton;
     private BDButton searchMorButton;
     private BDButton searchCloseButton;
-
     private HBox leftTop;
     private HBox rightTop;
 
     public BDSimpleSearchBoxSkin(BDSimpleSearchBox bdSimpleSearchBox) {
+        search = new BDScheduler(bdSimpleSearchBox::search, 500);
         super(bdSimpleSearchBox);
     }
 
@@ -53,7 +53,7 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
         initLeftPane();
         initRightPane();
         getChildren().add(splitPane);
-        splitPane.getItems().addAll(leftTop,rightTop);
+        splitPane.getItems().addAll(leftTop, rightTop);
     }
 
     private void initRightPane() {
@@ -86,7 +86,7 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
     }
 
     private void initLeftPane() {
-        searchField = Util.getInputContent(3);
+        searchField = new TextField();
         HBox.setHgrow(searchField, Priority.ALWAYS);
         searchHistoryButton = getBdButton();
         searchHistoryButton.setSelectable(false);
@@ -96,30 +96,26 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
         searchCleanButton.setSelectable(false);
         searchCleanButton.getStyleClass().add("circle");
         searchCleanButton.setDefaultGraphic(Util.getImageView(20, BDIcon.CLOSE_SMALL));
-        searchNewLineButton = getBdButton();
-        searchNewLineButton.setSelectable(false);
-        searchNewLineButton.setDefaultGraphic(Util.getImageView(20, BDIcon.NEW_LINE));
-        searchNewLineButton.setTooltip(new Tooltip("新行  Ctrl+Shift+Enter"));
         searchCaseButton = getBdButton();
         searchCaseButton.setDefaultGraphic(Util.getImageView(20, BDIcon.MATCH_CASE));
         searchCaseButton.setTooltip(new Tooltip("区分大小写  Alt+C"));
         searchRegularExpressionButton = getBdButton();
         searchRegularExpressionButton.setDefaultGraphic(Util.getImageView(20, BDIcon.REGEX));
         searchRegularExpressionButton.setTooltip(new Tooltip("正则表达式  Alt+X"));
-        leftTop = new HBox(searchHistoryButton,searchField, searchCleanButton, searchNewLineButton, searchCaseButton, searchRegularExpressionButton);
+        leftTop = new HBox(searchHistoryButton, searchField, searchCleanButton, searchCaseButton, searchRegularExpressionButton);
         leftTop.getStyleClass().add("top-pane");
     }
 
     @Override
     public void initProperty() {
         mapping.binding(searchResultText.textProperty(), Bindings.createStringBinding(() -> {
-                    boolean b = searchField.getText() != null && !searchField.getText().isEmpty() && control.getSearchBlockCount() == 0;
+                    boolean b = searchField.getText() != null && !searchField.getText().isEmpty() && control.getSearchBlockCount() < 0;
                     searchResultText.pseudoClassStateChanged(ERROR, b);
-                    if (control.getSearchBlockCount() == 0) return "0 个结果";
-                    return control.getSearchBlockIndex() + 1 + " / " + control.getSearchBlockCount();
-                }, control.searchBlockCountProperty(), control.searchBlockIndexProperty(), searchField.textProperty()))
+                    if (control.getSearchBlockCount() < 0) return "0 个结果";
+                    return control.getSearchResultIndex() + 1 + " / " + control.getSearchBlockCount();
+                }, control.searchBlockCountProperty(), control.searchResultIndexProperty()))
                 .bindBidirectional(searchField.textProperty(), control.searchTextProperty())
-                .bindProperty(control.regularExpression, searchField.textProperty().map(this::getRegularExpression))
+                .bindBidirectional(control.searchTextProperty(), searchField.textProperty())
                 .bindProperty(searchCleanButton.visibleProperty(), searchField.textProperty().isNotEmpty())
                 .addListener(() -> {
                     String s = "搜索";
@@ -130,30 +126,18 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
                     else if (searchRegularExpressionButton.isSelected())
                         s = "正则表达式(x)";
                     searchField.setPromptText(s);
-                }, true, searchCaseButton.selectedProperty(), searchRegularExpressionButton.selectedProperty());
-    }
-    private String getRegularExpression(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            return "";
-        }
-        if (searchRegularExpressionButton.isSelected()) {
-            // 直接使用用户输入的正则表达式
-            return searchCaseButton.isSelected() ? searchText : "(?i)" + searchText;
-        } else {
-            // 转义所有正则特殊字符
-            String s = searchText.replaceAll("([\\\\\\[\\]{}()*+?.^$|])", "\\\\$1");
-            return searchCaseButton.isSelected() ? s : "(?i)" + s;
-        }
+                }, true, searchCaseButton.selectedProperty(), searchRegularExpressionButton.selectedProperty())
+                .addListener(search::run,true,searchField.textProperty());
     }
 
-    private BDButton getBdButton(){
+    private BDButton getBdButton() {
         BDButton bdButton = new BDButton();
         bdButton.getStyleClass().add("bd-search-box-button");
         return bdButton;
     }
+
     @Override
     public void initEvent() {
-        KeyCombination newLine = KeyCombination.keyCombination("Ctrl+Shift+Enter");
         KeyCombination caseKey = KeyCombination.keyCombination("Alt+C");
         KeyCombination regularExpression = KeyCombination.keyCombination("Alt+X");
         mapping
@@ -169,17 +153,8 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
                     if (regularExpression.match(event))
                         searchRegularExpressionButton.fire();
                 })
-                .addEventFilter(searchField, KeyEvent.KEY_PRESSED, event -> {
-                    if (event.getCode().equals(KeyCode.ENTER))
-                        event.consume();
-                    if (newLine.match(event)) searchNewLineButton.fire();
-                })
                 .addEventHandler(searchCleanButton, ActionEvent.ACTION, _ -> {
                     searchField.clear();
-                    searchField.requestFocus();
-                })
-                .addEventHandler(searchNewLineButton, ActionEvent.ACTION, _ -> {
-                    searchField.appendText("\n");
                     searchField.requestFocus();
                 })
                 .addEventHandler(searchCaseButton, ActionEvent.ACTION, _ -> searchField.requestFocus())

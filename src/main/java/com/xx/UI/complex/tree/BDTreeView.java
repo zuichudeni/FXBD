@@ -1,6 +1,8 @@
 package com.xx.UI.complex.tree;
 
+import com.xx.UI.complex.search.simple.box.BDSimpleSearchBox;
 import com.xx.UI.util.BDMapping;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -17,6 +19,8 @@ public class BDTreeView<T> extends TreeView<T> {
     private final BDMapping mapping = new BDMapping();
     private final SimpleObjectProperty<BDTreeCellInitFactory<T>> treeCellInitFactory = new SimpleObjectProperty<>();
     Runnable selectedItemDispose;
+    BDSimpleSearchBox<T> searchBox;
+    SimpleBooleanProperty searchRefresh = new SimpleBooleanProperty();
 
     public BDTreeView() {
         setCellFactory(param -> new BDTreeCell<>((BDTreeView<T>) param));
