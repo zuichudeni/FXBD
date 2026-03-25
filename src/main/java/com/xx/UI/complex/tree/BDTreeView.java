@@ -2,7 +2,6 @@ package com.xx.UI.complex.tree;
 
 import com.xx.UI.complex.search.simple.box.BDSimpleSearchBox;
 import com.xx.UI.util.BDMapping;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -12,18 +11,20 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class BDTreeView<T> extends TreeView<T> {
     final SimpleListProperty<TreeItem<T>> selectBroItem = new SimpleListProperty<>(FXCollections.observableArrayList());
+    final SimpleObjectProperty<BDSimpleSearchBox<T>> searchBox = new SimpleObjectProperty<>();
     private final BDMapping mapping = new BDMapping();
     private final SimpleObjectProperty<BDTreeCellInitFactory<T>> treeCellInitFactory = new SimpleObjectProperty<>();
     Runnable selectedItemDispose;
-    BDSimpleSearchBox<T> searchBox;
-    SimpleBooleanProperty searchRefresh = new SimpleBooleanProperty();
 
-    public BDTreeView() {
+    public BDTreeView(BDTreeCellInitFactory<T> initFactory) {
         setCellFactory(param -> new BDTreeCell<>((BDTreeView<T>) param));
+        setTreeCellInitFactory(initFactory);
         mapping.addListener(() -> {
             if (selectedItemDispose != null) selectedItemDispose.run();
             ListChangeListener<TreeItem<T>> listener = change -> {
@@ -37,7 +38,7 @@ public class BDTreeView<T> extends TreeView<T> {
             };
             MultipleSelectionModel<TreeItem<T>> model = getSelectionModel();
             model.getSelectedItems().addListener(listener);
-            selectedItemDispose = ()-> model.getSelectedItems().removeListener(listener);
+            selectedItemDispose = () -> model.getSelectedItems().removeListener(listener);
         }, true, selectionModelProperty());
     }
 
@@ -59,6 +60,7 @@ public class BDTreeView<T> extends TreeView<T> {
 
     public void setTreeCellInitFactory(BDTreeCellInitFactory<T> cellInitFactory) {
         this.treeCellInitFactory.set(cellInitFactory);
+        refresh();
     }
 
     public BDMapping getMapping() {

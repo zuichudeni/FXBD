@@ -3,12 +3,14 @@ package com.xx.UI.complex.search;
 import com.xx.UI.ui.BDControl;
 import com.xx.UI.ui.BDSkin;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +22,6 @@ public class BDSearchBox extends BDControl {
     protected final SimpleIntegerProperty searchBlockIndex = new SimpleIntegerProperty(-1);
     // 触发刷新的变量
     final SimpleBooleanProperty refresh = new SimpleBooleanProperty(false);
-    final SimpleStringProperty regularExpression = new SimpleStringProperty();
     final BDSearchPane searchPane;
     private final SimpleBooleanProperty searchCase = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty searchRegex = new SimpleBooleanProperty(false);
@@ -36,11 +37,11 @@ public class BDSearchBox extends BDControl {
     private final ScheduledExecutorService scheduler;
     // 用于管理搜索任务
     private final AtomicReference<Task<Void>> currentSearchTask = new AtomicReference<>();
+    // 任务状态锁
+    private final Object taskLock = new Object();
     private ScheduledFuture<?> scheduledSearch;
     // 添加一个标记，表示是否已关闭
     private volatile boolean disposed = false;
-    // 任务状态锁
-    private final Object taskLock = new Object();
 
     public BDSearchBox(BDSearchPane searchPane) {
         getStyleClass().add(CSS_CLASS_NAME);
@@ -97,15 +98,18 @@ public class BDSearchBox extends BDControl {
     }
 
     public String getRegularExpression() {
-        return regularExpression.get();
-    }
-
-    public void setRegularExpression(String regularExpression) {
-        this.regularExpression.set(regularExpression);
-    }
-
-    public ReadOnlyStringProperty regularExpressionProperty() {
-        return regularExpression;
+        String searchText = this.searchText.get();
+        if (searchText == null || searchText.isEmpty()) {
+            return "";
+        }
+        if (searchRegex.get()) {
+            // 直接使用用户输入的正则表达式
+            return searchCase.get() ? searchText : "(?i)" + searchText;
+        } else {
+            // 转义所有正则特殊字符
+            String s = searchText.replaceAll("([\\\\\\[\\]{}()*+?.^$|])", "\\\\$1");
+            return searchCase.get() ? s : "(?i)" + s;
+        }
     }
 
     public String getSearchText() {
@@ -229,26 +233,26 @@ public class BDSearchBox extends BDControl {
     }
 
     private void search(String text) {
+
         // 检查是否已关闭
         if (disposed) {
             return;
         }
-
         // 在UI线程中清空之前的搜索结果
         clearSearchResultsOnUI();
 
-        String searchPattern = regularExpression.get();
-        if (searchPattern == null || searchPattern.isEmpty() || text == null || text.isEmpty()) {
+        String searchPattern = getRegularExpression();
+        if (searchPattern.isEmpty() || text == null || text.isEmpty()) {
             resetSearchState();
             return;
         }
 
+
         // 当搜索类型为搜索选中内容时，需要获取选中内容的起始行和偏移量
         final int startParagraph = isSearchSelected() ?
-            searchPane.bdSearchResource.getSelectedStartParagraph() : 0;
+                searchPane.bdSearchResource.getSelectedStartParagraph() : 0;
         final int startOffset = isSearchSelected() ?
-            searchPane.bdSearchResource.getSelectedOffset() : 0;
-
+                searchPane.bdSearchResource.getSelectedOffset() : 0;
         // 创建并执行后台任务
         createAndExecuteSearchTask(text, searchPattern, startParagraph, startOffset);
     }
@@ -264,7 +268,7 @@ public class BDSearchBox extends BDControl {
     }
 
     private void createAndExecuteSearchTask(String text, String searchPattern,
-                                           int startParagraph, int startOffset) {
+                                            int startParagraph, int startOffset) {
         Task<Void> searchTask = new Task<>() {
             @Override
             protected Void call() {
@@ -283,10 +287,14 @@ public class BDSearchBox extends BDControl {
                     List<SearchBlock> newSearchBlocks = new ArrayList<>();
 
                     while (matcher.find() && !disposed) {
+
                         if (isCancelled()) {
                             break;
                         }
-
+// 跳过空匹配，避免产生无意义的高亮块
+                        if (matcher.start() == matcher.end()) {
+                            continue;
+                        }
                         int globalStart = matcher.start();
                         int globalEnd = matcher.end();
 
@@ -299,8 +307,8 @@ public class BDSearchBox extends BDControl {
                         }
 
                         processMatch(globalStart, globalEnd, startLine, endLine,
-                                   lineStarts, lineLengths, startParagraph,
-                                   startOffset, newSearchBlocks, resultsByLine);
+                                lineStarts, lineLengths, startParagraph,
+                                startOffset, newSearchBlocks, resultsByLine);
                     }
 
                     // 检查任务状态后再更新UI
@@ -317,7 +325,7 @@ public class BDSearchBox extends BDControl {
             }
 
             private void calculateLineInfo(String text, List<Integer> lineStarts,
-                                         List<Integer> lineLengths) {
+                                           List<Integer> lineLengths) {
                 lineStarts.add(0);
                 int lineStart = 0;
                 for (int i = 0; i < text.length(); i++) {
@@ -332,10 +340,10 @@ public class BDSearchBox extends BDControl {
             }
 
             private void processMatch(int globalStart, int globalEnd, int startLine,
-                                    int endLine, List<Integer> lineStarts,
-                                    List<Integer> lineLengths, int startParagraph,
-                                    int startOffset, List<SearchBlock> newSearchBlocks,
-                                    Map<Integer, List<SearchResult>> resultsByLine) {
+                                      int endLine, List<Integer> lineStarts,
+                                      List<Integer> lineLengths, int startParagraph,
+                                      int startOffset, List<SearchBlock> newSearchBlocks,
+                                      Map<Integer, List<SearchResult>> resultsByLine) {
                 int resultIndex = newSearchBlocks.size();
                 SearchBlock searchBlock = new SearchBlock(startLine + startParagraph);
                 newSearchBlocks.add(searchBlock);
@@ -344,27 +352,27 @@ public class BDSearchBox extends BDControl {
                 if (startLine == endLine) {
                     // 单行匹配
                     processSingleLineMatch(globalStart, globalEnd, startLine, lineStarts,
-                                         lineLengths, startParagraph, startOffset,
-                                         resultIndex, searchBlock, resultsByLine);
+                            lineLengths, startParagraph, startOffset,
+                            resultIndex, searchBlock, resultsByLine);
                 } else {
                     // 跨行匹配
                     processMultiLineMatch(globalStart, globalEnd, startLine, endLine,
-                                        lineStarts, lineLengths, startParagraph,
-                                        startOffset, resultIndex, searchBlock, resultsByLine);
+                            lineStarts, lineLengths, startParagraph,
+                            startOffset, resultIndex, searchBlock, resultsByLine);
                 }
             }
 
             private void processSingleLineMatch(int globalStart, int globalEnd,
-                                              int line, List<Integer> lineStarts,
-                                              List<Integer> lineLengths,
-                                              int startParagraph, int startOffset,
-                                              int resultIndex, SearchBlock searchBlock,
-                                              Map<Integer, List<SearchResult>> resultsByLine) {
+                                                int line, List<Integer> lineStarts,
+                                                List<Integer> lineLengths,
+                                                int startParagraph, int startOffset,
+                                                int resultIndex, SearchBlock searchBlock,
+                                                Map<Integer, List<SearchResult>> resultsByLine) {
                 int lineStartPos = lineStarts.get(line);
                 int lineStartOffset = globalStart - lineStartPos + (line == 0 ? startOffset : 0);
                 int lineEndOffset = globalEnd - lineStartPos + (line == 0 ? startOffset : 0);
                 boolean fullLine = (globalStart - lineStartPos == 0 &&
-                                  globalEnd - lineStartPos == lineLengths.get(line));
+                        globalEnd - lineStartPos == lineLengths.get(line));
 
                 int displayLine = line + startParagraph;
                 SearchResult result = new SearchResult(displayLine, lineStartOffset,
@@ -374,12 +382,12 @@ public class BDSearchBox extends BDControl {
             }
 
             private void processMultiLineMatch(int globalStart, int globalEnd,
-                                             int startLine, int endLine,
-                                             List<Integer> lineStarts,
-                                             List<Integer> lineLengths,
-                                             int startParagraph, int startOffset,
-                                             int resultIndex, SearchBlock searchBlock,
-                                             Map<Integer, List<SearchResult>> resultsByLine) {
+                                               int startLine, int endLine,
+                                               List<Integer> lineStarts,
+                                               List<Integer> lineLengths,
+                                               int startParagraph, int startOffset,
+                                               int resultIndex, SearchBlock searchBlock,
+                                               Map<Integer, List<SearchResult>> resultsByLine) {
                 // 第一部分：开始行
                 int firstLineStartPos = lineStarts.get(startLine);
                 int firstLineStart = globalStart - firstLineStartPos;
@@ -414,7 +422,7 @@ public class BDSearchBox extends BDControl {
             }
 
             private void updateSearchResultsOnUI(List<SearchBlock> newSearchBlocks,
-                                               Map<Integer, List<SearchResult>> resultsByLine) {
+                                                 Map<Integer, List<SearchResult>> resultsByLine) {
                 Platform.runLater(() -> {
                     if (!disposed) {
                         searchBlocks.clear();
@@ -430,7 +438,6 @@ public class BDSearchBox extends BDControl {
                 });
             }
         };
-
         // 设置并启动任务
         currentSearchTask.set(searchTask);
 
@@ -497,7 +504,7 @@ public class BDSearchBox extends BDControl {
                     List<Runnable> notExecuted = scheduler.shutdownNow();
                     if (!notExecuted.isEmpty()) {
                         System.out.println("BDSearchBox: " + notExecuted.size() +
-                                         " tasks were not executed");
+                                " tasks were not executed");
                     }
                 }
             } catch (InterruptedException e) {

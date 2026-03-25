@@ -130,7 +130,7 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
                     Platform.runLater(control::refresh);
                 })
                 .addEventHandler(replaceAllButton, ActionEvent.ACTION, _ -> {
-                    String patter = control.regularExpression.get();
+                    String patter = control.getRegularExpression();
                     String resource = control.isSearchSelected()?control.searchPane.bdSearchResource.getSelectedResource(): control.searchPane.bdSearchResource.getResource();
                     String replaceStr = replaceField.getText();
                     control.searchPane.replaceAll().replace(resource, resource.replaceAll(patter, replaceStr), replaceStr,control.isSearchSelected());
@@ -149,7 +149,8 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
                 .bindProperty(rightBottom.prefHeightProperty(),leftBottom.heightProperty())
                 .bindBidirectional(searchField.textProperty(), control.searchTextProperty())
                 .bindBidirectional(searchSelect.selectedProperty(), control.searchSelectedProperty())
-                .bindProperty(control.regularExpression, searchField.textProperty().map(this::getRegularExpression))
+                .bindBidirectional(control.searchCaseProperty(),searchCaseButton.selectedProperty())
+                .bindBidirectional(control.searchRegexProperty(),searchRegularExpressionButton.selectedProperty())
                 .bindProperty(retractButton.rotateProperty(), control.retractProperty().map(r -> r ? 180 : -90))
                 .bindProperty(searchCleanButton.visibleProperty(), searchField.textProperty().isNotEmpty())
                 .bindProperty(replaceCleanButton.visibleProperty(), replaceField.textProperty().isNotEmpty())
@@ -179,19 +180,7 @@ public class BDSearchBoxSkin extends BDSkin<BDSearchBox> {
                 }, true, control.retractProperty());
     }
 
-    private String getRegularExpression(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            return "";
-        }
-        if (searchRegularExpressionButton.isSelected()) {
-            // 直接使用用户输入的正则表达式
-            return searchCaseButton.isSelected() ? searchText : "(?i)" + searchText;
-        } else {
-            // 转义所有正则特殊字符
-            String s = searchText.replaceAll("([\\\\\\[\\]{}()*+?.^$|])", "\\\\$1");
-            return searchCaseButton.isSelected() ? s : "(?i)" + s;
-        }
-    }
+
 
     @Override
     public void initUI() {

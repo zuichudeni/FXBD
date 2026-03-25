@@ -5,6 +5,7 @@ import com.xx.UI.ui.BDIcon;
 import com.xx.UI.ui.BDSkin;
 import com.xx.UI.util.BDScheduler;
 import com.xx.UI.util.Util;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
@@ -14,13 +15,14 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 
-public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
+public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox<?>> {
 
     private static final PseudoClass ERROR =
             PseudoClass.getPseudoClass("error");
@@ -109,14 +111,23 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
     @Override
     public void initProperty() {
         mapping.binding(searchResultText.textProperty(), Bindings.createStringBinding(() -> {
-                    boolean b = searchField.getText() != null && !searchField.getText().isEmpty() && control.getSearchBlockCount() < 0;
+                    boolean b = searchField.getText() != null
+                            && !searchField.getText().isEmpty()
+                            && control.getSearchBlockCount() <= 0;
                     searchResultText.pseudoClassStateChanged(ERROR, b);
-                    if (control.getSearchBlockCount() < 0) return "0 个结果";
+                    if (control.getSearchBlockCount() <= 0) return "0 个结果";
                     return control.getSearchResultIndex() + 1 + " / " + control.getSearchBlockCount();
-                }, control.searchBlockCountProperty(), control.searchResultIndexProperty()))
+                }, control.searchBlockCountProperty(), control.searchResultIndexProperty(), control.searchTextProperty()))
                 .bindBidirectional(searchField.textProperty(), control.searchTextProperty())
-                .bindBidirectional(control.searchTextProperty(), searchField.textProperty())
                 .bindProperty(searchCleanButton.visibleProperty(), searchField.textProperty().isNotEmpty())
+                .bindBidirectional(control.searchRegexProperty(),searchRegularExpressionButton.selectedProperty())
+                .bindBidirectional(control.searchCaseProperty(),searchCaseButton.selectedProperty())
+                .addListener(() -> {
+                    if (control.show.get()) {
+                        Platform.runLater(() -> searchField.requestFocus());
+                        control.search();
+                    }
+                }, true, control.show)
                 .addListener(() -> {
                     String s = "搜索";
                     if (searchRegularExpressionButton.isSelected() && searchCaseButton.isSelected())
@@ -127,7 +138,7 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
                         s = "正则表达式(x)";
                     searchField.setPromptText(s);
                 }, true, searchCaseButton.selectedProperty(), searchRegularExpressionButton.selectedProperty())
-                .addListener(search::run,true,searchField.textProperty());
+                .addListener(search::run, true, searchField.textProperty(),control.searchCaseProperty(),control.searchRegexProperty());
     }
 
     private BDButton getBdButton() {
@@ -158,6 +169,9 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox> {
                     searchField.requestFocus();
                 })
                 .addEventHandler(searchCaseButton, ActionEvent.ACTION, _ -> searchField.requestFocus())
-                .addEventHandler(searchRegularExpressionButton, ActionEvent.ACTION, _ -> searchField.requestFocus());
+                .addEventHandler(searchRegularExpressionButton, ActionEvent.ACTION, _ -> searchField.requestFocus())
+                .addEventHandler(searchField, KeyEvent.KEY_PRESSED, e -> {
+                    if (e.getCode().equals(KeyCode.ENTER)) control.nextSearchBlock();
+                });
     }
 }

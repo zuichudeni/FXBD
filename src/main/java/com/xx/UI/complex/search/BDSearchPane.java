@@ -71,6 +71,7 @@ public abstract class BDSearchPane extends BDControl {
 
     public void refresh() {
         if (isShowSearchBox())
+
             if (isShowSearchBox()) {
                 if (searchBox.isSearchSelected()) {
                     searchBox.triggerSearchImmediate(bdSearchResource.getSelectedResource());

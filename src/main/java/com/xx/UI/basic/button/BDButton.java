@@ -92,7 +92,7 @@ public class BDButton extends Button {
         this.selected.set(selected);
     }
 
-    public ReadOnlyBooleanProperty selectedProperty() {
+    public SimpleBooleanProperty selectedProperty() {
         return selected;
     }
 

@@ -12,7 +12,6 @@ public class BDSimpleSearchPane<T> extends BDControl {
     protected final BDSimpleSearchBox<T> simpleSearchBox;
     private final SimpleObjectProperty<Node> content = new SimpleObjectProperty<>();
     private final SimpleBooleanProperty showSearchBox = new SimpleBooleanProperty(false);
-
     public BDSimpleSearchPane(BDSimpleSearchBox<T> searchBox, Node content) {
         this.simpleSearchBox = searchBox;
         mapping.addChildren(searchBox.getMapping());

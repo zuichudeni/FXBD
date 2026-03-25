@@ -30,33 +30,33 @@ public class BDSimpleSearchPaneSkin extends BDSkin<BDSimpleSearchPane> {
                     if (control.isShowSearchBox())
                         root.getChildren().addFirst(control.simpleSearchBox);
                     else root.getChildren().remove(control.simpleSearchBox);
-                    control.simpleSearchBox.clearSearch();
+                    control.simpleSearchBox.clean();
                 }, true, control.showSearchBoxProperty())
                 .addListener(() -> {
                     if (control.getContent() != null)
                         contentPane.getChildren().setAll(control.getContent());
                     else contentPane.getChildren().clear();
-                }, true, control.contentProperty());
+                }, true, control.contentProperty())
+                .addListener(() -> {
+                    if (!control.isShowSearchBox())
+                        control.simpleSearchBox.clean();
+                }, false, control.showSearchBoxProperty())
+                .bindBidirectional(control.showSearchBoxProperty(), control.simpleSearchBox.show);
     }
 
     @Override
     public void initEvent() {
         KeyCombination search = KeyCombination.keyCombination("Ctrl+F");
-        KeyCombination replace = KeyCombination.keyCombination("Ctrl+R");
         KeyCombination close = KeyCombination.keyCombination("Esc");
         mapping.addEventFilter(control, KeyEvent.KEY_PRESSED, event -> {
-                    if (search.match(event)) {
-                        control.setShowSearchBox(true);
-                        control.simpleSearchBox.requestFocus();
-                        control.simpleSearchBox.applyCss();
-                    }
-                    if (replace.match(event)){
-                        control.setShowSearchBox(true);
-                        control.simpleSearchBox.requestFocus();
-                    }
-                    if (close.match(event)){
-                        control.setShowSearchBox(false);
-                    }
-                });
+            if (search.match(event)) {
+                control.setShowSearchBox(true);
+                control.simpleSearchBox.requestFocus();
+                control.simpleSearchBox.applyCss();
+            }
+            if (close.match(event)) {
+                control.setShowSearchBox(false);
+            }
+        });
     }
 }

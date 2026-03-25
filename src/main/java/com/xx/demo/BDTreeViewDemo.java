@@ -26,9 +26,7 @@ public class BDTreeViewDemo extends Application {
         FxmlKit.enableDevelopmentMode();
         FxmlKit.setApplicationUserAgentStylesheet(Util.getResourceUrl("/css/cupertino-light.css"));
 
-        BDTreeView<File> treeView = new BDTreeView<>();
-        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        treeView.setTreeCellInitFactory(new BDTreeCellInitFactory<>() {
+        BDTreeView<File> treeView = new BDTreeView<>(new BDTreeCellInitFactory<>() {
             @Override
             public Node initGraphic(File file) {
                 return Util.getImageView(25, BDIcon.getIconForFile(file));
@@ -54,6 +52,7 @@ public class BDTreeViewDemo extends Application {
                 else text.setFill(Color.BLACK);
             }
         });
+        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         treeView.setRoot(getFile(Path.of("./").toFile()));
         treeView.sortItem();
         Scene scene = new Scene(new BDTreeViewBySearch<>(treeView), 800, 600);

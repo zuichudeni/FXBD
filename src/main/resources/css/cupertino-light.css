@@ -5668,7 +5668,6 @@ BDButton.icon {
 
 .bd-search-box .result {
     -fx-fill: #8C8C8C;
-
     transiton: -fx-fill 0.3 ease;
 }
 
@@ -6657,18 +6656,33 @@ BDButton.icon {
 .bd-tree-cell-text {
 
 }
-.bd-tree-cell-search-pane{}
-.bd-treeview-search-back{
-    -fx-fill: #F8A80080;
-    -fx-stroke: derive(#6b5252, 0%);
-    -fx-arc-width: 10;
-    -fx-arc-height: 10;
+
+.bd-tree-cell-search-pane {
 }
-.bd-treeview-search-back:selected{
-    -fx-fill: #007DF980;
-    -fx-stroke: derive(#000000, 0%);
-    -fx-arc-width: 10;
-    -fx-arc-height: 10;
+.bd-treeview-search-back {
+    -fx-background-color: #fff59d; /* 更接近IDEA的浅黄色 */
+    -fx-background-radius: 3px;
+    -fx-border-color: #ffd54f;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 0.5px;
+}
+
+.bd-treeview-search-back:selected {
+    -fx-background-color: #90caf9; /* IDEA的选中蓝色 */
+    -fx-border-color: #42a5f5;
+    -fx-border-width: 1.5px;
+    -fx-background-insets: 0;
+    -fx-border-insets: -0.5px;
+}
+
+/* 鼠标悬停效果 */
+.bd-treeview-search-back:hover {
+    -fx-background-color: #ffe082;
+}
+
+.bd-treeview-search-back:selected:hover {
+    -fx-background-color: #81d4fa;
 }
 
 .bd-tree-cell-line {
@@ -6691,6 +6705,70 @@ BDButton.icon {
 }
 
 .bd-tree-view > .virtual-flow > .clipped-container > .sheet > .bd-tree-cell:filled:selected {
+    -fx-background-color: #DFE1E5;
+    -fx-background-radius: 5px;
+}
+/*************************** BDListView ********************************************/
+/*view*/
+.bd-list-view {
+    -fx-background-color: #F7F8FA;
+}
+
+/*cell*/
+.bd-list-cell {
+    -fx-background-color: transparent;
+}
+
+.bd-list-cell:selected {
+    -fx-background-color: #D4E2FF;
+}
+
+.bd-list-hbox {
+    -fx-alignment: center-left;
+}
+
+.bd-list-root {
+    -fx-border-width: 0 0 0 1px;
+}
+
+.bd-list-cell-text {
+
+}
+
+.bd-list-cell-search-pane {
+}
+.bd-listview-search-back {
+    -fx-background-color: #fff59d; /* 更接近IDEA的浅黄色 */
+    -fx-background-radius: 3px;
+    -fx-border-color: #ffd54f;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 0.5px;
+}
+
+.bd-listview-search-back:selected {
+    -fx-background-color: #90caf9; /* IDEA的选中蓝色 */
+    -fx-border-color: #42a5f5;
+    -fx-border-width: 1.5px;
+    -fx-background-insets: 0;
+    -fx-border-insets: -0.5px;
+}
+
+/* 鼠标悬停效果 */
+.bd-listview-search-back:hover {
+    -fx-background-color: #ffe082;
+}
+
+.bd-listview-search-back:selected:hover {
+    -fx-background-color: #81d4fa;
+}
+
+.bd-list-view:focused > .virtual-flow > .clipped-container > .sheet > .bd-list-cell:filled:selected {
+    -fx-background-color: #D4E2FF;
+    -fx-background-radius: 5px;
+}
+
+.bd-list-view > .virtual-flow > .clipped-container > .sheet > .bd-list-cell:filled:selected {
     -fx-background-color: #DFE1E5;
     -fx-background-radius: 5px;
 }

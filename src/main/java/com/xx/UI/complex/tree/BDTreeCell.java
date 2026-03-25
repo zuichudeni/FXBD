@@ -16,11 +16,12 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -39,7 +40,7 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
     private final AnchorPane searchPane = new AnchorPane();
     private final HBox hBox = new HBox();
     private final Pane linePane = new AnchorPane();
-    private final Pane root = new AnchorPane(hBox, linePane, searchPane);
+    private final Pane root = new AnchorPane(searchPane, linePane, hBox);
     private final BDMapping mapping = new BDMapping();
     private final double translateX = -24;
     private final double disclosureNodeWidth = 20;
@@ -68,7 +69,7 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
         setPadding(Insets.EMPTY);
         setBorder(Border.EMPTY);
         setFont(Font.font(20));
-        setContentDisplay(null);
+        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         imageView.setFitWidth(disclosureNodeWidth);
         imageView.setPreserveRatio(true);
         disclosureNode.setPadding(Insets.EMPTY);
@@ -90,6 +91,8 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
 
     @Override
     public void initProperty() {
+        BDMapping tempMapping = new BDMapping();
+        mapping.addChildren(tempMapping);
         mapping.addListener(() -> {
                     disposeVirtual();
                     if (!isEmpty()) {
@@ -98,11 +101,21 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
                         initVirtualProperty();
                     }
                 }, true, (Observable) treeView.selectBroItem, treeItemProperty())
-                .addListener(this::refreshSearchWord, true, treeView.searchRefresh);
+                .addListener(() -> {
+                    tempMapping.dispose();
+                    if (treeView.searchBox.get() != null) {
+                        tempMapping.addListener(treeView.searchBox.get().refreshProperty(), (_, _, _) -> refreshSearchWord());
+                        tempMapping.addListener(treeView.searchBox.get().searchResultProperty(), (_, ov, nv) -> {
+                            if ((ov != null && Objects.equals(ov.t(), getItem())) || (nv != null && Objects.equals(nv.t(), getItem())))
+                                refreshSearchWord();
+                        });
+                    }
+                }, true, treeView.searchBox);
     }
 
     @Override
     public void initEvent() {
+        hBox.setMouseTransparent(true);
         mapping.addEventHandler(disclosureNode, MouseEvent.MOUSE_CLICKED, _ -> {
             TreeItem<T> treeItem = getTreeItem();
             if (treeItem != null)
@@ -138,9 +151,9 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
         setGraphic(root);
         refreshLine();
         refreshDisclosureNode();
-        refreshSearchWord();
         applyCss();
         layout();
+        refreshSearchWord();
     }
 
     private void refreshFocusLine() {
@@ -174,22 +187,29 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
             imageView.setImage(treeView.getTreeCellInitFactory().getDisclosureNodeImage(getTreeItem().isExpanded()));
         }
     }
-private final BDMapping virtualMapping = new BDMapping();
+
     private void refreshSearchWord() {
         searchPane.getChildren().clear();
-        if (treeView.searchBox == null || treeView.searchBox.getSearchMap().isEmpty()) return;
-        List<BDSimpleSearchBox.SimpleSearchResult<T>> resultList = treeView.searchBox.getSearchMap().get(getItem());
+        if (treeView.searchBox.get() == null || treeView.searchBox.get().getSearchMap().isEmpty()) return;
+        List<BDSimpleSearchBox.SimpleSearchResult<T>> resultList = treeView.searchBox.get().getSearchMap().get(getItem());
         if (resultList != null && !resultList.isEmpty()) {
             resultList.forEach(result -> {
                 PathElement[] start = text.caretShape(result.startOffset(), true);
                 PathElement[] end = text.caretShape(result.endOffset(), true);
-                Rectangle rectangle = new Rectangle(((MoveTo) end[0]).getX() - ((MoveTo) start[0]).getX(), getHeight() - 1);
-                rectangle.getStyleClass().add("bd-treeview-search-back");
+                Pane pane = new Pane();
+                AnchorPane.setTopAnchor(pane, .0);
+                AnchorPane.setBottomAnchor(pane, .0);
+                pane.setPrefWidth(((MoveTo) end[0]).getX() - ((MoveTo) start[0]).getX());
+                pane.getStyleClass().add("bd-treeview-search-back");
+                BDSimpleSearchBox.SimpleSearchResult<T> tSimpleSearchResult = treeView.searchBox.get().searchResultProperty().get();
+                pane.pseudoClassStateChanged(select, Objects.equals(tSimpleSearchResult, result));
                 Bounds textBounds = text.localToScene(text.getLayoutBounds());
                 Bounds paneBounds = searchPane.localToScene(searchPane.getLayoutBounds());
-                rectangle.setLayoutX(textBounds.getMinX() - paneBounds.getMinX() + ((MoveTo) text.caretShape(result.startOffset(), true)[0]).getX());
-                rectangle.setOnMouseClicked(_-> treeView.searchBox.setSearchResult(result));
-                searchPane.getChildren().add(rectangle);
+                pane.setLayoutX(textBounds.getMinX() - paneBounds.getMinX() + ((MoveTo) text.caretShape(result.startOffset(), true)[0]).getX());
+                pane.setOnMouseClicked(_ -> {
+                    treeView.searchBox.get().setSearchResult(result);
+                });
+                searchPane.getChildren().add(pane);
             });
         }
     }

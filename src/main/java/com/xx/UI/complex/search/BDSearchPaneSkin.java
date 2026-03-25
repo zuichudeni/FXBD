@@ -59,7 +59,12 @@ public class BDSearchPaneSkin extends BDSkin<BDSearchPane> {
                         contentPane.getChildren().setAll(control.getContent());
                     else contentPane.getChildren().clear();
                 }, true, control.contentProperty())
-                .addListener(control::refresh,true,control.searchBox.regularExpressionProperty(),control.searchSelectProperty(),control.showSearchBoxProperty())
+                .addListener(control::refresh,true,
+                        control.searchBox.searchTextProperty(),
+                        control.searchBox.searchCaseProperty(),
+                        control.searchBox.searchRegexProperty(),
+                        control.searchSelectProperty(),
+                        control.showSearchBoxProperty())
                 .addListener(control.searchBox::refresh,true,control.searchBox.searchBlockCountProperty())
                 .addListener(()-> control.bdSearchResource.updateResult(control.searchBox.getSearchBlockIndex(),control.searchBox.getSearchBlocks(),control.searchBox.getSearchResults()),
                         true,
