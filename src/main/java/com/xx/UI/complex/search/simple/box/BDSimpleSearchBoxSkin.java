@@ -157,7 +157,7 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox<?>> {
                 .addEventHandler(searchFilterButton, ActionEvent.ACTION, _ -> {
                     searchFilterButtonContextMenu.show(searchFilterButton, Side.BOTTOM, 0, 0);
                 })
-                .addEventHandler(searchCloseButton, ActionEvent.ACTION, _ -> control.simpleSearchPane.setShowSearchBox(false))
+                .addEventHandler(searchCloseButton, ActionEvent.ACTION, _ -> control.show.set(false))
                 .addEventFilter(control, KeyEvent.KEY_PRESSED, event -> {
                     if (caseKey.match(event))
                         searchCaseButton.fire();

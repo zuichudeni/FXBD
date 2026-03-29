@@ -6,12 +6,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
-import java.util.List;
-
 public class BDSimpleSearchPane<T> extends BDControl {
     protected final BDSimpleSearchBox<T> simpleSearchBox;
     private final SimpleObjectProperty<Node> content = new SimpleObjectProperty<>();
     private final SimpleBooleanProperty showSearchBox = new SimpleBooleanProperty(false);
+
     public BDSimpleSearchPane(BDSimpleSearchBox<T> searchBox, Node content) {
         this.simpleSearchBox = searchBox;
         mapping.addChildren(searchBox.getMapping());
@@ -22,16 +21,16 @@ public class BDSimpleSearchPane<T> extends BDControl {
         return content.get();
     }
 
+    public void setContent(Node node) {
+        this.content.set(node);
+    }
+
     public SimpleObjectProperty<Node> contentProperty() {
         return content;
     }
 
     public BDSimpleSearchBox<T> getSimpleSearchBox() {
         return simpleSearchBox;
-    }
-
-    public void setContent(Node node) {
-        this.content.set(node);
     }
 
     public boolean isShowSearchBox() {
@@ -52,5 +51,6 @@ public class BDSimpleSearchPane<T> extends BDControl {
     }
 
     public void refresh() {
+        simpleSearchBox.refreshProperty().set(!simpleSearchBox.refreshProperty().get());
     }
 }

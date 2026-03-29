@@ -38,8 +38,10 @@ public class BDSimpleSearchPaneSkin extends BDSkin<BDSimpleSearchPane> {
                     else contentPane.getChildren().clear();
                 }, true, control.contentProperty())
                 .addListener(() -> {
-                    if (!control.isShowSearchBox())
+                    if (!control.isShowSearchBox()) {
                         control.simpleSearchBox.clean();
+                        control.refresh();
+                    }
                 }, false, control.showSearchBoxProperty())
                 .bindBidirectional(control.showSearchBoxProperty(), control.simpleSearchBox.show);
     }

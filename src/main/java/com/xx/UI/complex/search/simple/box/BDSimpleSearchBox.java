@@ -33,7 +33,6 @@ public abstract class BDSimpleSearchBox<T> extends BDControl {
     // 线程池管理
     private final ExecutorService executor;
     private final AtomicReference<Task<?>> currentTaskRef = new AtomicReference<>();
-    BDSimpleSearchPane<T> simpleSearchPane;
     private Future<?> currentTask;
     private SearchEvent changeEvent;
 
