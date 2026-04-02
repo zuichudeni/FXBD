@@ -35,13 +35,13 @@ import static com.xx.UI.complex.tree.BDTreeCellInitFactory.getDeep;
 
 public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
     private final PseudoClass select = PseudoClass.getPseudoClass("selected");
-    private final BDTreeView<T> treeView;
-    private final Text text = new Text();
+    protected final BDTreeView<T> treeView;
+    protected final Text text = new Text();
     private final AnchorPane searchPane = new AnchorPane();
     private final HBox hBox = new HBox();
     private final Pane linePane = new AnchorPane();
     private final Pane root = new AnchorPane(searchPane, linePane, hBox);
-    private final BDMapping mapping = new BDMapping();
+    protected final BDMapping mapping = new BDMapping();
     private final double translateX = -24;
     private final double disclosureNodeWidth = 20;
     private final ImageView imageView = new ImageView();

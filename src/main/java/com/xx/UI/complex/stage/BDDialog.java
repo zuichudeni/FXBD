@@ -48,6 +48,9 @@ public class BDDialog implements BDUI {
         initEvent();
         initProperty();
     }
+    public BDDialog(Node node) {
+        this();
+    }
 
     public BDDialog setHeader(BDHeaderBarBuilder headerBarBuilder) {
         stageBuilder.setHeaderBar(headerBarBuilder);
@@ -272,10 +275,12 @@ public class BDDialog implements BDUI {
         return this;
     }
 
-    public Stage build() {
+    public Stage build(Node node) {
         stageBuilder.setContent(root);
         stageBuilder.addStyleClass("dialog");
-        return stageBuilder.build();
+        Stage build = stageBuilder.build();
+        build.initOwner(node.getScene().getWindow());
+        return build;
     }
 
     public BDDialog addBDDialogStyleClass(String s) {

@@ -51,6 +51,8 @@ public class BDListViewDemo extends Application {
         stage.setScene(scene);
         stage.show();
         stage.setAlwaysOnTop(true);
+
+
     }
 
     private List<File> getFile(File root) {

@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class BDListCell<T> extends ListCell<T> implements BDUI, BDVirtualUI {
-    private final BDListView<T> listView;
+    protected final BDListView<T> listView;
     private final PseudoClass select = PseudoClass.getPseudoClass("selected");
-    private final Text text = new Text();
+    protected final Text text = new Text();
     private final AnchorPane searchPane = new AnchorPane();
     private final HBox hBox = new HBox();
     private final Pane root = new AnchorPane(searchPane, hBox);
-    private final BDMapping mapping = new BDMapping();
+    protected final BDMapping mapping = new BDMapping();
 
     public BDListCell(BDListView<T> listView) {
         this.listView = listView;

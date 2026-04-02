@@ -129,7 +129,7 @@ public class BDStageDemo extends Application {
                     .addAfterActionNode(ok)
                     .setDialogType(styleSelect.getSelectionModel().getSelectedItem());
             if (expandAble.isSelected()) bdDialog.setExpandContent(new Text("我是被隐藏起来的text expand content"));
-            Stage stage = bdDialog.build();
+            Stage stage = bdDialog.build(sideContent);
             globalMapping.addEventHandler(ok, ActionEvent.ACTION, _ -> stage.close());
             stage.setAlwaysOnTop(true);
             stage.show();

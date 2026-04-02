@@ -101,7 +101,7 @@ public class BDTaskControlCenterSkin extends BDSkin<BDTaskControlCenter> {
                             .setDialogType(BDDialog.BD_DIALOG_TYPE.NONE)
                             .setHeader(header)
                             .setContent(content)
-                            .build();
+                            .build(control);
                     build.setWidth(600);
                     build.setHeight(400);
                     build.setAlwaysOnTop(true);

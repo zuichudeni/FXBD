@@ -103,6 +103,19 @@ public class BDHeaderBarBuilder {
         this.title.getStyleClass().add("bd-header-bar-title");
         return this;
     }
+    public BDHeaderBarBuilder addTitle(String title, Util.InitText initText) {
+        this.title = new Text(title);
+        this.title.setText(title);
+        this.title.getStyleClass().add("bd-header-bar-title");
+        initText.initText(this.title);
+        return this;
+    }
+    public BDHeaderBarBuilder setTitleFill(Paint color) {
+        this.title.setFill(color);
+        return this;
+    }
+
+
 
     /**
      * 向右侧区域添加节点
