@@ -28,7 +28,7 @@ public class BDMessageItem extends BDSideBarItem {
     }
 
     public BDMessageItem(BDDirection direction, BDInSequence inSequence) {
-        this("通知", Util.getImageView(30, BDIcon.NOTIFICATIONS), Util.getImageView(30, BDIcon.NOTIFICATIONS), direction, inSequence);
+        this("通知", Util.getImageView(30, BDIcon.NOTIFICATIONS), Util.getImageView(30, BDIcon.NOTIFICATIONS_DARK), direction, inSequence);
     }
 
     private void init() {

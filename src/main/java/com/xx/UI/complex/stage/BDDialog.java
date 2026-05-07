@@ -12,9 +12,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -34,7 +32,8 @@ public class BDDialog implements BDUI {
     private final VBox root = new VBox();
     private final HBox header = new HBox();
     private final Separator separator = new Separator();
-    private final VBox contentRoot = new VBox();
+    private final Pane contentRoot = new StackPane();
+    private final Pane expandPane = new StackPane();
     private final HBox actionBar = new HBox();
     private final HBox pre = new HBox();
     private final HBox center = new HBox();
@@ -48,6 +47,7 @@ public class BDDialog implements BDUI {
         initEvent();
         initProperty();
     }
+
     public BDDialog(Node node) {
         this();
     }
@@ -153,13 +153,13 @@ public class BDDialog implements BDUI {
         return dialogType.get();
     }
 
-    public SimpleObjectProperty<BD_DIALOG_TYPE> dialogTypeProperty() {
-        return dialogType;
-    }
-
     public BDDialog setDialogType(BD_DIALOG_TYPE dialogType) {
         this.dialogType.set(dialogType);
         return this;
+    }
+
+    public SimpleObjectProperty<BD_DIALOG_TYPE> dialogTypeProperty() {
+        return dialogType;
     }
 
     public BDDialog addPreActionNode(Node... node) {
@@ -200,6 +200,7 @@ public class BDDialog implements BDUI {
         separator.getStyleClass().add("bd-dialog-separator");
         separator.setOrientation(Orientation.HORIZONTAL);
         contentRoot.getStyleClass().add("bd-dialog-content-root");
+        expandPane.getStyleClass().add("bd-dialog-expand-pane");
         actionBar.getChildren().addAll(pre, Util.getHBoxSpring(), center, Util.getHBoxSpring(), after);
         pre.getChildren().add(expandText);
         actionBar.getStyleClass().add("bd-dialog-action-bar");
@@ -220,26 +221,35 @@ public class BDDialog implements BDUI {
                         } else header.getChildren().setAll(headerText);
                     } else if (headerGraphic.get() != null) header.getChildren().setAll(headerGraphic.get());
                     else header.getChildren().clear();
-                    refreshRoot();
                 }, true, headerText.textProperty(), headerGraphic, headerDisplay)
                 .addListener(() -> {
                     expandText.setVisible(expandContent.get() != null);
                     expandText.setManaged(expandContent.get() != null);
+                    if (expandContent.get() != null) expandPane.getChildren().setAll(expandContent.get());
+                    else expandPane.getChildren().clear();
                     if (expand.get()) {
                         if (content.get() != null) {
-                            if (expandContent.get() != null)
-                                contentRoot.getChildren().setAll(content.get(), expandContent.get());
-                            else contentRoot.getChildren().setAll(content.get());
-                        } else if (expandContent.get() != null)
-                            contentRoot.getChildren().setAll(expandContent.get());
+                            if (expandContent.get() != null) {
+                                contentRoot.getChildren().setAll(content.get());
+                                root.getChildren().setAll(header,separator,contentRoot, expandPane,actionBar);
+                            }
+                            else {
+                                contentRoot.getChildren().setAll(content.get());
+                                root.getChildren().setAll(header,separator,contentRoot,actionBar);
+                            }
+                        } else if (expandContent.get() != null) {
+                            root.getChildren().setAll(header,separator,expandPane,actionBar);
+                        }
                         else
-                            contentRoot.getChildren().clear();
-                    } else {
-                        if (content.get() != null)
-                            contentRoot.getChildren().setAll(content.get());
-                        else contentRoot.getChildren().clear();
+                            root.getChildren().setAll(header,separator,actionBar);
                     }
-                    refreshRoot();
+                    else {
+                        if (content.get() != null) {
+                            contentRoot.getChildren().setAll(content.get());
+                            root.getChildren().setAll(header,separator,contentRoot,actionBar);
+                        }
+                        else root.getChildren().setAll(header,separator,actionBar);
+                    }
                 }, true, content, expandContent, expand)
                 .addListener(() -> expandAction.get().action(expandText, expand.get()), true, expand, expandAction)
                 .addListener(() -> {
@@ -259,29 +269,34 @@ public class BDDialog implements BDUI {
                 }, true, dialogType);
     }
 
-    private void refreshRoot() {
-        if (!header.getChildren().isEmpty()) {
-            if (!contentRoot.getChildren().isEmpty())
-                root.getChildren().setAll(header, separator, contentRoot, actionBar);
-            else root.getChildren().setAll(header, actionBar);
-        } else if (!contentRoot.getChildren().isEmpty())
-            root.getChildren().setAll(contentRoot, actionBar);
-        else
-            root.getChildren().setAll(actionBar);
-    }
-
     public BDDialog setSize(double width, double height) {
         stageBuilder.setSize(width, height);
         return this;
     }
 
     public Stage build(Node node) {
-        stageBuilder.setContent(root);
-        stageBuilder.addStyleClass("dialog");
-        Stage build = stageBuilder.build();
+        return build(node, false);
+    }
+
+    public Stage build(Node node, boolean autosize) {
+        Stage build = build(autosize);
         build.initOwner(node.getScene().getWindow());
         return build;
     }
+
+    public Stage build() {
+        return build(false);
+    }
+
+    public Stage build(boolean autoSize) {
+        stageBuilder.setContent(root);
+        stageBuilder.addStyleClass("dialog");
+        Stage build = stageBuilder.build();
+        build.setResizable(!autoSize);
+        if (autoSize) mapping.addListener(build::sizeToScene, false, root.widthProperty(), root.heightProperty(),expand);
+        return build;
+    }
+
 
     public BDDialog addBDDialogStyleClass(String s) {
         stageBuilder.addStyleClass(s);

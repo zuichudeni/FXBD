@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.Stack;
 
 public class BDTreeView<T> extends TreeView<T> {
+    Runnable onRefresh;
     final SimpleListProperty<TreeItem<T>> selectBroItem = new SimpleListProperty<>(FXCollections.observableArrayList());
     final SimpleObjectProperty<BDSimpleSearchBox<T>> searchBox = new SimpleObjectProperty<>();
     private final BDMapping mapping = new BDMapping();
@@ -69,6 +70,12 @@ public class BDTreeView<T> extends TreeView<T> {
 
     public SimpleObjectProperty<BDTreeCellInitFactory<T>> treeCellInitFactoryProperty() {
         return treeCellInitFactory;
+    }
+
+    @Override
+    public void refresh() {
+        super.refresh();
+        if (onRefresh != null) onRefresh.run();
     }
 
     @Override

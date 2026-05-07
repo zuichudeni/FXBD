@@ -125,17 +125,17 @@ public class BDStageDemo extends Application {
                             .addTitle("弹窗测试")
                             .addIcon(Util.getImageView(40, BDIcon.FINAL_MARK)))
                     .setHeaderText("我是header text，右边的是header graphic。")
-                    .setContent(new Text("我是text content"))
+                    .setContent(new TextField())
                     .addAfterActionNode(ok)
                     .setDialogType(styleSelect.getSelectionModel().getSelectedItem());
             if (expandAble.isSelected()) bdDialog.setExpandContent(new Text("我是被隐藏起来的text expand content"));
-            Stage stage = bdDialog.build(sideContent);
+            Stage stage = bdDialog.build(sideContent,true);
             globalMapping.addEventHandler(ok, ActionEvent.ACTION, _ -> stage.close());
             stage.setAlwaysOnTop(true);
             stage.show();
             message.pushMessage(new BDMessage<>(bdDialog.getDialogType(), "dialog启动", new Date(), "启动弹窗成功（弹窗类型：%s,是否有填充内容%s）".formatted(bdDialog.getDialogType(), expandAble.isSelected())));
         });
-
+sideContent.addAfterNodeItem(new Button("test"));
         HBox root = new HBox(20, new VBox(20,
                 new HBox(20, new InputGroup(new Text("弹窗类型"), styleSelect),
                         expandAble), build));
@@ -184,7 +184,7 @@ public class BDStageDemo extends Application {
             );
             content.addNotification(ntf);
         });
-        return new BDSideBarItem("任务", Util.getImageView(25, BDIcon.RUN), Util.getImageView(25, BDIcon.RUN_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, taskControl);
+        return new BDSideBarItem("任务","Ctrl+Alt+Enter", Util.getImageView(25, BDIcon.RUN), Util.getImageView(25, BDIcon.RUN_DARK), BDDirection.BOTTOM, BDInSequence.FRONT, taskControl);
     }
 
     private BDTask<String> getSimpleTask() {

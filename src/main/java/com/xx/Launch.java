@@ -37,13 +37,6 @@ public class Launch extends Application {
             bar.setProgress(nv.doubleValue());
         });
 
-        Task<Double> task = new Task<Double>() {
-            @Override
-            protected Double call() throws Exception {
-                return 0.0;
-            }
-        };
-
 
         service.start();
         Scene scene = new Scene(new StackPane(bar));

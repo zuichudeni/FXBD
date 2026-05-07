@@ -43,7 +43,7 @@ public class BDSimpleSearchPaneSkin extends BDSkin<BDSimpleSearchPane> {
                         control.refresh();
                     }
                 }, false, control.showSearchBoxProperty())
-                .bindBidirectional(control.showSearchBoxProperty(), control.simpleSearchBox.show);
+                .bindBidirectional(control.simpleSearchBox.show,control.showSearchBoxProperty() );
     }
 
     @Override

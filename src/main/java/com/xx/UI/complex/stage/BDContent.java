@@ -633,8 +633,8 @@ public class BDContent extends BDControl {
     void hoverToolTipShow(BDSideBarItem item) {
         tooltip.pseudoClassStateChanged(TOOL_TIP_SHOW, true);
         text.setText(item.getName() + (item.getShortcutKey() == null ? "" : " " + item.getShortcutKey()));
-        tooltip.layout();
-        tooltip.applyCss();
+        layout();
+        applyCss();
         Bounds itemBounds = item.localToScene(item.getLayoutBounds());
         Bounds rootBounds = horizontalRootPane.localToScene(horizontalRootPane.getLayoutBounds());
         double tooltipWidth = tooltip.getWidth();

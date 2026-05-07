@@ -60,12 +60,16 @@ public class BDSideContentSkin extends BDSkin<BDSideContent> {
                         content.getChildren().add(control.getContent());
                 }, true, control.contentProperty())
                 .addListener(() -> {
+                    prePane.getChildren().clear();
+                    postPane.getChildren().clear();
                     prePane.getChildren().add(title);
                     if (!control.preNodeItemsProperty().isEmpty())
                         prePane.getChildren().addAll(control.preNodeItemsProperty().get());
                     if (!control.afterNodeItemsProperty().isEmpty())
                         postPane.getChildren().addAll(control.afterNodeItemsProperty().get());
-                }, true, (ObservableList<?>) control.preNodeItemsProperty(), control.afterNodeItemsProperty());
+                    postPane.getChildren().add(hide);
+                }, true, (ObservableList<?>) control.preNodeItemsProperty(),
+                        control.afterNodeItemsProperty());
     }
 
     @Override
@@ -76,7 +80,6 @@ public class BDSideContentSkin extends BDSkin<BDSideContent> {
         control.dock.setSelectable(false);
         control.dock.getStyleClass().addAll("icon", "dock");
         header.getChildren().addAll(prePane, postPane);
-        control.addAfterNodeItem(hide);
         hide.setDefaultGraphic(Util.getImageView(15, BDIcon.HIDE));
         hide.setSelectable(false);
         hide.getStyleClass().addAll("icon", "hide");

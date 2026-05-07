@@ -28,7 +28,10 @@ public abstract class BDSimpleSearchBox<T> extends BDControl {
     private final SimpleIntegerProperty searchBlockCount = new SimpleIntegerProperty(0);
     private final SimpleObjectProperty<SimpleSearchResult<T>> searchResult = new SimpleObjectProperty<>();
     private final Map<T, List<SimpleSearchResult<T>>> searchMap = new LinkedHashMap<>();
+    //    这个refresh是为了刷新treeview的。
     private final SimpleBooleanProperty refresh = new SimpleBooleanProperty();
+    //    刷新搜索行为
+    private final SimpleBooleanProperty refreshSearch = new SimpleBooleanProperty();
     private final List<SimpleSearchResult<T>> searchList = new ArrayList<>();
     // 线程池管理
     private final ExecutorService executor;
@@ -58,6 +61,7 @@ public abstract class BDSimpleSearchBox<T> extends BDControl {
     public abstract LinkedHashMap<T, String> getSearchSource();
 
     void search() {
+
         if (changeEvent != null) changeEvent.onSearchStart();
         searchList.clear(); // 清空，UI 线程安全
 
@@ -66,7 +70,7 @@ public abstract class BDSimpleSearchBox<T> extends BDControl {
         if (oldTask != null && !oldTask.isDone()) {
             oldTask.cancel(true);
         }
-
+        if (!show.get()) return;
         String regex = getRegularExpression();
         Map<T, String> source = getSearchSource();
 
@@ -277,6 +281,14 @@ public abstract class BDSimpleSearchBox<T> extends BDControl {
 
     public SimpleBooleanProperty refreshProperty() {
         return refresh;
+    }
+
+    public void refreshSearch() {
+        refreshSearch.set(!refreshSearch.get());
+    }
+
+    public SimpleBooleanProperty refreshSearchProperty() {
+        return refreshSearch;
     }
 
     public interface SearchEvent {

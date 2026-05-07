@@ -120,12 +120,12 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox<?>> {
                 }, control.searchBlockCountProperty(), control.searchResultIndexProperty(), control.searchTextProperty()))
                 .bindBidirectional(searchField.textProperty(), control.searchTextProperty())
                 .bindProperty(searchCleanButton.visibleProperty(), searchField.textProperty().isNotEmpty())
-                .bindBidirectional(control.searchRegexProperty(),searchRegularExpressionButton.selectedProperty())
-                .bindBidirectional(control.searchCaseProperty(),searchCaseButton.selectedProperty())
+                .bindBidirectional(control.searchRegexProperty(), searchRegularExpressionButton.selectedProperty())
+                .bindBidirectional(control.searchCaseProperty(), searchCaseButton.selectedProperty())
                 .addListener(() -> {
                     if (control.show.get()) {
                         Platform.runLater(() -> searchField.requestFocus());
-                        control.search();
+                        search.run();
                     }
                 }, true, control.show)
                 .addListener(() -> {
@@ -138,7 +138,7 @@ public class BDSimpleSearchBoxSkin extends BDSkin<BDSimpleSearchBox<?>> {
                         s = "正则表达式(x)";
                     searchField.setPromptText(s);
                 }, true, searchCaseButton.selectedProperty(), searchRegularExpressionButton.selectedProperty())
-                .addListener(search::run, true, searchField.textProperty(),control.searchCaseProperty(),control.searchRegexProperty());
+                .addListener(search::run, true, searchField.textProperty(), control.refreshSearchProperty(), control.searchCaseProperty(), control.searchRegexProperty());
     }
 
     private BDButton getBdButton() {

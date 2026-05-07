@@ -163,14 +163,14 @@ public class BDTreeCell<T> extends TreeCell<T> implements BDVirtualUI, BDUI {
             if (treeView.selectBroItem.contains(treeItem)) {
                 if (!treeItem.isExpanded())
                     focusItem.add(linePane.getChildren().getFirst());
-                else focusItem.add(linePane.getChildren().get(1));
+                else if (!treeItem.isLeaf())focusItem.add(linePane.getChildren().get(1));
             } else {
                 treeView.selectBroItem.forEach(broItem -> {
                     int deep = getDeep(broItem, treeItem);
                     if (deep != -1) {
                         if (!treeItem.isExpanded())
                             focusItem.add(linePane.getChildren().get(deep));
-                        else focusItem.add(linePane.getChildren().get(deep + 1));
+                        else if (!treeItem.isLeaf())focusItem.add(linePane.getChildren().get(deep + 1));
                     } else if (Objects.equals(broItem.getParent(), treeItem))
                         focusItem.add(linePane.getChildren().getFirst());
                 });

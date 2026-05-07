@@ -6094,6 +6094,9 @@ BDButton.icon {
     -fx-background-radius: 10;
     -fx-padding: 5px;
     -fx-effect: none;
+    -bd-selected-fill: #3574F0;
+    -bd-selected-hover-fill: #3574F0;
+    -bd-selected-pressed-fill: #3574F0;
 }
 
 .bd-side-bar-badge {
@@ -6173,8 +6176,11 @@ BDButton.icon {
 }
 
 .bd-dialog-content-root {
-    -fx-alignment: baseline-left;
-    -fx-padding: 20px;
+    -fx-padding: 20px 20px 0 20px;
+}
+
+.bd-dialog-expand-pane {
+    -fx-padding: 20px 20px 0 20px;
 }
 
 .bd-dialog-action-bar {
@@ -6659,6 +6665,7 @@ BDButton.icon {
 
 .bd-tree-cell-search-pane {
 }
+
 .bd-treeview-search-back {
     -fx-background-color: #fff59d; /* 更接近IDEA的浅黄色 */
     -fx-background-radius: 3px;
@@ -6708,6 +6715,7 @@ BDButton.icon {
     -fx-background-color: #DFE1E5;
     -fx-background-radius: 5px;
 }
+
 /*************************** BDListView ********************************************/
 /*view*/
 .bd-list-view {
@@ -6737,6 +6745,7 @@ BDButton.icon {
 
 .bd-list-cell-search-pane {
 }
+
 .bd-listview-search-back {
     -fx-background-color: #fff59d; /* 更接近IDEA的浅黄色 */
     -fx-background-radius: 3px;

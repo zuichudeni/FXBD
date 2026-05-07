@@ -7,6 +7,7 @@ import com.xx.UI.complex.textArea.content.segment.NodeSegment;
 import com.xx.UI.complex.textArea.view.BDTextArea;
 import com.xx.UI.complex.textArea.view.BDTextAreaSearch;
 import com.xx.UI.complex.textArea.view.dataFormat.example.java.BDJavaTextInitFactory;
+import com.xx.UI.complex.textArea.view.dataFormat.example.regex.BDRegulaInitFactory;
 import com.xx.UI.ui.BDIcon;
 import com.xx.UI.util.Util;
 import javafx.application.Application;

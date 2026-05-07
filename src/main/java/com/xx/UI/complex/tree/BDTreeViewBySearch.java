@@ -46,5 +46,6 @@ public class BDTreeViewBySearch<T> extends BDSimpleSearchPane<T> {
                     BDTreeCellInitFactory.selectAndShow(treeView, searchResult.t());
             }
         });
+        treeView.onRefresh = box::refreshSearch;
     }
 }

@@ -55,7 +55,9 @@ public class BDTreeViewDemo extends Application {
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         treeView.setRoot(getFile(Path.of("./").toFile()));
         treeView.sortItem();
-        Scene scene = new Scene(new BDTreeViewBySearch<>(treeView), 800, 600);
+        BDTreeViewBySearch<File> root = new BDTreeViewBySearch<>(treeView);
+        root.setShowSearchBox(true);
+        Scene scene = new Scene(root, 800, 600);
         stage.setTitle("BDTreeView 测试");
         stage.setScene(scene);
         stage.show();
